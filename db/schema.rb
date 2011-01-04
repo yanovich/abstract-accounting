@@ -10,12 +10,24 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110104113951) do
+ActiveRecord::Schema.define(:version => 20110104134718) do
+
+  create_table "assets", :force => true do |t|
+    t.string "tag"
+  end
+
+  add_index "assets", ["tag"], :name => "index_assets_on_tag", :unique => true
 
   create_table "entities", :force => true do |t|
-    t.string   "tag"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string "tag"
   end
+
+  create_table "money", :id => false, :force => true do |t|
+    t.integer "num_code"
+    t.string  "alpha_code"
+  end
+
+  add_index "money", ["alpha_code"], :name => "index_money_on_alpha_code", :unique => true
+  add_index "money", ["num_code"], :name => "index_money_on_num_code", :unique => true
 
 end
