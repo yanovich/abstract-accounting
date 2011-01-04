@@ -7,10 +7,10 @@
 #
 # Please see ./COPYING for details
 
-class Entity < ActiveRecord::Base
+class Deal < ActiveRecord::Base
   validates_presence_of :tag
-  validates_uniqueness_of :tag
-  has_many :deals
+  validates_presence_of :rate
+  belongs_to :entity
 end
 
 # vim: ts=2 sts=2 sw=2 et:

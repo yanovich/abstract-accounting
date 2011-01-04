@@ -7,10 +7,19 @@
 #
 # Please see ./COPYING for details
 
-class Entity < ActiveRecord::Base
-  validates_presence_of :tag
-  validates_uniqueness_of :tag
-  has_many :deals
-end
+equityshare1:
+  tag: "equity share 1"
+  rate: 10000.0
+  entity: sergey
+
+equityshare2:
+  tag: "equity share 2"
+  rate: 10000.0
+  entity: jdow
+
+bankaccount:
+  tag: "bank account 1"
+  rate: 1.0
+  entity: sbrfbank
 
 # vim: ts=2 sts=2 sw=2 et:

@@ -7,10 +7,20 @@
 #
 # Please see ./COPYING for details
 
-class Entity < ActiveRecord::Base
-  validates_presence_of :tag
-  validates_uniqueness_of :tag
-  has_many :deals
+require 'test_helper'
+
+class DealTest < ActiveSupport::TestCase
+  test "Deal should be stored" do
+    d = Deal.new
+    assert !d.save, "Empty deal saved"
+    d = Deal.new
+    d.tag = deals(:equityshare1).tag
+    d.rate = deals(:equityshare1).rate
+    d.entity = deals(:equityshare1).entity
+    assert_raise ActiveRecord::RecordNotUnique do
+      !d.save
+    end
+  end
 end
 
 # vim: ts=2 sts=2 sw=2 et:
