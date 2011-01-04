@@ -10,13 +10,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110104134718) do
+ActiveRecord::Schema.define(:version => 20110104170520) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
   end
 
   add_index "assets", ["tag"], :name => "index_assets_on_tag", :unique => true
+
+  create_table "deals", :force => true do |t|
+    t.string  "tag"
+    t.float   "rate"
+    t.integer "entity_id"
+  end
+
+  add_index "deals", ["entity_id", "tag"], :name => "index_deals_on_entity_id_and_tag", :unique => true
 
   create_table "entities", :force => true do |t|
     t.string "tag"

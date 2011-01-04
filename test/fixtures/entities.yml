@@ -1,13 +1,10 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 acorp:
-  id: 1
   tag: A Corp.
 
 smithj:
-  id: 2
   tag: Smith, John
 
 zinc:
-  id: 3
   tag: Z Inc.

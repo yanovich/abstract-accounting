@@ -1,0 +1,12 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+purchase:
+  tag: "purchase 1"
+  rate: 100
+  entity: acorp
+
+metall:
+  tag: "metall storage"
+  rate: 1
+  entity: smithj
+
