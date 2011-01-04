@@ -2,8 +2,6 @@ class CreateEntities < ActiveRecord::Migration
   def self.up
     create_table :entities do |t|
       t.string :tag
-
-      t.timestamps
     end
   end
 
