@@ -1,0 +1,10 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+acorp:
+  tag: A Corp.
+
+smithj:
+  tag: Smith, John
+
+zinc:
+  tag: Z Inc.
