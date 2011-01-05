@@ -3,7 +3,7 @@ class CreateResources < ActiveRecord::Migration
 	create_table :assets do |t|
 		t.string :tag
 	end
-	create_table :money, :id => false do |t|
+	create_table :money do |t|
 		t.integer :num_code
 		t.string :alpha_code
 	end

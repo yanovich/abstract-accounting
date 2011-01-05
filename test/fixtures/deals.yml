@@ -4,9 +4,13 @@ purchase:
   tag: "purchase 1"
   rate: 100
   entity: acorp
+  give: usd (Money)
+  take: steel (Asset)
 
 metall:
   tag: "metall storage"
   rate: 1
   entity: smithj
+  give: steel (Asset)
+  take: steel (Asset)
 

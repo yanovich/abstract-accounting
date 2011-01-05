@@ -4,6 +4,8 @@ class CreateDeals < ActiveRecord::Migration
       t.string :tag
       t.float :rate
       t.references :entity
+      t.references :give, :polymorphic => true
+      t.references :take, :polymorphic => true
     end
 	add_index :deals, [:entity_id, :tag], :unique => true
   end
