@@ -1,7 +1,10 @@
 class Deal < ActiveRecord::Base
-  validates_presence_of :tag
-  validates_presence_of :rate
+  validates :tag, :rate, :presence => true
   belongs_to :entity
   belongs_to :give, :polymorphic => true
   belongs_to :take, :polymorphic => true
+  has_many :states
+  def state(day)
+    states.where(:start => day).first
+  end
 end
