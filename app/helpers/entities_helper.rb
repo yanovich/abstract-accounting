@@ -20,7 +20,14 @@ module EntitiesHelper
       :rowList => [10, 20, 30],
       :sortname => 'tag',
       :sortorder => 'asc',
-      :viewrecords => true
+      :viewrecords => true,
+      :onSelectRow => "function(cell)
+      {
+        document.getElementById('entity_tag').value = cell;
+        document.getElementById('change_entity').disabled = false;
+        document.getElementById('change_entity').parentNode.parentNode.action =
+          '/entities/' + $('#entities_list').getCell(cell, 'id') + '/edit';
+      }".to_json_var
     }]
 
     jqgrid_api 'entities_list', grid, options
