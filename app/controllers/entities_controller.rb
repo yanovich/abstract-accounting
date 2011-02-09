@@ -9,6 +9,7 @@ class EntitiesController < ApplicationController
   end
 
   def edit
+    @entity = Entity.find(params[:id])
   end
 
   def create
