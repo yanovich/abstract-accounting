@@ -1,4 +1,6 @@
 <script type="text/javascript">
+  var tagEntity = unescape(document.getElementById('hide_entity_tag').value);
+  document.getElementById('entity_tag_a').value = tagEntity;
   function escape(text)
   {
     return text.replace(/&/g, '&amp;')
@@ -13,6 +15,11 @@
                .replace(/&gt;/g, '>')
                .replace(/&amp;/g, '&');
   }
+  function sendTagEntity()
+  {
+    document.getElementById('hide_entity_tag').value =
+      escape(document.getElementById('entity_tag_a').value);
+  }
 </script>
 
 <table>
@@ -23,7 +30,8 @@
     </td>
     <td width="50">
       <%= form_for(@entity, :remote => true) do |f| %>
-      <%= f.submit "save", :id => "save_entity", :disabled => "true" %>
+      <%= f.submit "save", :id => "save_entity", :disabled => "true",
+                           :onclick => "sendTagEntity();" %>
       <%= f.hidden_field :tag, :id => "hide_entity_tag", :value => @entity.tag %>
       <% end %>
     </td>
