@@ -29,4 +29,11 @@ class EntitiesControllerTest < ActionController::TestCase
       'Entity \'A Corp. tester\' not saved'
   end
 
+  test "should update entity" do
+    xml_http_request :put, :update, :id => @entity.to_param,
+      :entity => { :tag => 'A Corp. tester update' }
+    assert_response :success
+    assert_equal 'A Corp. tester update', Entity.find(@entity.id).tag,
+      'Entity \'A Corp. tester\' not edited'
+  end
 end

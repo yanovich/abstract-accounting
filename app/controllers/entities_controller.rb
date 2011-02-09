@@ -20,6 +20,10 @@ class EntitiesController < ApplicationController
   end
 
   def update
+    @entity = Entity.find(params[:id])
+    if !@entity.update_attributes(params[:entity])
+      render :action => "edit"
+    end
   end
-
+  
 end
