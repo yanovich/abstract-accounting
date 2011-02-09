@@ -40,3 +40,4 @@ Must have: rails 3, ruby 1.9.1
 
 Prior to the development, you must do the following:
 Run "bundle install"
+Run "rails generate jquery:install --ui --jqgrid"
