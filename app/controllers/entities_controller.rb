@@ -5,6 +5,7 @@ class EntitiesController < ApplicationController
   end
 
   def new
+    @entity = Entity.new
   end
 
   def edit

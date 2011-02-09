@@ -6,4 +6,10 @@ class EntitiesControllerTest < ActionController::TestCase
     assert_response :success
     assert_not_nil assigns(:entities)
   end
+
+  test "should get new entity" do
+    xml_http_request :get, :new
+    assert_response :success
+  end
+
 end
