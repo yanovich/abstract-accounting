@@ -1,6 +1,9 @@
 <script type="text/javascript">
   var tagEntity = unescape(document.getElementById('hide_entity_tag').value);
   document.getElementById('entity_tag_a').value = tagEntity;
+  $('#entities_list').resetSelection();
+  canSelect = false;
+
   function escape(text)
   {
     return text.replace(/&/g, '&amp;')
@@ -22,6 +25,7 @@
   }
   function onCancel()
   {
+   canSelect = true;
    $('#actions').html('<%= escape_javascript(render :partial => 'form_index') %>');
    $('#entities_list').resetSelection();
   }

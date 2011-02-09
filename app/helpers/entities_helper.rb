@@ -27,6 +27,11 @@ module EntitiesHelper
         document.getElementById('change_entity').disabled = false;
         document.getElementById('change_entity').parentNode.parentNode.action =
           '/entities/' + $('#entities_list').getCell(cell, 'id') + '/edit';
+      }".to_json_var,
+      :beforeSelectRow =>	"function()
+      {
+        if (canSelect) return true;
+        return false;
       }".to_json_var
     }]
 
