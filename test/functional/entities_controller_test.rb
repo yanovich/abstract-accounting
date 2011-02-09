@@ -21,4 +21,12 @@ class EntitiesControllerTest < ActionController::TestCase
     assert_response :success
   end
 
+  test "should create entity" do
+    assert_difference('Entity.count') do
+       xml_http_request :post, :create, :entity => { :tag => 'A Corp. tester' }
+    end
+    assert_equal 1, Entity.where(:tag =>'A Corp. tester').count,
+      'Entity \'A Corp. tester\' not saved'
+  end
+
 end

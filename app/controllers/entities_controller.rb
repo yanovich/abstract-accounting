@@ -13,6 +13,10 @@ class EntitiesController < ApplicationController
   end
 
   def create
+    @entity = Entity.new(params[:entity])
+    if !@entity.save
+      render :action => "new"
+    end
   end
 
   def update
