@@ -25,7 +25,11 @@
    $('#actions').html('<%= escape_javascript(render :partial => 'form_index') %>');
    $('#entities_list').resetSelection();
   }
-
+  function onReset()
+  {
+   document.getElementById('entity_tag_a').value = tagEntity;
+   document.getElementById('save_entity').disabled = true;
+  }
 </script>
 
 <table>
@@ -33,7 +37,8 @@
     <td>
       <input name="cancel" type="button" value="cancel"
         onclick="onCancel();"/>
-      <input name="reset" type="button" value="reset"/>
+      <input name="reset" type="button" value="reset"
+        onclick="onReset();"/>
     </td>
     <td width="50">
       <%= form_for(@entity, :remote => true) do |f| %>
