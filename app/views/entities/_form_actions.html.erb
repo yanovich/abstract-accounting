@@ -1,0 +1,21 @@
+<table>
+  <tr align="right">
+    <td>
+      <input name="cancel" type="button" value="cancel"/>
+      <input name="reset" type="button" value="reset"/>
+    </td>
+    <td width="50">
+      <%= form_for(@entity, :remote => true) do |f| %>
+      <%= f.submit "save", :id => "save_entity", :disabled => "true" %>
+      <%= f.hidden_field :tag, :id => "hide_entity_tag", :value => @entity.tag %>
+      <% end %>
+    </td>
+  </tr>
+  <tr align="left">
+    <td colspan="2">
+      tag:
+      <input id="entity_tag_a" name="entity_edit" type="text" value="" size="83"
+             onkeypress="document.getElementById('save_entity').disabled = false;"/>
+    </td>
+  </tr>
+</table>
