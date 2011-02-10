@@ -1,6 +1,6 @@
 <script type="text/javascript">
-  var tagEntity = unescape(document.getElementById('hide_entity_tag').value);
-  document.getElementById('entity_tag_a').value = tagEntity;
+  var tagEntity = unescape($('#hide_entity_tag').val());
+  $('#entity_tag_a').val(tagEntity);
   $('#entities_list').resetSelection();
   canSelect = false;
 
@@ -20,8 +20,7 @@
   }
   function sendTagEntity()
   {
-    document.getElementById('hide_entity_tag').value =
-      escape(document.getElementById('entity_tag_a').value);
+    $('#hide_entity_tag').val(escape($('#entity_tag_a').val()));
   }
   function onCancel()
   {
@@ -31,8 +30,8 @@
   }
   function onReset()
   {
-   document.getElementById('entity_tag_a').value = tagEntity;
-   document.getElementById('save_entity').disabled = true;
+   $('#entity_tag_a').val(tagEntity);
+   $('#save_entity').attr('disabled','disabled');
   }
 </script>
 
@@ -56,7 +55,7 @@
     <td colspan="2">
       tag:
       <input id="entity_tag_a" name="entity_edit" type="text" value="" size="83"
-             onkeypress="document.getElementById('save_entity').disabled = false;"/>
+             onkeypress="$('#save_entity').removeAttr('disabled');"/>
     </td>
   </tr>
 </table>
