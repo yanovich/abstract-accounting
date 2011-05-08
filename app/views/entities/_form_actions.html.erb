@@ -1,0 +1,61 @@
+<script type="text/javascript">
+  var tagEntity = unescape($('#hide_entity_tag').val());
+  $('#entity_tag_a').val(tagEntity);
+  $('#entities_list').resetSelection();
+  canSelect = false;
+
+  function escape(text)
+  {
+    return text.replace(/&/g, '&amp;')
+               .replace(/</g, '&lt;')
+               .replace(/>/g, '&gt;')
+               .replace(/"/g, '&quot;');
+  }
+  function unescape(text)
+  {
+    return text.replace(/&quot;/g, '"')
+               .replace(/&lt;/g, '<')
+               .replace(/&gt;/g, '>')
+               .replace(/&amp;/g, '&');
+  }
+  function sendTagEntity()
+  {
+    $('#hide_entity_tag').val(escape($('#entity_tag_a').val()));
+  }
+  function onCancel()
+  {
+   canSelect = true;
+   $('#actions').html('<%= escape_javascript(render :partial => 'form_index') %>');
+   $('#entities_list').resetSelection();
+  }
+  function onReset()
+  {
+   $('#entity_tag_a').val(tagEntity);
+   $('#save_entity').attr('disabled','disabled');
+  }
+</script>
+
+<table>
+  <tr align="right">
+    <td>
+      <input name="cancel" type="button" value="cancel"
+        onclick="onCancel();"/>
+      <input name="reset" type="button" value="reset"
+        onclick="onReset();"/>
+    </td>
+    <td width="50">
+      <%= form_for(@entity, :remote => true) do |f| %>
+      <%= f.submit "save", :id => "save_entity", :disabled => "true",
+                           :onclick => "sendTagEntity();" %>
+      <%= f.hidden_field :tag, :id => "hide_entity_tag", :value => @entity.tag %>
+      <% end %>
+    </td>
+  </tr>
+  <tr align="left">
+    <td colspan="2">
+      tag:
+      <input id="entity_tag_a" name="entity_edit" type="text" value="" size="83"
+             onkeypress="$('#save_entity').removeAttr('disabled');"/>
+    </td>
+  </tr>
+</table>

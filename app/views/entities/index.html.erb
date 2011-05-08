@@ -1,0 +1,14 @@
+<script type="text/javascript">
+  var canSelect = true;
+</script>
+
+<table id="entities_list"></table>
+<div id="entities_pager"></div>
+
+<% content_for :head do %>
+  <%= raw(entities_jqgrid) %>
+<% end %>
+
+<div id="actions">
+  <%= render 'form_index' %>
+</div>

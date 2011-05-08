@@ -1,0 +1,23 @@
+<script type="text/javascript">
+  canSelect = true;
+  $("#entities_list").trigger("reloadGrid");
+</script>
+
+<table>
+  <tr align="right">
+    <td>
+      <%= button_to "new", new_entity_path, :method => :get, :remote => true %>
+    </td>
+    <td width="70">
+      <%= button_to "change", edit_entity_path(0), :id => 'change_entity',
+          :method => :get, :remote => true, :disabled => true %>
+    </td>
+  </tr>
+  <tr align="left">
+    <td colspan="2">
+      tag:
+      <input id="entity_tag" name="edit_entity" type="text" disabled="true"
+             value="" size="83" />
+    </td>
+  </tr>
+</table>
