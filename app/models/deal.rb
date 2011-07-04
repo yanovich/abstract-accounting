@@ -13,6 +13,11 @@ class Deal < ActiveRecord::Base
   belongs_to :entity
   belongs_to :give, :polymorphic => true
   belongs_to :take, :polymorphic => true
+  has_many :states
+
+  def state(day)
+    states.where(:start => day).first
+  end
 end
 
 # vim: ts=2 sts=2 sw=2 et:

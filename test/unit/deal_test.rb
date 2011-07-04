@@ -35,6 +35,20 @@ class DealTest < ActiveSupport::TestCase
     assert_equal d, deal_give.deal_gives.where(:tag => deal_tag).first,
       "Give resource not contain equityshare1"
   end
+
+  test "Deal has states" do
+    s = State.new
+    s.deal = Deal.first
+    assert s.invalid?, "State with deal is valid"
+    s.start = DateTime.civil(2011, 1, 8)
+    s.amount = 5000
+    s.side = "active"
+    assert s.save, "State is not saved"
+    assert_equal s, Deal.first.state(s.start),
+                 "State from first deal is not equal saved state"
+    assert Deal.first.state(DateTime.civil(2011, 1, 7)).nil?,
+           "State is not nil"
+  end
 end
 
 # vim: ts=2 sts=2 sw=2 et:
