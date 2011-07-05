@@ -14,6 +14,12 @@ class State < ActiveRecord::Base
 
   after_initialize :do_init
 
+  def resource
+    return nil if self.deal.nil?
+    return self.deal.take if self.side == "active"
+    self.deal.give
+  end
+
   def apply_fact(fact)
     return false if self.deal.nil?
     return false if fact.nil?
