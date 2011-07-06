@@ -15,8 +15,14 @@ class Deal < ActiveRecord::Base
   belongs_to :take, :polymorphic => true
   has_many :states
 
-  def state(day)
-    states.where(:start => day).first
+  def state(day = nil)
+    states.find_all_by_start(
+      (unless day.nil?
+        states.where("start <= ?", day)
+      else
+        states
+      end).maximum(:start)
+    ).first
   end
 end
 

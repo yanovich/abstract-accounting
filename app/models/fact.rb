@@ -29,12 +29,20 @@ class Fact < ActiveRecord::Base
 
   private
   def do_save
-    false if !init_state(self.from) or !init_state(self.to)
+    if changed? or new_record?
+      return false unless init_state(self.from.state, self.from)
+      return false unless init_state(self.to.state, self.to)
+    end
   end
 
-  def init_state(deal)
+  def init_state(old_state, deal)
     return false if deal.nil?
-    state = deal.states.build
+    state =
+      if old_state.nil?
+        deal.states.build
+      else
+        old_state
+      end
     if state.apply_fact(self)
       return state.save
     end

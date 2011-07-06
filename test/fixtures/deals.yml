@@ -27,3 +27,24 @@ bankaccount:
   entity: sbrfbank
   give: rub (Money)
   take: rub (Money)
+
+purchase:
+  tag: "purchase contract 1"
+  rate: 0.0000142857143
+  entity: equipmentsupl
+  give: rub (Money)
+  take: sonyvaio (Asset)
+
+forex:
+  tag: "forex deal 1"
+  rate: 0.028612303
+  entity: sbrfbank
+  give: rub (Money)
+  take: eur (Money)
+
+bankaccount2:
+  tag: "bank account 2"
+  rate: 1.0
+  entity: sbrfbank
+  give: eur (Money)
+  take: eur (Money)

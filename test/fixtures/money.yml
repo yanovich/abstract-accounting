@@ -10,5 +10,6 @@
 rub:
   alpha_code: RUB
   num_code: 643
-
-# vim: ts=2 sts=2 sw=2 et:
+eur:
+  alpha_code: EUR
+  num_code: 978

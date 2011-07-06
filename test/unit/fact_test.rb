@@ -29,7 +29,7 @@ class FactTest < ActiveSupport::TestCase
     assert fact.save, "Fact not saved"
     f = Fact.find(fact.id)
     assert_equal "passive", f.from.state(f.day).side
-    assert_equal 0.03, f.from.state(f.day).amount.round(2)
+    assert_equal 0.03, f.from.state(f.day).amount
     assert_equal "active", f.to.state(f.day).side
     assert_equal 300, f.to.state(f.day).amount
   end

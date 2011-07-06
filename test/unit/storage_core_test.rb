@@ -7,15 +7,6 @@
 #
 # Please see ./COPYING for details
 
-# Copyright (C) 2011 Sergey Yanovich <ynvich@gmail.com>
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3 of the
-# License, or (at your option) any later version.
-#
-# Please see ./COPYING for details
-
 require 'test_helper'
 
 class StorageCore < ActiveSupport::TestCase
@@ -32,6 +23,63 @@ class StorageCore < ActiveSupport::TestCase
     assert_equal true,
       check_state(deals(:bankaccount), s2tb.day, 100000.0,
         deals(:bankaccount).take)
+
+    stb = Fact.new(:amount => 142000.0,
+      :day => DateTime.civil(2007, 8, 29, 12, 0, 0),
+      :from => deals(:equityshare1),
+      :to => deals(:bankaccount),
+      :resource => deals(:equityshare1).take)
+    assert stb.save, "Fact is not saved"
+    assert_equal true,
+      check_state(deals(:equityshare2), stb.day, 10.0,
+        deals(:equityshare2).give)
+    assert_equal true,
+      check_state(deals(:equityshare1), stb.day, 14.2,
+        deals(:equityshare1).give)
+    assert_equal true,
+      check_state(deals(:bankaccount), stb.day, 242000.0,
+        deals(:bankaccount).take)
+
+    batp = Fact.new(:amount => 70000.0,
+      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+      :from => deals(:bankaccount),
+      :to => deals(:purchase),
+      :resource => deals(:bankaccount).take)
+    assert batp.save, "Fact is not saved"
+    assert_equal true,
+      check_state(deals(:equityshare2), batp.day, 10.0,
+        deals(:equityshare2).give)
+    assert_equal true,
+      check_state(deals(:equityshare1), batp.day, 14.2,
+        deals(:equityshare1).give)
+    assert_equal true,
+      check_state(deals(:bankaccount), batp.day, 172000.0,
+        deals(:bankaccount).take)
+    assert_equal true,
+      check_state(deals(:purchase), batp.day, 1.0, deals(:purchase).take)
+
+    ftba2 = Fact.new(:amount => 1000.0,
+      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+      :from => deals(:forex),
+      :to => deals(:bankaccount2),
+      :resource => deals(:forex).take)
+    assert ftba2.save, "Fact is not saved"
+    assert_equal true,
+      check_state(deals(:equityshare2), ftba2.day, 10.0,
+        deals(:equityshare2).give)
+    assert_equal true,
+      check_state(deals(:equityshare1), ftba2.day, 14.2,
+        deals(:equityshare1).give)
+    assert_equal true,
+      check_state(deals(:bankaccount), ftba2.day, 172000.0,
+        deals(:bankaccount).take)
+    assert_equal true,
+      check_state(deals(:purchase), ftba2.day, 1.0, deals(:purchase).take)
+    assert_equal true,
+      check_state(deals(:forex), ftba2.day, 34950.0, deals(:forex).give)
+    assert_equal true,
+      check_state(deals(:bankaccount2), ftba2.day, 1000.0,
+        deals(:bankaccount2).take)
   end
 
   private
