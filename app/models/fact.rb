@@ -44,7 +44,11 @@ class Fact < ActiveRecord::Base
         old_state
       end
     if state.apply_fact(self)
-      return state.save
+      if state.changed? && state.zero?
+        return state.destroy
+      else
+        return state.save
+      end
     end
     false
   end

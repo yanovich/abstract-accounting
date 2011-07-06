@@ -80,6 +80,28 @@ class StorageCore < ActiveSupport::TestCase
     assert_equal true,
       check_state(deals(:bankaccount2), ftba2.day, 1000.0,
         deals(:bankaccount2).take)
+
+    batf = Fact.new(:amount => 34950.0,
+      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+      :from => deals(:bankaccount),
+      :to => deals(:forex),
+      :resource => deals(:bankaccount).take)
+    assert batf.save, "Fact is not saved"
+    assert_equal true,
+      check_state(deals(:equityshare2), batf.day, 10.0,
+        deals(:equityshare2).give)
+    assert_equal true,
+      check_state(deals(:equityshare1), batf.day, 14.2,
+        deals(:equityshare1).give)
+    assert_equal true,
+      check_state(deals(:bankaccount), batf.day, 137050.0,
+        deals(:bankaccount).take)
+    assert_equal true,
+      check_state(deals(:purchase), batf.day, 1.0, deals(:purchase).take)
+    assert deals(:forex).state.nil?, "Forex deal have state"
+    assert_equal true,
+      check_state(deals(:bankaccount2), batf.day, 1000.0,
+        deals(:bankaccount2).take)
   end
 
   private
