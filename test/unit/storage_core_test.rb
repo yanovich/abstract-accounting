@@ -58,6 +58,12 @@ class StorageCore < ActiveSupport::TestCase
     assert_equal true,
       check_state(deals(:purchase), batp.day, 1.0, deals(:purchase).take)
 
+    assert_equal batp.day, deals(:bankaccount).state(stb.day).paid,
+      "Wrong state paid"
+    assert_equal true,
+      check_state(deals(:bankaccount), stb.day, 242000.0,
+        deals(:bankaccount).take)
+
     ftba2 = Fact.new(:amount => 1000.0,
       :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
       :from => deals(:forex),

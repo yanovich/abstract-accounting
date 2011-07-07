@@ -43,11 +43,23 @@ class Fact < ActiveRecord::Base
       else
         old_state
       end
-    if state.apply_fact(self)
-      if state.changed? && state.zero?
-        return state.destroy
-      else
-        return state.save
+    if state.new_record?
+      return state.save if state.apply_fact(self)
+    elsif state.start == self.day
+      if state.apply_fact(self)
+        if state.zero?
+          return state.destroy
+        else
+          return state.save
+        end
+      end
+    else
+      state.paid = self.day
+      if state.save
+        state2 = deal.states.build :start => self.day,
+                                   :amount => state.amount,
+                                   :side => state.side
+        return state2.save if state2.apply_fact(self)
       end
     end
     false
