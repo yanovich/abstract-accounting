@@ -19,13 +19,24 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110704091921) do
+ActiveRecord::Schema.define(:version => 20110707114611) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
   end
 
   add_index "assets", ["tag"], :name => "index_assets_on_tag", :unique => true
+
+  create_table "balances", :force => true do |t|
+    t.integer  "deal_id"
+    t.string   "side"
+    t.float    "amount"
+    t.float    "value"
+    t.datetime "start"
+    t.datetime "paid"
+  end
+
+  add_index "balances", ["deal_id", "start"], :name => "index_balances_on_deal_id_and_start", :unique => true
 
   create_table "charts", :force => true do |t|
     t.integer "currency_id"
