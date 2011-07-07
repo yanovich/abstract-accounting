@@ -59,7 +59,10 @@ class Fact < ActiveRecord::Base
         state2 = deal.states.build :start => self.day,
                                    :amount => state.amount,
                                    :side => state.side
-        return state2.save if state2.apply_fact(self)
+        if state2.apply_fact(self)
+          return true if state2.zero?
+          return state2.save
+        end
       end
     end
     false

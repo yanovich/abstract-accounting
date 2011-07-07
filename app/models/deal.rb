@@ -16,13 +16,13 @@ class Deal < ActiveRecord::Base
   has_many :states
 
   def state(day = nil)
-    states.find_all_by_start(
+    states.where(:start =>
       (unless day.nil?
         states.where("start <= ?", day)
       else
         states
-      end).maximum(:start)
-    ).first
+      end).maximum("start")
+    ).where("paid > ? OR paid is NULL", day).first
   end
 end
 

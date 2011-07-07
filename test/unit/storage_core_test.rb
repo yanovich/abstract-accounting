@@ -108,6 +108,53 @@ class StorageCore < ActiveSupport::TestCase
     assert_equal true,
       check_state(deals(:bankaccount2), batf.day, 1000.0,
         deals(:bankaccount2).take)
+
+    ba2tf2 = Fact.new(:amount => 1000.0,
+      :day => DateTime.civil(2007, 8, 31, 12, 0, 0),
+      :from => deals(:bankaccount2),
+      :to => deals(:forex2),
+      :resource => deals(:bankaccount2).take)
+    assert ba2tf2.save, "Fact is not saved"
+    assert_equal true,
+      check_state(deals(:equityshare2), ba2tf2.day, 10.0,
+        deals(:equityshare2).give)
+    assert_equal true,
+      check_state(deals(:equityshare1), ba2tf2.day, 14.2,
+        deals(:equityshare1).give)
+    assert_equal true,
+      check_state(deals(:bankaccount), ba2tf2.day, 137050.0,
+        deals(:bankaccount).take)
+    assert_equal true,
+      check_state(deals(:purchase), ba2tf2.day, 1.0, deals(:purchase).take)
+    assert deals(:forex).state.nil?, "Forex deal have state"
+    assert deals(:bankaccount2).state.nil?,
+      "Bank account 2 deal have state"
+    assert_equal true,
+      check_state(deals(:forex2), ba2tf2.day, 35000.0,
+        deals(:forex2).take)
+    ba2tba = Fact.new(:amount => 1.0,
+      :day => DateTime.civil(2007, 8, 31, 12, 0, 0),
+      :from => deals(:bankaccount2),
+      :to => deals(:bankaccount),
+      :resource => deals(:bankaccount2).take)
+    assert !ba2tba.save, "Fact is not saved"
+    assert_equal true,
+      check_state(deals(:equityshare2), ba2tba.day, 10.0,
+        deals(:equityshare2).give)
+    assert_equal true,
+      check_state(deals(:equityshare1), ba2tba.day, 14.2,
+        deals(:equityshare1).give)
+    assert_equal true,
+      check_state(deals(:bankaccount), ba2tba.day, 137050.0,
+        deals(:bankaccount).take)
+    assert_equal true,
+      check_state(deals(:purchase), ba2tba.day, 1.0, deals(:purchase).take)
+    assert deals(:forex).state.nil?, "Forex deal have state"
+    assert deals(:bankaccount2).state.nil?,
+      "Bank account 2 deal have state"
+    assert_equal true,
+      check_state(deals(:forex2), ba2tba.day, 35000.0,
+        deals(:forex2).take)
   end
 
   private

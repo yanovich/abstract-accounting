@@ -48,3 +48,10 @@ bankaccount2:
   entity: sbrfbank
   give: eur (Money)
   take: eur (Money)
+
+forex2:
+  tag: "forex deal 2"
+  rate: 35.0
+  entity: sbrfbank
+  give: eur (Money)
+  take: rub (Money)
