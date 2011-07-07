@@ -27,7 +27,7 @@ class State < ActiveRecord::Base
   end
 
   def zero?
-    self.amount < 0.00009 and self.amount > -0.00009
+    self.amount.accounting_zero?
   end
 
   private
@@ -49,7 +49,7 @@ class State < ActiveRecord::Base
     else
       self.amount += fact.amount * deal_rate
     end
-    if !zero? && self.amount < 0.0
+    if self.amount.accounting_negative?
       self.side =
         if self.side == "passive"
           "active"
@@ -58,7 +58,7 @@ class State < ActiveRecord::Base
         end
       self.amount *= -1 * deal_rate
     end
-    self.amount = norm_value(self.amount)
+    self.amount = self.amount.accounting_norm
     true
   end
 
@@ -73,14 +73,5 @@ class State < ActiveRecord::Base
   def update_time(time)
     self.start = time
     true
-  end
-
-  def round64(value)
-    return (value - 0.5).ceil if value < 0.0
-    (value + 0.5).floor
-  end
-
-  def norm_value(value)
-    round64(value * 100.0) / 100.0
   end
 end
