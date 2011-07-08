@@ -27,6 +27,10 @@ class Fact < ActiveRecord::Base
   belongs_to :to, :class_name => "Deal", :foreign_key => "to_deal_id"
   before_save :do_save
 
+  def self.pendings
+    Fact.all
+  end
+
   private
   def do_save
     if changed? or new_record?

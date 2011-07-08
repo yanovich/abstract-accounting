@@ -73,4 +73,53 @@ class AccountTest < ActiveSupport::TestCase
     b.destroy
     assert_equal 0, Balance.all.count, "Balance is not deleted"
   end
+
+  test "account test" do
+    init_facts
+    assert !Fact.pendings.nil?, "Pending facts is nil"
+    assert_equal 6, Fact.pendings.count, "Pending facts count is not equal to 6"
+    pending_fact = Fact.pendings.first
+    assert_equal 100000.0, pending_fact.amount, "Wrong pending fact amount"
+    assert_equal deals(:equityshare2), pending_fact.from,
+      "Wrong pending fact from deal"
+    assert_equal deals(:bankaccount), pending_fact.to,
+      "Wrong pending fact to deal"
+    assert_equal 1, Chart.all.count, "Wrong chart count"
+    assert_equal money(:rub), Chart.all.first.currency,
+      "Wrong chart currency"
+  end
+
+  private
+  def init_facts
+    assert Fact.new(:amount => 100000.0,
+      :day => DateTime.civil(2007, 8, 29, 12, 0, 0),
+      :from => deals(:equityshare2),
+      :to => deals(:bankaccount),
+      :resource => deals(:equityshare2).take).save, "Fact is not saved"
+    assert Fact.new(:amount => 142000.0,
+      :day => DateTime.civil(2007, 8, 29, 12, 0, 0),
+      :from => deals(:equityshare1),
+      :to => deals(:bankaccount),
+      :resource => deals(:equityshare1).take).save, "Fact is not saved"
+    assert Fact.new(:amount => 70000.0,
+      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+      :from => deals(:bankaccount),
+      :to => deals(:purchase),
+      :resource => deals(:bankaccount).take).save, "Fact is not saved"
+    assert Fact.new(:amount => 1000.0,
+      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+      :from => deals(:forex),
+      :to => deals(:bankaccount2),
+      :resource => deals(:forex).take).save, "Fact is not saved"
+    assert Fact.new(:amount => 34950.0,
+      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+      :from => deals(:bankaccount),
+      :to => deals(:forex),
+      :resource => deals(:bankaccount).take).save, "Fact is not saved"
+    assert Fact.new(:amount => 1000.0,
+      :day => DateTime.civil(2007, 8, 31, 12, 0, 0),
+      :from => deals(:bankaccount2),
+      :to => deals(:forex2),
+      :resource => deals(:bankaccount2).take).save, "Fact is not saved"
+  end
 end
