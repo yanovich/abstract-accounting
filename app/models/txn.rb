@@ -11,4 +11,12 @@ class Txn < ActiveRecord::Base
   validates :value, :fact_id, :status, :presence => true
   validates_uniqueness_of :fact_id
   belongs_to :fact
+  after_initialize :after_init
+
+  private
+  def after_init
+    self.value ||= 0.0 if self.attributes.has_key?('value')
+    self.status ||= 0 if self.attributes.has_key?('status')
+    self.earnings ||= 0.0 if self.attributes.has_key?('earnings')
+  end
 end

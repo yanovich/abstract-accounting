@@ -22,16 +22,10 @@ class TxnTest < ActiveSupport::TestCase
     t = Txn.new
     assert t.invalid?, "Empty transaction saved"
     t.fact = fact
-    assert t.invalid?, "Txn with value and status is not valid"
-    t.value = 100.0
-    assert t.invalid?, "Txn with status is not valid"
-    t.status = 0
     assert t.valid?, "Txn is not valid"
     assert t.save, "Txn is not saved"
     t2 = Txn.new
     t2.fact = fact
-    t2.value = 12.0
-    t2.status = 1
     assert t2.invalid?, "Txn with unique fact is not valid"
   end
 end

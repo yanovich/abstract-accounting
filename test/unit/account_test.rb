@@ -87,6 +87,10 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 1, Chart.all.count, "Wrong chart count"
     assert_equal money(:rub), Chart.all.first.currency,
       "Wrong chart currency"
+
+    t = Txn.new :fact => pending_fact
+    assert t.valid?, "Transaction is not valid"
+    assert t.save, "Txn is not saved"
   end
 
   private
