@@ -25,6 +25,7 @@ class Fact < ActiveRecord::Base
   belongs_to :resource, :polymorphic => true
   belongs_to :from, :class_name => "Deal", :foreign_key => "from_deal_id"
   belongs_to :to, :class_name => "Deal", :foreign_key => "to_deal_id"
+  has_one :txn
   before_save :do_save
 
   def self.pendings

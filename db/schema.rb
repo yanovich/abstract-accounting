@@ -21,7 +21,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110707114611) do
+ActiveRecord::Schema.define(:version => 20110707145742) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -84,6 +84,15 @@ ActiveRecord::Schema.define(:version => 20110707114611) do
     t.datetime "start"
     t.datetime "paid"
   end
+
+  create_table "txns", :force => true do |t|
+    t.integer "fact_id"
+    t.float   "value"
+    t.integer "status"
+    t.float   "earnings"
+  end
+
+  add_index "txns", ["fact_id"], :name => "index_txns_on_fact_id", :unique => true
 
 end
 
