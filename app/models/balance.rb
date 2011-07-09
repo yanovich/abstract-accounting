@@ -22,5 +22,6 @@ class Balance < ActiveRecord::Base
   def do_init
     self.side ||= ACTIVE if self.attributes.has_key?('side')
     self.amount ||= 0.0 if self.attributes.has_key?('amount')
+    self.value ||= 0.0 if self.attributes.has_key?('value')
   end
 end

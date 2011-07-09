@@ -96,6 +96,9 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal pending_fact.from, bfrom.deal, "From balance invalid deal"
     assert_equal pending_fact.from.give, bfrom.resource,
       "From balance invalid resource"
+    assert_equal Balance::PASSIVE, bfrom.side, "From balance invalid side"
+    assert_equal pending_fact.amount / deals(:equityshare2).rate, bfrom.amount,
+      "From balance amount is not equal"
   end
 
   private

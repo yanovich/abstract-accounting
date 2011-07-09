@@ -15,4 +15,33 @@ module StateAction
     return nil if self.deal.nil?
     self.side == ACTIVE ? self.deal.take : self.deal.give
   end
+
+  def update_amount(side, amount)
+    return false if self.deal.nil?
+    if self.side != side
+      self.amount -= amount
+    else
+      self.amount += amount * rate
+    end
+    if self.amount.accounting_negative?
+      self.side =
+        if self.side == PASSIVE
+          ACTIVE
+        else
+          PASSIVE
+        end
+      self.amount *= -1 * rate
+    end
+    self.amount = self.amount.accounting_norm
+    true
+  end
+
+  protected
+  def rate
+    if self.side == ACTIVE
+      self.deal.rate
+    else
+      1/self.deal.rate
+    end
+  end
 end

@@ -17,41 +17,13 @@ class State < ActiveRecord::Base
   belongs_to :deal
   after_initialize :do_init
 
-  def update_amount(side, amount)
-    return false if self.deal.nil?
-    if self.side != side
-      self.amount -= amount
-    else
-      self.amount += amount * rate
-    end
-    if self.amount.accounting_negative?
-      self.side =
-        if self.side == "passive"
-          "active"
-        else
-          "passive"
-        end
-      self.amount *= -1 * rate
-    end
-    self.amount = self.amount.accounting_norm
-    true
-  end
-
   def zero?
     self.amount.accounting_zero?
   end
 
   private
   def do_init
-    self.side ||= ACTIVE
-    self.amount ||= 0.0
-  end
-
-  def rate
-    if self.side == ACTIVE
-      self.deal.rate
-    else
-      1/self.deal.rate
-    end
+    self.side ||= ACTIVE if self.attributes.has_key?('side')
+    self.amount ||= 0.0 if self.attributes.has_key?('amount')
   end
 end
