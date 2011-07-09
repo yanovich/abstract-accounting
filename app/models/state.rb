@@ -7,20 +7,15 @@
 #
 # Please see ./COPYING for details
 
+require "state_action"
+
 class State < ActiveRecord::Base
-  PASSIVE = "passive"
-  ACTIVE = "active"
+  include StateAction
 
   validates :amount, :start, :side, :deal_id, :presence => true
   validates_inclusion_of :side, :in => [PASSIVE, ACTIVE]
   belongs_to :deal
-
   after_initialize :do_init
-
-  def resource
-    return nil if self.deal.nil?
-    self.side == ACTIVE ? self.deal.take : self.deal.give
-  end
 
   def update_amount(side, amount)
     return false if self.deal.nil?

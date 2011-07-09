@@ -94,6 +94,8 @@ class AccountTest < ActiveSupport::TestCase
     bfrom = t.from_balance
     assert !bfrom.nil?, "Balance is nil"
     assert_equal pending_fact.from, bfrom.deal, "From balance invalid deal"
+    assert_equal pending_fact.from.give, bfrom.resource,
+      "From balance invalid resource"
   end
 
   private

@@ -7,9 +7,10 @@
 #
 # Please see ./COPYING for details
 
+require "state_action"
+
 class Balance < ActiveRecord::Base
-  PASSIVE = "passive"
-  ACTIVE = "active"
+  include StateAction
 
   validates :amount, :value, :start, :side, :deal_id, :presence => true
   validates_inclusion_of :side, :in => [PASSIVE, ACTIVE]
