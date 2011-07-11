@@ -103,6 +103,16 @@ class AccountTest < ActiveSupport::TestCase
       "From balance value is not equal"
     assert_equal pending_fact.amount, t.value,
         "Wrong txn value"
+    bto = t.to_balance
+    assert !bto.nil?, "Balance is nil"
+    assert_equal pending_fact.to, bto.deal, "To balance invalid deal"
+    assert_equal pending_fact.to.take, bto.resource,
+      "To balance invalid resource"
+    assert_equal Balance::ACTIVE, bto.side, "To balance invalid side"
+    assert_equal pending_fact.amount, bto.amount,
+      "To balance amount is not equal"
+    assert_equal pending_fact.amount, bto.value,
+      "To balance value is not equal"
   end
 
   private

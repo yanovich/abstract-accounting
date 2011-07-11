@@ -18,6 +18,10 @@ class Txn < ActiveRecord::Base
     self.fact.from.balance
   end
 
+  def to_balance
+    self.fact.to.balance
+  end
+
   private
   def after_init
     self.value ||= 0.0 if self.attributes.has_key?('value')
@@ -28,7 +32,7 @@ class Txn < ActiveRecord::Base
   def before_save
     if self.fact.from.update_by_txn(self)
       self.value = self.fact.from.balance.value
-      return true
+      return self.fact.to.update_by_txn(self)
     end
     false
   end

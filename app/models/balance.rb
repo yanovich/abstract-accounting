@@ -19,12 +19,18 @@ class Balance < ActiveRecord::Base
   after_initialize :do_init
 
   def update_value(side, amount)
-    if update_amount(side, amount) && side == PASSIVE && self.side == PASSIVE
-      raise "Invalid debit" if Chart.first.nil? || self.deal.take != Chart.first.currency
-      self.value = (self.amount * self.deal.rate).accounting_norm
-      return true
+    if update_amount(side, amount)
+      if side == PASSIVE && self.side == PASSIVE
+        raise "Invalid debit" unless has_debit?
+        self.value = (self.amount * self.deal.rate).accounting_norm
+      elsif side == ACTIVE && self.side == ACTIVE
+        raise "Invalid debit" unless has_debit?
+        self.value = self.amount.accounting_norm
+      else
+        return false
+      end
     end
-    false
+    true
   end
 
   protected
@@ -32,5 +38,9 @@ class Balance < ActiveRecord::Base
     self.side ||= ACTIVE if self.attributes.has_key?('side')
     self.amount ||= 0.0 if self.attributes.has_key?('amount')
     self.value ||= 0.0 if self.attributes.has_key?('value')
+  end
+
+  def has_debit?
+    !Chart.first.nil? and self.deal.take == Chart.first.currency
   end
 end
