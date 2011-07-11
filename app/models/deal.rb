@@ -51,7 +51,7 @@ class Deal < ActiveRecord::Base
   def update_by_txn(txn)
     return false if txn.nil? or txn.fact.nil?
     balance = self.balances.build :start => txn.fact.day
-    return false unless balance.update_amount(self.id == txn.fact.from.id ? Balance::PASSIVE : Balance::ACTIVE,
+    return false unless balance.update_value(self.id == txn.fact.from.id ? Balance::PASSIVE : Balance::ACTIVE,
                                               txn.fact.amount)
     balance.save
   end
