@@ -28,9 +28,7 @@ class Fact < ActiveRecord::Base
   has_one :txn
   before_save :do_save
 
-  def self.pendings
-    Fact.all
-  end
+  scope :pendings, includes("txn").where("txns.id is NULL")
 
   private
   def do_save
