@@ -30,8 +30,14 @@ class Txn < ActiveRecord::Base
   end
 
   def before_save
+    balance = self.fact.from.balance
+    old_balance_value = balance.nil? ? 0.0 : balance.accounting_value
     if self.fact.from.update_by_txn(self)
-      self.value = self.fact.from.balance.value
+      if self.fact.from.balance.side == Balance::ACTIVE
+        self.value = old_balance_value - self.fact.from.balance.value
+      else
+        self.value = self.fact.from.balance.value
+      end
       return self.fact.to.update_by_txn(self)
     end
     false

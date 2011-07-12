@@ -18,12 +18,20 @@ class Balance < ActiveRecord::Base
   belongs_to :deal
   after_initialize :do_init
 
-  def update_value(side, amount)
+  def update_value(side, amount, value)
     if update_amount(side, amount)
       if side == PASSIVE && self.side == PASSIVE
         raise "Invalid debit" unless has_debit?
         self.value = (self.amount * self.deal.rate).accounting_norm
       elsif side == ACTIVE && self.side == ACTIVE
+        if has_debit?
+          self.value = self.amount.accounting_norm
+        elsif !value.accounting_zero?
+          self.value = value
+        else
+          raise "Unexpected behaviour"
+        end
+      elsif side == PASSIVE && self.side == ACTIVE
         raise "Invalid debit" unless has_debit?
         self.value = self.amount.accounting_norm
       else
@@ -31,6 +39,13 @@ class Balance < ActiveRecord::Base
       end
     end
     true
+  end
+
+  def accounting_value
+    if Balance::ACTIVE == self.side && self.has_debit?
+      return self.amount
+    end
+    self.value
   end
 
   protected

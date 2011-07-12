@@ -53,7 +53,7 @@ class Deal < ActiveRecord::Base
     balance = self.balance
     balance = self.balances.build :start => txn.fact.day if balance.nil?
     return false unless balance.update_value(self.id == txn.fact.from.id ? Balance::PASSIVE : Balance::ACTIVE,
-                                              txn.fact.amount)
+                                              txn.fact.amount, txn.value)
     balance.save
   end
 end
