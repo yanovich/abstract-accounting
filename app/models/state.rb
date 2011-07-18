@@ -17,10 +17,6 @@ class State < ActiveRecord::Base
   belongs_to :deal
   after_initialize :do_init
 
-  def zero?
-    self.amount.accounting_zero?
-  end
-
   private
   def do_init
     self.side ||= ACTIVE if self.attributes.has_key?('side')

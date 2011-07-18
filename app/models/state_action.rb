@@ -36,6 +36,10 @@ module StateAction
     true
   end
 
+  def zero?
+    self.amount.accounting_zero?
+  end
+
   protected
   def rate
     if self.side == ACTIVE

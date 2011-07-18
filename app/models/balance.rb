@@ -40,8 +40,12 @@ class Balance < ActiveRecord::Base
       elsif side == PASSIVE && self.side == ACTIVE
         raise "Invalid debit" unless has_debit?
         self.value = self.amount.accounting_norm
-      else
-        return false
+      elsif side == ACTIVE && self.side == ACTIVE
+        if has_credit?
+          self.value = self.amount
+        else
+          raise "Unexpected behaviour"
+        end
       end
     end
     true
