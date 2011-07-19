@@ -370,6 +370,8 @@ class AccountTest < ActiveSupport::TestCase
     assert t.save, "Txn is not saved"
     assert_equal (1000.0/deals(:forex).rate).accounting_norm,
       Fact.find(pending_fact.id).txn.value, "Txn value is not equal"
+    assert_equal 1, Fact.find(pending_fact.id).txn.status,
+      "Txn status is not equal"
   end
 
   private
