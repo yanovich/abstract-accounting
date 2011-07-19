@@ -357,6 +357,19 @@ class AccountTest < ActiveSupport::TestCase
       "balance value is not equal"
     assert_equal (1000.0 / deals(:forex).rate).accounting_norm,
       Fact.find(pending_fact.id).txn.value, "Txn value is not equal"
+
+    assert_equal 1, Fact.pendings.count, "Pending facts count is not equal to 2"
+    pending_fact = Fact.pendings.first
+    assert_equal 1000.0, pending_fact.amount, "Wrong pending fact amount"
+    assert_equal deals(:bankaccount2), pending_fact.from,
+      "Wrong pending fact from deal"
+    assert_equal deals(:forex2), pending_fact.to,
+      "Wrong pending fact to deal"
+    t = Txn.new :fact => pending_fact
+    assert t.valid?, "Transaction is not valid"
+    assert t.save, "Txn is not saved"
+    assert_equal (1000.0/deals(:forex).rate).accounting_norm,
+      Fact.find(pending_fact.id).txn.value, "Txn value is not equal"
   end
 
   private

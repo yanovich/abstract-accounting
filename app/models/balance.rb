@@ -20,6 +20,8 @@ class Balance < ActiveRecord::Base
   scope :pendings, where("balances.paid IS NULL")
 
   def update_value(side, amount, value)
+    old_value = self.accounting_value
+    old_amount = self.amount
     if update_amount(side, amount)
       if side == PASSIVE && self.side == PASSIVE
         if has_credit?
@@ -38,8 +40,13 @@ class Balance < ActiveRecord::Base
           raise "Unexpected behaviour"
         end
       elsif side == PASSIVE && self.side == ACTIVE
-        raise "Invalid debit" unless has_debit?
-        self.value = self.amount.accounting_norm
+        if has_debit?
+          self.value = self.amount.accounting_norm
+        else
+          raise "Unexpected behaviour" \
+            if old_value.accounting_negative? || old_amount.accounting_zero?
+          self.value = (old_value * self.amount/old_amount).accounting_norm
+        end
       elsif side == ACTIVE && self.side == ACTIVE
         if has_credit?
           self.value = self.amount
