@@ -375,6 +375,63 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal (1000.0 * (deals(:forex2).rate -
         (1/deals(:forex).rate))).accounting_norm,
       Fact.find(pending_fact.id).txn.earnings, "Txn earning is not equal"
+    assert_equal 5, Balance.pendings.count, "Balance count is not equal to 5"
+    b = deals(:equityshare2).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal deals(:equityshare2), b.deal, "balance invalid deal"
+    assert_equal deals(:equityshare2).give, b.resource,
+      "balance invalid resource"
+    assert_equal Balance::PASSIVE, b.side, "balance invalid side"
+    assert_equal 100000.0 / deals(:equityshare2).rate, b.amount,
+      "balance amount is not equal"
+    assert_equal 100000.0, b.value,
+      "balance value is not equal"
+    b = deals(:bankaccount).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal deals(:bankaccount), b.deal, "balance invalid deal"
+    assert_equal deals(:bankaccount).take, b.resource,
+      "balance invalid resource"
+    assert_equal Balance::ACTIVE, b.side, "balance invalid side"
+    assert_equal 100000.0 + 142000.0 - 70000.0 -
+      (1000.0 / deals(:forex).rate).accounting_norm, b.amount,
+      "balance amount is not equal"
+    assert_equal 100000.0 + 142000.0 - 70000.0 -
+      (1000.0 / deals(:forex).rate).accounting_norm, b.value,
+      "balance value is not equal"
+    b = deals(:equityshare1).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal deals(:equityshare1), b.deal, "balance invalid deal"
+    assert_equal deals(:equityshare1).give, b.resource,
+      "balance invalid resource"
+    assert_equal Balance::PASSIVE, b.side, "balance invalid side"
+    assert_equal 142000.0 / deals(:equityshare1).rate, b.amount,
+      "balance amount is not equal"
+    assert_equal 142000.0, b.value,
+      "balance value is not equal"
+    b = deals(:purchase).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal deals(:purchase), b.deal, "balance invalid deal"
+    assert_equal deals(:purchase).take, b.resource,
+      "balance invalid resource"
+    assert_equal Balance::ACTIVE, b.side, "balance invalid side"
+    assert_equal 1.0, b.amount,
+      "balance amount is not equal"
+    assert_equal 70000.0, b.value,
+      "balance value is not equal"
+    b = deals(:forex).balance
+    assert b.nil?, "Balance is not nil"
+    b = deals(:bankaccount2).balance
+    assert b.nil?, "Balance is not nil"
+    b = deals(:forex2).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal deals(:forex2), b.deal, "balance invalid deal"
+    assert_equal deals(:forex2).take, b.resource,
+      "balance invalid resource"
+    assert_equal Balance::ACTIVE, b.side, "balance invalid side"
+    assert_equal 1000.0 * deals(:forex2).rate, b.amount,
+      "balance amount is not equal"
+    assert_equal 1000.0 * deals(:forex2).rate, b.value,
+      "balance value is not equal"
   end
 
   private

@@ -63,6 +63,7 @@ class Deal < ActiveRecord::Base
     return false unless balance.update_value(self.id == txn.fact.from.id ? Balance::PASSIVE : Balance::ACTIVE,
                                               txn.fact.amount, txn.value)
     return balance.destroy if balance.zero? && !balance.new_record?
+    return true if balance.zero? && balance.new_record?
     balance.save
   end
 end
