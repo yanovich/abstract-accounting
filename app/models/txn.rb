@@ -39,7 +39,8 @@ class Txn < ActiveRecord::Base
       else
         self.value = balance.value
       end
-      old_balance_value = 0.0
+      balance = self.fact.to.balance
+      old_balance_value = balance.nil? ? 0.0 : balance.accounting_value
       if self.fact.to.update_by_txn(self)
         earnings_tmp = 0.0
         balance = self.fact.to.balance
@@ -49,6 +50,8 @@ class Txn < ActiveRecord::Base
         unless earnings_tmp.accounting_zero?
           self.status = 1
           self.earnings = earnings_tmp
+          i = Income.new :txn => self
+          return i.save
         end
         return true
       end

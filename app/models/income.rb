@@ -13,4 +13,11 @@ class Income < ActiveRecord::Base
   validates :start, :side, :value, :presence => true
   validates :start, :uniqueness => true
   validates :side, :inclusion => { :in => [PASSIVE, ACTIVE] }
+
+  def txn=(txn)
+    return nil if txn.nil? or txn.status == 0
+    self.start = txn.fact.day
+    self.value = txn.earnings
+    self.side = PASSIVE
+  end
 end
