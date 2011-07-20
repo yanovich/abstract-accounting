@@ -45,7 +45,10 @@ class Txn < ActiveRecord::Base
         if !balance.nil? && balance.side == Balance::ACTIVE
           earnings_tmp = balance.value - old_balance_value - self.value
         end
-        self.status = 1 unless earnings_tmp.accounting_zero?
+        unless earnings_tmp.accounting_zero?
+          self.status = 1
+          self.earnings = earnings_tmp
+        end
         return true
       end
     end
