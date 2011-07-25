@@ -11,7 +11,7 @@ class FactValidator
   def validate(record)
     record.errors[:base] << "bad resource" unless
     record.resource == record.from.take \
-    and record.resource == record.to.give
+    and (record.resource == record.to.give || record.to.income?)
   end
 end
 

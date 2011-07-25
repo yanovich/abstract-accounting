@@ -16,6 +16,16 @@ class Deal < ActiveRecord::Base
   has_many :states
   has_many :balances
 
+  def self.income
+    income = Deal.new :tag => "profit and loss", :rate => 1.0
+    income.id = INCOME_ID
+    income
+  end
+
+  def income?
+    self.id == INCOME_ID
+  end
+
   def state(day = nil)
     states.where(:start =>
       (unless day.nil?
@@ -66,6 +76,9 @@ class Deal < ActiveRecord::Base
     return true if balance.zero? && balance.new_record?
     balance.save
   end
+
+  private
+  INCOME_ID = 0
 end
 
 # vim: ts=2 sts=2 sw=2 et:
