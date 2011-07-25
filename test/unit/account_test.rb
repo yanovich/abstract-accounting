@@ -440,37 +440,90 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 0, Fact.pendings.count, "Pending facts count is wrong"
   end
 
+  test "loss transaction" do
+    init_facts.each do |fact|
+      assert Txn.new(:fact => fact).save, "Txn is not saved"
+    end
+
+    f = Fact.new(:amount => 1000.0 * deals(:forex2).rate,
+                :day => DateTime.civil(2007, 9, 3, 12, 0, 0),
+                :from => deals(:forex2),
+                :to => deals(:bankaccount),
+                :resource => deals(:forex2).take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    assert !Balance.open.nil?, "Open balances is nil"
+    assert_equal 4, Balance.open.count, "Open balances count is wrong"
+
+    b = deals(:equityshare2).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal (100000.0 / deals(:equityshare2).rate).accounting_norm,
+      b.amount, "Wrong balance amount"
+    assert_equal 100000.0, b.value, "Wrong balance value"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+
+    b = deals(:equityshare1).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal (142000.0 / deals(:equityshare1).rate).accounting_norm,
+      b.amount, "Wrong balance amount"
+    assert_equal 142000.0, b.value, "Wrong balance value"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+
+    b = deals(:purchase).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal (70000.0 * deals(:purchase).rate).accounting_norm,
+      b.amount, "Wrong balance amount"
+    assert_equal 70000.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    b = deals(:bankaccount).balance
+    value = 100000.0 + 142000.0 - 70000.0 +
+      (1000.0 * (deals(:forex2).rate - 1 / deals(:forex).rate))
+    assert !b.nil?, "Balance is nil"
+    assert_equal value.accounting_norm, b.amount, "Wrong balance amount"
+    assert_equal value.accounting_norm, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+  end
+
   private
   def init_facts
-    assert Fact.new(:amount => 100000.0,
-      :day => DateTime.civil(2007, 8, 29, 12, 0, 0),
-      :from => deals(:equityshare2),
-      :to => deals(:bankaccount),
-      :resource => deals(:equityshare2).take).save, "Fact is not saved"
-    assert Fact.new(:amount => 142000.0,
-      :day => DateTime.civil(2007, 8, 29, 12, 0, 0),
-      :from => deals(:equityshare1),
-      :to => deals(:bankaccount),
-      :resource => deals(:equityshare1).take).save, "Fact is not saved"
-    assert Fact.new(:amount => 70000.0,
-      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
-      :from => deals(:bankaccount),
-      :to => deals(:purchase),
-      :resource => deals(:bankaccount).take).save, "Fact is not saved"
-    assert Fact.new(:amount => 1000.0,
-      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
-      :from => deals(:forex),
-      :to => deals(:bankaccount2),
-      :resource => deals(:forex).take).save, "Fact is not saved"
-    assert Fact.new(:amount => 34950.0,
-      :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
-      :from => deals(:bankaccount),
-      :to => deals(:forex),
-      :resource => deals(:bankaccount).take).save, "Fact is not saved"
-    assert Fact.new(:amount => 1000.0,
-      :day => DateTime.civil(2007, 8, 31, 12, 0, 0),
-      :from => deals(:bankaccount2),
-      :to => deals(:forex2),
-      :resource => deals(:bankaccount2).take).save, "Fact is not saved"
+    facts = [
+      Fact.new(:amount => 100000.0,
+              :day => DateTime.civil(2007, 8, 29, 12, 0, 0),
+              :from => deals(:equityshare2),
+              :to => deals(:bankaccount),
+              :resource => deals(:equityshare2).take),
+      Fact.new(:amount => 142000.0,
+              :day => DateTime.civil(2007, 8, 29, 12, 0, 0),
+              :from => deals(:equityshare1),
+              :to => deals(:bankaccount),
+              :resource => deals(:equityshare1).take),
+      Fact.new(:amount => 70000.0,
+              :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+              :from => deals(:bankaccount),
+              :to => deals(:purchase),
+              :resource => deals(:bankaccount).take),
+      Fact.new(:amount => 1000.0,
+              :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+              :from => deals(:forex),
+              :to => deals(:bankaccount2),
+              :resource => deals(:forex).take),
+      Fact.new(:amount => 34950.0,
+              :day => DateTime.civil(2007, 8, 30, 12, 0, 0),
+              :from => deals(:bankaccount),
+              :to => deals(:forex),
+              :resource => deals(:bankaccount).take),
+      Fact.new(:amount => 1000.0,
+              :day => DateTime.civil(2007, 8, 31, 12, 0, 0),
+              :from => deals(:bankaccount2),
+              :to => deals(:forex2),
+              :resource => deals(:bankaccount2).take)
+    ]
+    facts.each do |f|
+      assert f.save, "Fact is not saved"
+    end
+    facts
   end
 end
