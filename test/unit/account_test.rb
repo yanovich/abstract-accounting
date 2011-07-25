@@ -552,6 +552,19 @@ class AccountTest < ActiveSupport::TestCase
                 :resource => office.take)
     assert f.valid?, "Fact is not valid"
     assert f.save, "Fact is not saved"
+
+    assert_equal 6, State.where("states.paid IS NULL").count, "State count is wrong"
+    s = office.state
+    assert !s.nil?, "State is nil"
+    assert_equal (1 / office.rate).accounting_norm, s.amount,
+      "State amount is wrong"
+    assert_equal money(:rub), s.resource, "State resource is wrong"
+
+    s = deals(:bankaccount).state
+    assert !s.nil?, "State is nil"
+    assert_equal value.accounting_norm, s.amount,
+      "State amount is wrong"
+    assert_equal money(:rub), s.resource, "State resource is wrong"
   end
 
   private

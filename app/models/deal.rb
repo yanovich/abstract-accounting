@@ -42,6 +42,7 @@ class Deal < ActiveRecord::Base
 
   def update_by_fact(fact)
     return false if fact.nil?
+    return true if self.income?
     state = self.state
     state = self.states.build(:start => fact.day) if state.nil?
     if !state.new_record? && state.start < fact.day
