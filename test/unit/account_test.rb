@@ -644,6 +644,10 @@ class AccountTest < ActiveSupport::TestCase
     t = Txn.new :fact => f
     assert t.save, "Txn is not saved"
 
+    profit = (1000.0 * (deals(:forex2).rate -
+          (1/deals(:forex).rate))).accounting_norm
+    profit -= (1 / office.rate).accounting_norm
+
     forex = Deal.new :tag => "forex deal 4",
       :rate => 34.95,
       :entity => entities(:sbrfbank),
@@ -668,6 +672,16 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal (euros * 34.2).accounting_norm, b.value,
       "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    b = forex.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal (t.fact.amount * forex.rate).accounting_norm, b.amount,
+      "Wrong balance amount"
+    assert_equal (t.fact.amount * forex.rate).accounting_norm, b.value,
+      "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    assert_equal 1, Income.all.count, "Wrong income count"
   end
 
   private

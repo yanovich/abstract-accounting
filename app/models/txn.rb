@@ -57,7 +57,9 @@ class Txn < ActiveRecord::Base
           unless earnings_tmp.accounting_zero?
             self.status = 1
             self.earnings = earnings_tmp
-            i = Income.new :txn => self
+            i = Income.last
+            i = Income.new if i.nil?
+            i.txn = self
             return i.save
           end
           return true
