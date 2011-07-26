@@ -565,6 +565,18 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal value.accounting_norm, s.amount,
       "State amount is wrong"
     assert_equal money(:rub), s.resource, "State resource is wrong"
+
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    assert_equal 6, Balance.open.count, "Balance count is wrong"
+    assert t.to_balance.nil?, "To balance is not nil"
+    assert !t.from_balance.nil?, "From balance is nil"
+    assert_equal (1 / office.rate).accounting_norm, t.from_balance.amount,
+      "From balance amount is wrong"
+    assert_equal (1 / office.rate).accounting_norm, t.from_balance.value,
+      "From balance value is wrong"
+    assert_equal Balance::PASSIVE, t.from_balance.side, "From balance side is wrong"
   end
 
   private

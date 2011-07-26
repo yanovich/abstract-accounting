@@ -61,6 +61,7 @@ class Deal < ActiveRecord::Base
 
   def update_by_txn(txn)
     return false if txn.nil? or txn.fact.nil?
+    return true if self.income?
     balance = self.balance
     balance = self.balances.build :start => txn.fact.day if balance.nil?
     if !balance.new_record? && balance.start < txn.fact.day

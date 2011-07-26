@@ -39,6 +39,7 @@ class Txn < ActiveRecord::Base
       else
         self.value = balance.value
       end
+      return true if self.fact.to.income?
       balance = self.fact.to.balance
       old_balance_value = balance.nil? ? 0.0 : balance.accounting_value
       if self.fact.to.update_by_txn(self)
