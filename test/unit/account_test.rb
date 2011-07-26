@@ -577,6 +577,12 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal (1 / office.rate).accounting_norm, t.from_balance.value,
       "From balance value is wrong"
     assert_equal Balance::PASSIVE, t.from_balance.side, "From balance side is wrong"
+
+    assert_equal 1, Income.all.count, "Income count is wrong"
+    profit = (1000.0 * (deals(:forex2).rate -
+          (1/deals(:forex).rate))).accounting_norm
+    profit -= (1 / office.rate).accounting_norm
+    assert_equal profit, Income.first.value, "Income value is wrong"
   end
 
   private

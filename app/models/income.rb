@@ -16,8 +16,12 @@ class Income < ActiveRecord::Base
 
   def txn=(txn)
     return nil if txn.nil? or txn.status == 0
-    self.start = txn.fact.day
-    self.value = txn.earnings
-    self.side = PASSIVE
+    if self.new_record?
+      self.start = txn.fact.day
+      self.value = txn.earnings
+      self.side = PASSIVE
+    else
+      self.value += txn.earnings
+    end
   end
 end
