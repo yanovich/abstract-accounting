@@ -774,6 +774,157 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 0, Income.open.count, "Wrong open income count"
   end
 
+  test "gain transaction" do
+    init_facts.each do |fact|
+      assert Txn.new(:fact => fact).save, "Txn is not saved"
+    end
+
+    f = Fact.new(:amount => 1000.0 * deals(:forex2).rate,
+                :day => DateTime.civil(2007, 9, 3, 12, 0, 0),
+                :from => deals(:forex2),
+                :to => deals(:bankaccount),
+                :resource => deals(:forex2).take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    forex = Deal.new :tag => "forex deal 3",
+      :rate => (1 / 34.2),
+      :entity => entities(:sbrfbank),
+      :give => money(:rub),
+      :take => money(:eur)
+    assert forex.save, "Forex deal 3 is not saved"
+
+    f = Fact.new(:amount => (5000.0 / forex.rate).accounting_norm,
+                :day => DateTime.civil(2007, 9, 3, 12, 0, 0),
+                :from => deals(:bankaccount),
+                :to => forex,
+                :resource => deals(:bankaccount).take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    f = Fact.new(:amount => 5000.0,
+                :day => DateTime.civil(2007, 9, 4, 12, 0, 0),
+                :from => forex,
+                :to => deals(:bankaccount2),
+                :resource => forex.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    landlord = Entity.new :tag => "Audit service"
+    assert landlord.save, "Audit service not saved"
+    rent = Asset.new :tag => "office space"
+    assert rent.save, "Asset not saved"
+    office = Deal.new :tag => "rented office 1",
+      :rate => (1 / 2000.0),
+      :entity => landlord,
+      :give => money(:rub),
+      :take => rent
+    assert office.save, "Flow is not saved"
+
+    f = Fact.new(:amount => 1.0,
+                :day => DateTime.civil(2007, 8, 31, 12, 0, 0),
+                :from => office,
+                :to => Deal.income,
+                :resource => office.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    profit = (1000.0 * (deals(:forex2).rate -
+          (1/deals(:forex).rate))).accounting_norm
+    profit -= (1 / office.rate).accounting_norm
+
+    forex = Deal.new :tag => "forex deal 4",
+      :rate => 34.95,
+      :entity => entities(:sbrfbank),
+      :give => money(:eur),
+      :take => money(:rub)
+    assert forex.save, "Flow is not saved"
+
+    f = Fact.new(:amount => 2000.0,
+                :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
+                :from => deals(:bankaccount2),
+                :to => forex,
+                :resource => deals(:bankaccount2).take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    profit += (34.95 - 34.2) * t.fact.amount
+
+    f = Fact.new(:amount => (2500.0 * 34.95),
+                :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
+                :from => forex,
+                :to => deals(:bankaccount),
+                :resource => forex.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    rubs = 100000.0 + 142000.0 - 70000.0 +
+      (1000.0 * (deals(:forex2).rate - 1 / deals(:forex).rate))
+    rubs -= (5000.0 * 34.2).accounting_norm
+    rubs += t.fact.amount
+
+    f = Fact.new(:amount => 600.0,
+                :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
+                :from => deals(:bankaccount2),
+                :to => forex,
+                :resource => deals(:bankaccount2).take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    f = Fact.new(:amount => 100.0 * 34.95,
+                :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
+                :from => forex,
+                :to => deals(:bankaccount),
+                :resource => forex.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    assert_equal 6, Balance.open.count, "Wrong open balances count"
+    assert forex.balances.empty?, "Forex 4 balance is not nil"
+
+    rubs += 100.0 * 34.95
+    b = deals(:bankaccount).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal rubs.accounting_norm, b.amount, "Wrong balance amount"
+    assert_equal rubs.accounting_norm, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    f = Fact.new(:amount => 2 * 2000.0,
+                :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
+                :from => deals(:bankaccount),
+                :to => office,
+                :resource => deals(:bankaccount).take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert_equal 6, State.open.count, "Open states count is wrong"
+    s = office.state
+    assert !s.nil?, "Office state is nil"
+    assert_equal 1.0, s.amount, "Wrong forex state amount"
+    assert_equal office.take, s.resource, "Wrong forex state resource"
+
+    assert t.save, "Txn is not saved"
+    assert_equal 6, Balance.open.count, "Wrong open balances count"
+    rubs -= 2 * 2000.0
+    b = deals(:bankaccount).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal rubs.accounting_norm, b.amount, "Wrong balance amount"
+    assert_equal rubs.accounting_norm, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    b = office.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 1.0, b.amount, "Wrong balance amount"
+    assert_equal 2000.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+  end
+
   private
   def init_facts
     facts = [
