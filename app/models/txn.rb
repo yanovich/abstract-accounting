@@ -61,8 +61,13 @@ class Txn < ActiveRecord::Base
           unless earnings_tmp.accounting_zero?
             self.status = 1
             self.earnings = earnings_tmp
-            i = Income.last
+            i = Income.open.first
             i = Income.new if i.nil?
+            if !i.new_record? && i.start < self.fact.day
+              i_clone = Income.new i.attributes
+              return false unless i.update_attributes(:paid => self.fact.day)
+              i = i_clone
+            end
             i.txn = self
             return i.save
           end

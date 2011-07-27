@@ -681,10 +681,17 @@ class AccountTest < ActiveSupport::TestCase
       "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
 
-    assert_equal 1, Income.open.count, "Wrong income count"
+    assert_equal 1, Income.open.count, "Wrong open income count"
+    assert_equal 2, Income.all.count, "Wrong income count"
 
+    income = Income.where("incomes.paid IS NOT NULL").first
+    assert !income.nil?, "Income is not found"
+    assert_equal profit, income.value.accounting_norm, "Wrong income value"
+    assert_equal Income::PASSIVE, income.side, "Wrong income side"
+    assert_equal f.day, income.paid, "Wrong income paid value"
+    assert_equal DateTime.civil(2007, 8, 31, 12, 0, 0), income.start, "Wrong income start value"
     profit += (34.95 - 34.2) * t.fact.amount
-    assert_equal profit, Income.first.value.accounting_norm,
+    assert_equal profit, Income.open.first.value.accounting_norm,
       "Wrong income value"
 
     f = Fact.new(:amount => (2500.0 * 34.95),
