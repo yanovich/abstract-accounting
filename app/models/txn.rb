@@ -50,9 +50,11 @@ class Txn < ActiveRecord::Base
       else
         balance = self.fact.to.balance
         old_balance_value = balance.nil? ? 0.0 : balance.accounting_value
+        old_balance_side = balance.nil? ? Balance::ACTIVE : balance.side
         if self.fact.to.update_by_txn(self)
           earnings_tmp = 0.0
           balance = self.fact.to.balance
+          old_balance_value *= -1 if !balance.nil? && old_balance_side != balance.side
           if !balance.nil? && balance.side == Balance::ACTIVE
             earnings_tmp = balance.value - old_balance_value - self.value
           end
