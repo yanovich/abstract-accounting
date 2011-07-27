@@ -704,6 +704,47 @@ class AccountTest < ActiveSupport::TestCase
     assert t.save, "Txn is not saved"
     assert_equal 87375.0, t.value, "Wrong txn value"
     assert_equal 1, Income.all.count, "Wrong open income count"
+
+    assert_equal 7, Balance.open.count, "Wrong open balances count"
+    b = forex.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 2500.0 - 2000.0, b.amount,
+      "Wrong balance amount"
+    assert_equal ((2500.0 - 2000.0) * 34.95).accounting_norm, b.value,
+      "Wrong balance value"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+
+    rubs = 100000.0 + 142000.0 - 70000.0 +
+      (1000.0 * (deals(:forex2).rate - 1 / deals(:forex).rate))
+    rubs -= (5000.0 * 34.2).accounting_norm
+    rubs += t.fact.amount
+    b = deals(:bankaccount).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal rubs.accounting_norm, b.amount,
+      "Wrong balance amount"
+    assert_equal rubs.accounting_norm, b.value,
+      "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    assert_equal 1, Income.all.count, "Wrong open incomes count"
+    assert profit + Income.first.value, "Wrong income value"
+
+    f = Fact.new(:amount => 600.0,
+                :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
+                :from => deals(:bankaccount2),
+                :to => forex,
+                :resource => deals(:bankaccount2).take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+
+    assert_equal 7, State.open.count, "Wrong open states count"
+    s = forex.state
+    assert !s.nil?, "Forex state is nil"
+    assert_equal (100.0 * 34.95).accounting_norm, s.amount, "Wrong forex state amount"
+    assert_equal money(:rub), s.resource, "Wrong forex state resource"
+
+    assert t.save, "Txn is not saved"
+    assert_equal 450.0, t.earnings, "Wrong txn earnings"
   end
 
   private
