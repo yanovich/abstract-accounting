@@ -22,7 +22,9 @@ class Balance < ActiveRecord::Base
   def update_value(side, amount, value)
     old_value = self.accounting_value
     old_amount = self.amount
+    old_side = self.side
     if update_amount(side, amount)
+      old_value *= -1 if old_side != self.side
       if side == PASSIVE && self.side == PASSIVE
         if has_credit?
           self.value = self.amount
@@ -35,7 +37,7 @@ class Balance < ActiveRecord::Base
         if has_debit?
           self.value = self.amount.accounting_norm
         elsif !value.accounting_zero?
-          self.value = value
+          self.value = old_value + value
         else
           raise "Unexpected behaviour"
         end
