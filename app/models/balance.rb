@@ -52,6 +52,8 @@ class Balance < ActiveRecord::Base
       elsif side == ACTIVE && self.side == ACTIVE
         if has_credit?
           self.value = self.amount
+        elsif !old_value.accounting_negative? && !old_amount.accounting_zero?
+          self.value = (old_value - self.amount/old_amount).accounting_norm
         else
           raise "Unexpected behaviour"
         end
