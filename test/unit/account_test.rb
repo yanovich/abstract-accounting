@@ -923,6 +923,14 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 1.0, b.amount, "Wrong balance amount"
     assert_equal 2000.0, b.value, "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    assert_equal 0, Income.open.count, "Wrong open incomes count"
+
+    f = Fact.new(:amount => 50.0,
+                :day => DateTime.civil(2007, 9, 6, 12, 0, 0),
+                :from => deals(:bankaccount),
+                :to => Deal.income,
+                :resource => deals(:bankaccount).take)
+    assert f.save, "Fact is not saved"
   end
 
   private

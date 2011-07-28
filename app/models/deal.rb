@@ -17,8 +17,11 @@ class Deal < ActiveRecord::Base
   has_many :balances
 
   def self.income
-    income = Deal.new :tag => "profit and loss", :rate => 1.0
-    income.id = INCOME_ID
+    income = Deal.where(:id => INCOME_ID).first
+    if income.nil?
+      income = Deal.new :tag => "profit and loss", :rate => 1.0
+      income.id = INCOME_ID
+    end
     income
   end
 
