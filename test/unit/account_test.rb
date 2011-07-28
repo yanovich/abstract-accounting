@@ -953,6 +953,16 @@ class AccountTest < ActiveSupport::TestCase
                 :to => deals(:bankaccount),
                 :resource => deals(:bankaccount).give)
     assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert t.save, "Txn is not saved"
+
+    assert_equal 6, Balance.open.count, "Wrong open balances count"
+    rubs += 50.0
+    b = deals(:bankaccount).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal rubs.accounting_norm, b.amount, "Wrong balance amount"
+    assert_equal rubs.accounting_norm, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
 
   private
