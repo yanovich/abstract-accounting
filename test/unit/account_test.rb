@@ -946,6 +946,13 @@ class AccountTest < ActiveSupport::TestCase
     profit += (34.95 - 34.2) * 600.0
     profit -= 50.0
     assert_equal profit, Income.open.first.value, "Wrong income value"
+
+    f = Fact.new(:amount => 50.0,
+                :day => DateTime.civil(2007, 9, 7, 12, 0, 0),
+                :from => Deal.income,
+                :to => deals(:bankaccount),
+                :resource => deals(:bankaccount).give)
+    assert f.save, "Fact is not saved"
   end
 
   private
