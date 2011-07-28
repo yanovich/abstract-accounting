@@ -27,7 +27,7 @@ class Balance < ActiveRecord::Base
       old_value *= -1 if old_side != self.side
       if side == PASSIVE && self.side == PASSIVE
         if has_credit?
-          self.value = self.amount
+          self.value = (self.amount * self.credit).accounting_norm
         elsif has_debit?
           self.value = (self.amount * self.deal.rate).accounting_norm
         else
@@ -81,6 +81,16 @@ class Balance < ActiveRecord::Base
   end
 
   def has_credit?
-    !Chart.first.nil? and self.deal.give == Chart.first.currency
+    return true if !Chart.first.nil? and self.deal.give == Chart.first.currency
+    self.deal.give.is_a? Money and !self.deal.give.quotes.first.nil?
+  end
+
+  def credit
+    if self.deal.give.is_a? Money and !self.deal.give.quotes.first.nil?
+      return self.deal.give.quotes.first.rate
+    elsif !Chart.first.nil? and self.deal.give == Chart.first.currency
+      return 1.0
+    end
+    0.0
   end
 end
