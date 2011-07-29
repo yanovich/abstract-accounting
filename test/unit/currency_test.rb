@@ -13,8 +13,16 @@ class CurrencyTest < ActiveSupport::TestCase
   def setup
     @c1 = Money.new :alpha_code => "c1", :num_code => 2
     @c1.save
+    @c2 = Money.new :alpha_code => "c2", :num_code => 3
+    @c2.save
     x = Asset.new :tag => "x"
     x.save
+    @a2 = Deal.new :tag => "a2",
+      :entity => Entity.new(:tag => "B"),
+      :give => @c2,
+      :take => @c2,
+      :rate => 1.0
+    @a2.save
     @bx1 = Deal.new :tag => "bx1",
       :entity => Entity.new(:tag => "S1"),
       :give => @c1,
@@ -27,6 +35,12 @@ class CurrencyTest < ActiveSupport::TestCase
       :take => x,
       :rate => 1.0
     @dx.save
+    @sy2 = Deal.new :tag => "sy2",
+      :entity => Entity.new(:tag => "P2"),
+      :give => Asset.new(:tag => "y"),
+      :take => @c2,
+      :rate => 150.0
+    @sy2.save
   end
 
   test "currency" do
@@ -34,6 +48,7 @@ class CurrencyTest < ActiveSupport::TestCase
       :day => DateTime.civil(2008, 3, 24, 12, 0, 0)).save, "Quote is not saved"
     purchase
     rate_change_before_income
+    sale_advance
   end
 
   private
@@ -74,5 +89,35 @@ class CurrencyTest < ActiveSupport::TestCase
     assert_equal 1, Income.open.count, "Open incomes count is wrong"
     assert_equal Income::PASSIVE, Income.open.first.side, "Open income wrong side"
     assert_equal q.diff, Income.open.first.value, "Open income wrong value"
+  end
+
+  def sale_advance
+    assert @c2.quote.nil?, "Money c2 quote is not nil"
+
+    assert (Quote.new(:money => @c2, :rate => 2.0,
+      :day => DateTime.civil(2008, 3, 25, 12, 0, 0))).save, "Quote is not saved"
+
+    f = Fact.new(:amount => 60000.0,
+                :day => DateTime.civil(2008, 3, 25, 12, 0, 0),
+                :from => @sy2,
+                :to => @a2,
+                :resource => @sy2.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new(:fact => f)
+    assert t.save, "Txn is not saved"
+
+    b = t.from_balance
+    assert !b.nil?, "From balance is nil"
+    assert_equal 400.0, b.amount, "Wrong balance amount"
+    assert_equal 120000.0, b.value, "Wrong balance value"
+    assert_equal @sy2, b.deal, "Wrong balance deal"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+
+    b = t.to_balance
+    assert !b.nil?, "From balance is nil"
+    assert_equal 60000.0, b.amount, "Wrong balance amount"
+    assert_equal 120000.0, b.value, "Wrong balance value"
+    assert_equal @a2, b.deal, "Wrong balance deal"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
 end
