@@ -14,20 +14,29 @@ class Income < ActiveRecord::Base
   validates :start, :uniqueness => true
   validates :side, :inclusion => { :in => [PASSIVE, ACTIVE] }
   scope :open, where("incomes.paid IS NULL")
+  after_initialize :do_initialize
 
   def zero?
     self.value.accounting_zero?
   end
 
   def txn=(txn)
-    return nil if txn.nil? or txn.status == 0
-    if self.start.nil?
-      self.start = txn.fact.day
-      self.value = txn.earnings
-      self.side = PASSIVE
-    else
-      self.start = txn.fact.day
-      self.value += txn.earnings
-    end
+    update_value(txn.fact.day, txn.earnings) if txn.status != 0
+  end
+
+  def quote=(quote)
+    update_value(quote.day, quote.diff) unless quote.diff.accounting_zero?
+  end
+
+  private
+  def do_initialize
+    self.value ||= 0.0 if self.attributes.has_key?('value')
+    self.side ||= PASSIVE if self.attributes.has_key?('side')
+  end
+
+  def update_value(day, value)
+    do_initialize if self.value.nil?
+    self.start = day
+    self.value += value
   end
 end

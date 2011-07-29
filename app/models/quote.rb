@@ -26,6 +26,10 @@ class Quote < ActiveRecord::Base
         self.diff += (deal.balance.amount * (q.rate - self.rate)).accounting_norm
       end
     end
+    unless self.diff.accounting_zero?
+      income = Income.new :quote => self
+      return income.save
+    end
     true
   end
 end

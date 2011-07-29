@@ -13,24 +13,30 @@ class IncomeTest < ActiveSupport::TestCase
   test "income should be saved" do
     i = Income.new
     assert i.invalid?, "Invalid income"
+    assert_equal 0.0, i.value, "Wrong income value"
+    assert_equal Income::PASSIVE, i.side, "Wrong income side"
     i.start = DateTime.civil(2011, 9, 18)
-    assert i.invalid?, "Invalid income"
-    i.side = Income::ACTIVE
-    assert i.invalid?, "Invalid income"
-    i.value = 0.0
-    assert i.valid?, "Valid income"
-    i.side = Income::PASSIVE
-    assert i.valid?, "Valid income"
+    assert i.valid?, "Invalid income"
     i.side = "asdasd"
     assert i.invalid?, "Invalid income"
     i.side = Income::PASSIVE
     assert i.save, "Income is not saved"
     i = Income.new
     i.start = DateTime.civil(2011, 9, 19)
-    i.value = 0.0
-    i.side = Income::PASSIVE
     assert i.valid?, "Valid income"
     i.start = DateTime.civil(2011, 9, 18)
     assert i.invalid?, "Invalid income"
+  end
+
+  test "assign values through constructor" do
+    Income.instance_eval do
+      define_method :test= do |value|
+        update_value DateTime.now, value
+      end
+    end
+    assert_nothing_raised do
+      i = Income.new :test => 10.0
+      assert_equal 10.0, i.value, "Wrong income value"
+    end
   end
 end
