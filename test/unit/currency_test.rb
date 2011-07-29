@@ -70,5 +70,9 @@ class CurrencyTest < ActiveSupport::TestCase
       :day => DateTime.civil(2008, 3, 25, 12, 0, 0))).save, "Quote is not saved"
     assert_equal q, @c1.quote, "Maximum quote for money is wrong"
     assert_equal -3000.0, q.diff, "Quote diff is wrong"
+
+    assert_equal 1, Income.open.count, "Open incomes count is wrong"
+    assert_equal Income::PASSIVE, Income.open.first.side, "Open income wrong side"
+    assert_equal q.diff, Income.open.first.value, "Open income wrong value"
   end
 end
