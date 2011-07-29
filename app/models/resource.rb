@@ -22,6 +22,10 @@ class Money < ActiveRecord::Base
   has_many :deal_gives, :class_name => "Deal", :as => :give
   has_many :deal_takes, :class_name => "Deal", :as => :take
   has_many :quotes
+
+  def quote
+    self.quotes.where(:day => self.quotes.maximum(:day)).first
+  end
 end
 
 # vim: ts=2 sts=2 sw=2 et:
