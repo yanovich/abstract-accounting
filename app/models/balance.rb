@@ -43,7 +43,7 @@ class Balance < ActiveRecord::Base
         end
       elsif side == PASSIVE && self.side == ACTIVE
         if has_debit?
-          self.value = self.amount.accounting_norm
+          self.value = (self.amount * self.debit).accounting_norm
         else
           raise "Unexpected behaviour" \
             if old_value.accounting_negative? || old_amount.accounting_zero?
