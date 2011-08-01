@@ -23,7 +23,17 @@ class Quote < ActiveRecord::Base
     if !self.money.deal_gives.empty? and !self.money.quotes(:force_reload).empty?
       q = self.money.quote
       self.money.deal_gives.each do |deal|
-        self.diff += (deal.balance.amount * (q.rate - self.rate)).accounting_norm
+        b = deal.balance
+        self.diff += (b.amount * (q.rate - self.rate)).accounting_norm \
+          if b.side == Balance::PASSIVE
+      end
+    end
+    if !self.money.deal_takes(:force_reload).empty? and !self.money.quotes(:force_reload).empty?
+      q = self.money.quote
+      self.money.deal_takes.each do |deal|
+        b = deal.balance
+        self.diff += (b.amount * (self.rate - q.rate)).accounting_norm \
+          if b.side == Balance::ACTIVE
       end
     end
     unless self.diff.accounting_zero?
