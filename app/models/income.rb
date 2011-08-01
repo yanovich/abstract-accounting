@@ -35,7 +35,6 @@ class Income < ActiveRecord::Base
   end
 
   def update_value(day, value)
-    do_initialize if self.value.nil?
     self.start = day
     self.value += value
   end
