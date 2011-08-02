@@ -15,6 +15,7 @@ class Deal < ActiveRecord::Base
   belongs_to :take, :polymorphic => true
   has_many :states
   has_many :balances
+  has_many :rules
 
   def self.income
     income = Deal.where(:id => INCOME_ID).first

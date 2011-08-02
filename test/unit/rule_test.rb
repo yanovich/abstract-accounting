@@ -29,10 +29,28 @@ class RuleTest < ActiveSupport::TestCase
   end
 
   test "rule workflow" do
+    x = Asset.new :tag => "resource x"
+    assert x.save, "Asset is not saved"
+    y = Asset.new :tag => "resource y"
+    assert y.save, "Asset is not saved"
+    keeper = Entity.new :tag => "keeper"
+    assert keeper.save, "Entity is not saved"
     shipment = Asset.new :tag => "shipment"
     assert shipment.save, "Asset is not saved"
     supplier = Entity.new :tag => "supplier"
     assert supplier.save, "Entity is not saved"
+    storage_x = Deal.new :entity => keeper, :give => x,
+      :take => x, :rate => 1.0, :tag => "storage 1"
+    assert storage_x.save, "Deal is not saved"
+    storage_y = Deal.new :entity => keeper, :give => y,
+      :take => y, :rate => 1.0, :tag => "storage 2"
+    assert storage_y.save, "Deal is not saved"
+    sale_x = Deal.new :entity => supplier, :give => x,
+      :take => money(:rub), :rate => 120.0, :tag => "sale 1"
+    assert sale_x.save, "Deal is not saved"
+    sale_y = Deal.new :entity => supplier, :give => y,
+      :take => money(:rub), :rate => 160.0, :tag => "sale 2"
+    assert sale_y.save, "Deal is not saved"
 
     shipment_deal = Deal.new :tag => "shipment 1", :rate => 1.0,
       :entity => supplier, :give => shipment, :take => shipment,
@@ -40,5 +58,17 @@ class RuleTest < ActiveSupport::TestCase
     assert shipment_deal.save, "Deal is not saved"
     assert_equal true, Deal.find(shipment_deal.id).isOffBalance,
       "Wrong saved value for is off balance"
+
+    shipment_deal.rules.create :tag => "shipment1.rule1",
+      :from => storage_x, :to => sale_x, :fact_side => false,
+      :change_side => true, :rate => 27.0
+
+    assert_equal 1, Rule.all.count, "Rule count is wrong"
+
+    shipment_deal.rules.create :tag => "shipment1.rule2",
+      :from => storage_y, :to => sale_y, :fact_side => false,
+      :change_side => true, :rate => 42.0
+
+    assert_equal 2, Rule.all.count, "Rule count is wrong"
   end
 end
