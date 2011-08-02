@@ -39,6 +39,11 @@ class Quote < ActiveRecord::Base
     unless self.diff.accounting_zero?
       income = Income.open.first
       income = Income.new if income.nil?
+      if !income.new_record? && income.start < self.day
+        income_clone = Income.new income.attributes
+        return false unless income.update_attributes(:paid => self.day)
+        income = income_clone
+      end
       income.quote = self
       return income.save
     end

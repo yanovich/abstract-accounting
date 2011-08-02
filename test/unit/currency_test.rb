@@ -105,11 +105,15 @@ class CurrencyTest < ActiveSupport::TestCase
 
   def rate_change_before_income
     assert_equal Quote.first, @c1.quote, "Maximum quote for money is wrong"
+
+    assert_equal 0, Income.all.count, "Wrong income count"
+
     assert (q = Quote.new(:money => @c1, :rate => 1.6,
       :day => DateTime.civil(2008, 3, 25, 12, 0, 0))).save, "Quote is not saved"
     assert_equal q, @c1.quote, "Maximum quote for money is wrong"
     assert_equal -3000.0, q.diff, "Quote diff is wrong"
 
+    assert_equal 1, Income.all.count, "Wrong income count"
     assert_equal 1, Income.open.count, "Open incomes count is wrong"
     assert_equal Income::PASSIVE, Income.open.first.side, "Open income wrong side"
     assert_equal q.diff, Income.open.first.value, "Open income wrong value"
@@ -249,11 +253,20 @@ class CurrencyTest < ActiveSupport::TestCase
   end
 
   def rate_change
+    assert_equal 1, Income.all.count, "Wrong income count"
+    income = Income.new Income.first.attributes
+
     assert (q = Quote.new(:money => @c2, :rate => 2.1,
       :day => DateTime.civil(2008, 3, 31, 12, 0, 0))).save, "Quote is not saved"
     assert_equal q, @c2.quote, "Maximum quote for money is wrong"
     assert_equal 3000.0, q.diff, "Quote diff is wrong"
 
+    assert_equal 2, Income.all.count, "Wrong income count"
+    income_paid = Income.first
+    assert_equal income.start, income_paid.start, "Wrong income start"
+    assert_equal income.value, income_paid.value, "Wrong income value"
+    assert_equal income.side, income_paid.side, "Wrong income side"
+    assert_equal DateTime.civil(2008, 3, 31, 12, 0, 0), income_paid.paid, "Wrong income paid"
     assert_equal 1, Income.open.count, "Wrong open incomes count"
     assert_equal Income::PASSIVE, Income.open.first.side, "Invalid open income side"
     assert_equal 500.0, Income.open.first.value, "Invalid open income value"
