@@ -17,16 +17,28 @@ class CurrencyTest < ActiveSupport::TestCase
     @c1.save
     @c2 = Money.new :alpha_code => "c2", :num_code => 3
     @c2.save
+    @y = Asset.new :tag => "y"
+    @y.save
     x = Asset.new :tag => "x"
     x.save
     @B = Entity.new :tag => "B"
     @B.save
+    @S2 = Entity.new :tag => "S2"
+    @S2.save
+    k = Entity.new :tag => "K"
+    k.save
     @a2 = Deal.new :tag => "a2",
       :entity => @B,
       :give => @c2,
       :take => @c2,
       :rate => 1.0
     @a2.save
+    @dy = Deal.new :tag => "dy",
+      :entity => k,
+      :give => @y,
+      :take => @y,
+      :rate => 1.0
+    @dy.save
     @bx1 = Deal.new :tag => "bx1",
       :entity => Entity.new(:tag => "S1"),
       :give => @c1,
@@ -34,7 +46,7 @@ class CurrencyTest < ActiveSupport::TestCase
       :rate => (1.0 / 100.0)
     @bx1.save
     @dx = Deal.new :tag => "dx",
-      :entity => Entity.new(:tag => "K"),
+      :entity => k,
       :give => x,
       :take => x,
       :rate => 1.0
@@ -56,6 +68,7 @@ class CurrencyTest < ActiveSupport::TestCase
     forex_sale
     rate_change
     forex_sale_after_rate_change
+    transfer_rollback
   end
 
   private
@@ -273,5 +286,27 @@ class CurrencyTest < ActiveSupport::TestCase
     assert_equal 21000.0, b.value, "Wrong balance value"
     assert_equal f4, b.deal, "Wrong balance deal"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+  end
+
+  def transfer_rollback
+    assert (c3 = Money.new(:alpha_code => "c3", :num_code => 4)).save,
+      "Mone is not saved"
+    assert (by3 = Deal.new(:tag => "by3", :give => c3, :take => @y,
+        :entity => @S2, :rate => (1.0 / 200.0))).save, "Deal is not saved"
+    assert Quote.new(:rate => 0.8, :money => c3,
+      :day => DateTime.civil(2008, 4, 14, 12, 0, 0)).save, "Quote is not saved"
+
+    assert (f = Fact.new(:amount => 100.0,
+              :day => DateTime.civil(2008, 4, 11, 12, 0, 0),
+              :from => by3,
+              :to => @dy,
+              :resource => by3.take)).save, "Fact is not saved"
+
+    assert_equal 7, Fact.all.count, "Wrong fact count"
+    assert_equal 10, State.open.count, "Wrong open states count"
+
+    f.destroy
+    assert_equal 6, Fact.all.count, "Wrong fact count"
+    assert_equal 8, State.open.count, "Wrong open states count"
   end
 end

@@ -27,6 +27,7 @@ class Fact < ActiveRecord::Base
   belongs_to :to, :class_name => "Deal", :foreign_key => "to_deal_id"
   has_one :txn
   before_save :do_save
+  before_destroy :do_before_destroy
 
   scope :pendings, includes("txn").where("txns.id is NULL")
 
@@ -36,5 +37,11 @@ class Fact < ActiveRecord::Base
       return false unless self.from.update_by_fact(self)
       return false unless self.to.update_by_fact(self)
     end
+  end
+
+  def do_before_destroy
+    self.amount = -self.amount
+    return false unless self.from.update_by_fact(self)
+    self.to.update_by_fact(self)
   end
 end
