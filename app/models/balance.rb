@@ -64,7 +64,7 @@ class Balance < ActiveRecord::Base
 
   def accounting_value
     if Balance::ACTIVE == self.side && self.has_debit?
-      return self.amount
+      return (self.amount * self.debit).accounting_norm
     end
     self.value
   end

@@ -68,6 +68,10 @@ class CurrencyTest < ActiveSupport::TestCase
     t = Txn.new :fact => f
     assert t.save, "Txn is not saved"
 
+    assert_equal 45000.0, t.value, "Wrong txn value"
+    assert_equal 0, t.status, "Wrong txn status"
+    assert_equal 0.0, t.earnings, "Wrong txn earnings"
+
     assert_equal 2, Balance.all.count, "Balance count is not equal to 2"
 
     b = t.from_balance
@@ -112,6 +116,10 @@ class CurrencyTest < ActiveSupport::TestCase
     t = Txn.new(:fact => f)
     assert t.save, "Txn is not saved"
 
+    assert_equal 120000.0, t.value, "Wrong txn value"
+    assert_equal 0, t.status, "Wrong txn status"
+    assert_equal 0.0, t.earnings, "Wrong txn earnings"
+
     b = t.from_balance
     assert !b.nil?, "From balance is nil"
     assert_equal 400.0, b.amount, "Wrong balance amount"
@@ -145,6 +153,10 @@ class CurrencyTest < ActiveSupport::TestCase
     t = Txn.new(:fact => f)
     assert t.save, "Txn is not saved"
 
+    assert_equal 20000.0, t.value, "Wrong txn value"
+    assert_equal 1, t.status, "Wrong txn status"
+    assert_equal 1000.0, t.earnings, "Wrong txn earnings"
+
     b = t.from_balance
     assert !b.nil?, "From balance is nil"
     assert_equal 50000.0, b.amount, "Wrong balance amount"
@@ -171,6 +183,10 @@ class CurrencyTest < ActiveSupport::TestCase
     assert f.save, "Fact is not saved"
     t = Txn.new(:fact => f)
     assert t.save, "Txn is not saved"
+
+    assert_equal 20000.0, t.value, "Wrong txn value"
+    assert_equal 0, t.status, "Wrong txn status"
+    assert_equal 0.0, t.earnings, "Wrong txn earnings"
 
     b = t.from_balance
     assert !b.nil?, "From balance is nil"
@@ -199,6 +215,10 @@ class CurrencyTest < ActiveSupport::TestCase
     t = Txn.new(:fact => f)
     assert t.save, "Txn is not saved"
 
+    assert_equal 20000.0, t.value, "Wrong txn value"
+    assert_equal 1, t.status, "Wrong txn status"
+    assert_equal -500.0, t.earnings, "Wrong txn earnings"
+
     b = t.from_balance
     assert !b.nil?, "From balance is nil"
     assert_equal 30000.0, b.amount, "Wrong balance amount"
@@ -222,5 +242,6 @@ class CurrencyTest < ActiveSupport::TestCase
 
     assert_equal 1, Income.open.count, "Wrong open incomes count"
     assert_equal Income::PASSIVE, Income.open.first.side, "Invalid open income side"
+    assert_equal 500.0, Income.open.first.value, "Invalid open income value"
   end
 end
