@@ -96,8 +96,8 @@ class Balance < ActiveRecord::Base
   end
 
   def debit
-    if self.deal.take.is_a? Money and !self.deal.take.quotes.first.nil?
-      return self.deal.take.quotes.first.rate
+    if self.deal.take.is_a? Money and !self.deal.take.quote.nil?
+      return self.deal.take.quote.rate
     elsif !Chart.first.nil? and self.deal.take == Chart.first.currency
       return 1.0
     end

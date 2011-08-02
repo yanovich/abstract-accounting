@@ -55,6 +55,7 @@ class CurrencyTest < ActiveSupport::TestCase
     sale_advance
     forex_sale
     rate_change
+    forex_sale_after_rate_change
   end
 
   private
@@ -243,5 +244,34 @@ class CurrencyTest < ActiveSupport::TestCase
     assert_equal 1, Income.open.count, "Wrong open incomes count"
     assert_equal Income::PASSIVE, Income.open.first.side, "Invalid open income side"
     assert_equal 500.0, Income.open.first.value, "Invalid open income value"
+  end
+
+  def forex_sale_after_rate_change
+    assert (f4 = Deal.new(:tag => "f4",
+        :entity => @B, :give => @c2, :take => @c1, :rate => (2.1 / 1.6))).save,
+      "Deal is not saved"
+
+    f = Fact.new(:amount => 10000.0,
+                :day => DateTime.civil(2008, 3, 31, 12, 0, 0),
+                :from => @a2,
+                :to => f4,
+                :resource => @a2.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new(:fact => f)
+    assert t.save, "Txn is not saved"
+
+    b = t.from_balance
+    assert !b.nil?, "From balance is nil"
+    assert_equal 20000.0, b.amount, "Wrong balance amount"
+    assert_equal 42000.0, b.value, "Wrong balance value"
+    assert_equal @a2, b.deal, "Wrong balance deal"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    b = t.to_balance
+    assert !b.nil?, "From balance is nil"
+    assert_equal 13125.0, b.amount, "Wrong balance amount"
+    assert_equal 21000.0, b.value, "Wrong balance value"
+    assert_equal f4, b.deal, "Wrong balance deal"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
 end
