@@ -27,4 +27,18 @@ class RuleTest < ActiveSupport::TestCase
     assert r.valid?, "Rule is not valid"
     assert r.save, "Rule is not saved"
   end
+
+  test "rule workflow" do
+    shipment = Asset.new :tag => "shipment"
+    assert shipment.save, "Asset is not saved"
+    supplier = Entity.new :tag => "supplier"
+    assert supplier.save, "Entity is not saved"
+
+    shipment_deal = Deal.new :tag => "shipment 1", :rate => 1.0,
+      :entity => supplier, :give => shipment, :take => shipment,
+      :isOffBalance => true
+    assert shipment_deal.save, "Deal is not saved"
+    assert_equal true, Deal.find(shipment_deal.id).isOffBalance,
+      "Wrong saved value for is off balance"
+  end
 end
