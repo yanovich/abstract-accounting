@@ -39,6 +39,12 @@ class RuleTest < ActiveSupport::TestCase
     assert shipment.save, "Asset is not saved"
     supplier = Entity.new :tag => "supplier"
     assert supplier.save, "Entity is not saved"
+    purchase_x = Deal.new :entity => supplier, :give => money(:rub),
+      :take => x, :rate => (1.0 / 100.0), :tag => "purchase 1"
+    assert purchase_x.save,"Dealisnot saved"
+    purchase_y = Deal.new :entity => supplier, :give => money(:rub),
+      :take => y, :rate => (1.0 / 150.0), :tag => "purchase 2"
+    assert purchase_y.save, "Deal is not saved"
     storage_x = Deal.new :entity => keeper, :give => x,
       :take => x, :rate => 1.0, :tag => "storage 1"
     assert storage_x.save, "Deal is not saved"
@@ -51,6 +57,43 @@ class RuleTest < ActiveSupport::TestCase
     sale_y = Deal.new :entity => supplier, :give => y,
       :take => money(:rub), :rate => 160.0, :tag => "sale 2"
     assert sale_y.save, "Deal is not saved"
+    f = Fact.new(:amount => 50.0,
+                :day => DateTime.civil(2008, 9, 16, 12, 0, 0),
+                :from => purchase_x,
+                :to => storage_x,
+                :resource => purchase_x.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new(:fact => f)
+    assert t.save, "Txn is not saved"
+    f = Fact.new(:amount => 50.0,
+                :day => DateTime.civil(2008, 9, 16, 12, 0, 0),
+                :from => purchase_y,
+                :to => storage_y,
+                :resource => purchase_y.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new(:fact => f)
+    assert t.save, "Txn is not saved"
+    assert_equal 4, Balance.open.count, "Wrong open balances count"
+    b = purchase_x.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 5000.0, b.amount, "Wrong balance amount"
+    assert_equal 5000.0, b.value, "Wrong balance value"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+    b = purchase_y.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 7500.0, b.amount, "Wrong balance amount"
+    assert_equal 7500.0, b.value, "Wrong balance value"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+    b = storage_x.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 50.0, b.amount, "Wrong balance amount"
+    assert_equal 5000.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    b = storage_y.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 50.0, b.amount, "Wrong balance amount"
+    assert_equal 7500.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
 
     shipment_deal = Deal.new :tag => "shipment 1", :rate => 1.0,
       :entity => supplier, :give => shipment, :take => shipment,
@@ -77,5 +120,34 @@ class RuleTest < ActiveSupport::TestCase
                 :to => shipment_deal,
                 :resource => shipment_deal.give)
     assert f.save, "Fact is not saved"
+
+    assert_equal 7, State.open.count, "Wrong open states count"
+    s = purchase_x.state
+    assert !s.nil?, "State is nil"
+    assert_equal 5000.0, s.amount, "State amount is wrong"
+
+    s = purchase_y.state
+    assert !s.nil?, "State is nil"
+    assert_equal 7500.0, s.amount, "State amount is wrong"
+
+    s = storage_x.state
+    assert !s.nil?, "State is nil"
+    assert_equal 23.0, s.amount, "State amount is wrong"
+
+    s = storage_y.state
+    assert !s.nil?, "State is nil"
+    assert_equal 8.0, s.amount, "State amount is wrong"
+
+    s = sale_x.state
+    assert !s.nil?, "State is nil"
+    assert_equal (120.0 * 27.0).accounting_norm, s.amount, "State amount is wrong"
+
+    s = sale_y.state
+    assert !s.nil?, "State is nil"
+    assert_equal (160.0 * 42.0).accounting_norm, s.amount, "State amount is wrong"
+
+    s = shipment_deal.state
+    assert !s.nil?, "State is nil"
+    assert_equal 1.0, s.amount, "State amount is wrong"
   end
 end
