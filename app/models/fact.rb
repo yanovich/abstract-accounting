@@ -35,9 +35,9 @@ class Fact < ActiveRecord::Base
   def do_save
     if changed? or new_record?
       unless self.from.nil?
-        return false unless self.from.update_by_fact(self)
+        return false unless update_states(self.from)
       end
-      return false unless self.to.update_by_fact(self)
+      update_states(self.to)
     end
   end
 
@@ -45,5 +45,17 @@ class Fact < ActiveRecord::Base
     self.amount = -self.amount
     return false unless self.from.update_by_fact(self)
     self.to.update_by_fact(self)
+  end
+
+  def update_states(deal)
+    if deal.update_by_fact(self)
+      deal.rules.each do |rule|
+        fact = rule.to_fact
+        fact.day = self.day
+        return false unless fact.save
+      end
+      return true
+    end
+    false
   end
 end

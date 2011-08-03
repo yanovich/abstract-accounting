@@ -14,4 +14,9 @@ class Rule < ActiveRecord::Base
   belongs_to :deal
   belongs_to :from, :class_name => "Deal"
   belongs_to :to, :class_name => "Deal"
+
+  def to_fact
+    Fact.new :from => self.from, :to => self.to,
+             :amount => self.rate, :resource => self.to.give
+  end
 end
