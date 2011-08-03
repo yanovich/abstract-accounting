@@ -30,7 +30,7 @@ class Txn < ActiveRecord::Base
   end
 
   def before_save
-    unless self.fact.from.income?
+    unless self.fact.from.nil? || self.fact.from.income?
       balance = self.fact.from.balance
       old_balance_value = balance.nil? ? 0.0 : balance.accounting_value
       old_balance_side = balance.nil? ? Balance::ACTIVE : balance.side
@@ -46,6 +46,7 @@ class Txn < ActiveRecord::Base
         return false
       end
     end
+    return true if self.fact.to.isOffBalance
     if self.fact.to.income?
       self.earnings = -self.value
       self.status = 1
