@@ -10,8 +10,9 @@
 class FactValidator
   def validate(record)
     record.errors[:base] << "bad resource" unless
-    (record.resource == record.from.take || record.from.income?) \
-    and (record.resource == record.to.give || record.to.income?)
+        (record.from.nil? and !record.to.nil?) or
+        ((record.resource == record.from.take || record.from.income?) \
+        and (record.resource == record.to.give || record.to.income?))
   end
 end
 
@@ -19,7 +20,6 @@ class Fact < ActiveRecord::Base
   validates_presence_of :day
   validates_presence_of :amount
   validates_presence_of :resource_id
-  validates_presence_of :from_deal_id
   validates_presence_of :to_deal_id
   validates_with FactValidator
   belongs_to :resource, :polymorphic => true
@@ -34,7 +34,9 @@ class Fact < ActiveRecord::Base
   private
   def do_save
     if changed? or new_record?
-      return false unless self.from.update_by_fact(self)
+      unless self.from.nil?
+        return false unless self.from.update_by_fact(self)
+      end
       return false unless self.to.update_by_fact(self)
     end
   end
