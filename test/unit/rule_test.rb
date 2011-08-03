@@ -70,5 +70,12 @@ class RuleTest < ActiveSupport::TestCase
       :change_side => true, :rate => 42.0
 
     assert_equal 2, Rule.all.count, "Rule count is wrong"
+
+    f = Fact.new(:amount => 1.0,
+                :day => DateTime.civil(2008, 9, 22, 12, 0, 0),
+                :from => nil,
+                :to => shipment_deal,
+                :resource => shipment_deal.give)
+    assert f.save, "Fact is not saved"
   end
 end

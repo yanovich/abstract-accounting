@@ -57,7 +57,7 @@ class Deal < ActiveRecord::Base
     elsif !state.new_record? && state.start > fact.day
       raise "State start day is great then fact day"
     end
-    return false unless state.update_amount(self.id == fact.from.id ? State::PASSIVE : State::ACTIVE, fact.amount)
+    return false unless state.update_amount(self.id == fact.from_deal_id ? State::PASSIVE : State::ACTIVE, fact.amount)
     return state.destroy if state.zero? && !state.new_record?
     return true if state.zero? && state.new_record?
     state.save
