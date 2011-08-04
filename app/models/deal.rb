@@ -83,6 +83,18 @@ class Deal < ActiveRecord::Base
     balance.save
   end
 
+  def facts(start, stop)
+    Fact.where("(facts.from_deal_id = :id OR facts.to_deal_id = :id)
+                AND facts.day > :start AND facts.day < :stop",
+               :id => self.id,
+               :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
+               :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
+  end
+
+  def txns(start, stop)
+    Txn.find_all_by_fact_id(self.facts(start, stop))
+  end
+
   private
   INCOME_ID = 0
 end
