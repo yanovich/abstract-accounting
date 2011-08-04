@@ -46,7 +46,12 @@ class Txn < ActiveRecord::Base
         return false
       end
     end
-    return true if self.fact.to.isOffBalance
+    if self.fact.to.isOffBalance
+      self.fact.children.each do |fact|
+        return false unless Txn.new(:fact => fact).save
+      end
+      return true
+    end
     if self.fact.to.income?
       self.earnings = -self.value
       self.status = 1
