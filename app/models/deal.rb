@@ -83,6 +83,12 @@ class Deal < ActiveRecord::Base
     balance.save
   end
 
+  def balances_by_time_frame(start, stop)
+    self.balances.where("balances.start < :stop AND (balances.paid > :start OR balances.paid IS NULL)",
+                        :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
+                        :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
+  end
+
   def facts(start, stop)
     Fact.where("(facts.from_deal_id = :id OR facts.to_deal_id = :id)
                 AND facts.day > :start AND facts.day < :stop",
