@@ -152,7 +152,7 @@ class RuleTest < ActiveSupport::TestCase
 
     t = Txn.new(:fact => f)
     assert t.save, "Txn is not saved"
-    assert_equal 4, Balance.open.count, "Wrong open balances count"
+    assert_equal 6, Balance.open.count, "Wrong open balances count"
     b = purchase_x.balance
     assert !b.nil?, "Balance is nil"
     assert_equal 5000.0, b.amount, "Wrong balance amount"
@@ -165,13 +165,23 @@ class RuleTest < ActiveSupport::TestCase
     assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
     b = storage_x.balance
     assert !b.nil?, "Balance is nil"
-    assert_equal 50.0, b.amount, "Wrong balance amount"
-    assert_equal 5000.0, b.value, "Wrong balance value"
+    assert_equal 23.0, b.amount, "Wrong balance amount"
+    assert_equal 2300.0, b.value, "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
     b = storage_y.balance
     assert !b.nil?, "Balance is nil"
-    assert_equal 50.0, b.amount, "Wrong balance amount"
-    assert_equal 7500.0, b.value, "Wrong balance value"
+    assert_equal 8.0, b.amount, "Wrong balance amount"
+    assert_equal 1200.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    b = sale_x.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 3240.0, b.amount, "Wrong balance amount"
+    assert_equal 3240.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    b = sale_y.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal 6720.0, b.amount, "Wrong balance amount"
+    assert_equal 6720.0, b.value, "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
 end
