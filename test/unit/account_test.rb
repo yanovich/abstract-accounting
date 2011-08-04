@@ -1382,6 +1382,14 @@ class AccountTest < ActiveSupport::TestCase
       "Wrong transcript start value"
     assert_equal DateTime.civil(2007, 8, 29, 12, 0, 0), tr.stop,
       "Wrong transcript stop value"
+
+    assert tr.opening.nil?, "Wrong oening value"
+    assert !tr.closing.nil?, "Wrong closing value"
+    b = tr.closing
+    assert !b.nil?, "Balance is nil"
+    assert_equal 100000.0 + 142000.0, b.amount, "Wrong balance amount"
+    assert_equal 100000.0 + 142000.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
 
   private
