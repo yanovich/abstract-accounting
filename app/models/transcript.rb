@@ -12,6 +12,15 @@ class Transcript
     @deal = deal
     @start = start
     @stop = stop
+    load_diffs unless @deal.nil?
   end
-  attr_reader :deal, :start, :stop
+  attr_reader :deal, :start, :stop, :opening, :closing
+
+  private
+  def load_diffs
+    @deal.balances_by_time_frame(@start, @stop).each do |balance|
+      @opening = balance if balance.paid.nil?
+      @closing = balance unless balance.paid.nil?
+    end
+  end
 end
