@@ -7,16 +7,25 @@
 #
 # Please see ./COPYING for details
 
-class Transcript
+class Transcript < Array
   def initialize(deal, start, stop)
     @deal = deal
     @start = start
     @stop = stop
-    load_diffs unless @deal.nil?
+    unless @deal.nil?
+      load_list
+      load_diffs
+    end
   end
   attr_reader :deal, :start, :stop, :opening, :closing
 
   private
+  def load_list
+    @deal.txns(@start, @stop).each do |item|
+      self << item
+    end
+  end
+
   def load_diffs
     @deal.balances_by_time_frame(@start, @stop).each do |balance|
       @opening = balance if balance.paid.nil?
