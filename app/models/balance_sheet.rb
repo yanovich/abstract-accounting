@@ -8,11 +8,18 @@
 # Please see ./COPYING for details
 
 class BalanceSheet < Array
-  attr_reader :date
+  attr_reader :date, :assets
 
   def initialize(date = DateTime.now)
     @date = date
-    Balance.find_all_by_time_frame(date, date).each { |b| self << b }
-    Income.find_all_by_time_frame(date, date).each { |i| self << i }
+    @assets = 0.0
+    p = proc do |i|
+      self << i
+      if i.side == Balance::PASSIVE
+        @assets += i.value
+      end
+    end
+    Balance.find_all_by_time_frame(date, date).each &p
+    Income.find_all_by_time_frame(date, date).each &p
   end
 end
