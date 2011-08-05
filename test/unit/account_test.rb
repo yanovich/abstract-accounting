@@ -1671,6 +1671,18 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal (400.0 * (34.95 - 34.2)).accounting_norm, tr.closing.value,
       "Wrong income value"
     assert_equal Income::PASSIVE, tr.closing.side, "Wrong income value"
+
+    assert_equal 8, tr.count, "Wrong transcript txns count"
+    assert tr[0].instance_of?(Txn), "Wrong elemnt instance type"
+    assert_equal 1000.0, tr[0].fact.amount, "Wrong fact amount"
+    assert_equal 1000.0 * 34.95, tr[0].value, "Wrong txn value"
+    assert_equal (1000.0 * (35.0 - 34.95)).accounting_norm, tr[0].earnings,
+      "Wrong txn earnings"
+    assert tr[7].instance_of?(Txn), "Wrong elemnt instance type"
+    assert_equal 400.0, tr[7].fact.amount, "Wrong fact amount"
+    assert_equal 0.0, tr[7].value, "Wrong txn value"
+    assert_equal (400.0 * 34.95).accounting_norm, tr[7].earnings,
+      "Wrong txn earnings"
   end
 
   private

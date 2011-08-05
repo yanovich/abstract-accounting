@@ -90,15 +90,22 @@ class Deal < ActiveRecord::Base
   end
 
   def facts(start, stop)
-    Fact.where("(facts.from_deal_id = :id OR facts.to_deal_id = :id)
-                AND facts.day > :start AND facts.day < :stop",
-               :id => self.id,
-               :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
-               :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
+    if self.income?
+      Fact
+    else
+      Fact.where("(facts.from_deal_id = :id OR facts.to_deal_id = :id)",
+                  :id => self.id)
+    end.where("facts.day > :start AND facts.day < :stop",
+              :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
+              :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
   end
 
   def txns(start, stop)
-    Txn.find_all_by_fact_id(self.facts(start, stop))
+    if self.income?
+      Txn.find_all_by_fact_id_and_status(self.facts(start, stop), 1)
+    else
+      Txn.find_all_by_fact_id(self.facts(start, stop))
+    end
   end
 
   private
