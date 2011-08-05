@@ -1440,6 +1440,8 @@ class AccountTest < ActiveSupport::TestCase
 
     assert_equal 100000.0 + 142000.0, tr.total_debits,
       "Wrong total debits"
+    assert_equal 100000.0 + 142000.0, tr.total_debits_value,
+      "Wrong total debits value"
   end
 
   private
