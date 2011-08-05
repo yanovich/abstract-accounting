@@ -1481,6 +1481,19 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 34950.0, tr[1].fact.amount, "Wrong fact amount"
     assert_equal deals(:bankaccount), tr[1].fact.from, "Wrong fact from"
     assert_equal deals(:forex), tr[1].fact.to, "Wrong fact to"
+
+    tr = Transcript.new(deals(:bankaccount),
+      DateTime.civil(2007, 8, 28, 12, 0, 0),
+      DateTime.civil(2007, 8, 28, 12, 0, 0))
+    assert_equal deals(:bankaccount), tr.deal, "Wrong transcript deal value"
+    assert_equal DateTime.civil(2007, 8, 28, 12, 0, 0), tr.start,
+      "Wrong transcript start value"
+    assert_equal DateTime.civil(2007, 8, 28, 12, 0, 0), tr.stop,
+      "Wrong transcript stop value"
+
+    assert tr.opening.nil?, "Wrong oening value"
+    assert tr.closing.nil?, "Wrong closing value"
+    assert_equal 0, tr.count, "Wrong transcript txns count"
   end
 
   private
