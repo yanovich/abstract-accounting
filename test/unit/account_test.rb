@@ -1494,6 +1494,28 @@ class AccountTest < ActiveSupport::TestCase
     assert tr.opening.nil?, "Wrong oening value"
     assert tr.closing.nil?, "Wrong closing value"
     assert_equal 0, tr.count, "Wrong transcript txns count"
+
+    tr = Transcript.new(deals(:purchase),
+      DateTime.civil(2007, 8, 29, 12, 0, 0),
+      DateTime.civil(2007, 8, 30, 12, 0, 0))
+    assert_equal deals(:purchase), tr.deal, "Wrong transcript deal value"
+    assert_equal DateTime.civil(2007, 8, 29, 12, 0, 0), tr.start,
+      "Wrong transcript start value"
+    assert_equal DateTime.civil(2007, 8, 30, 12, 0, 0), tr.stop,
+      "Wrong transcript stop value"
+
+    assert tr.opening.nil?, "Wrong opening value"
+    assert !tr.closing.nil?, "Wrong closing value"
+    b = tr.closing
+    assert !b.nil?, "Balance is nil"
+    assert_equal 1.0, b.amount, "Wrong balance amount"
+    assert_equal 70000.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    assert_equal 1, tr.count, "Wrong transcript txns count"
+    assert tr[0].instance_of?(Txn), "Wrong element instance type"
+    assert_equal 70000.0, tr[0].fact.amount, "Wrong fact amount"
+    assert_equal deals(:bankaccount), tr[0].fact.from, "Wrong fact from"
+    assert_equal deals(:purchase), tr[0].fact.to, "Wrong fact to"
   end
 
   private
