@@ -1831,6 +1831,13 @@ class AccountTest < ActiveSupport::TestCase
 
     dt = DateTime.now
     assert_equal dt, BalanceSheet.new(dt).date, "Wrong balance sheet day"
+
+    bs = BalanceSheet.new
+    assert_equal 7, bs.count, "Wrong balance sheet count"
+    assert !bs[6].nil?, "Wrong element in balance sheet"
+    assert_equal (400.0 * (34.95 - 34.2)).accounting_norm, bs[6].value,
+      "Wrong income value"
+    assert_equal Income::PASSIVE, bs[6].side, "Wrong income side"
   end
 
   private
