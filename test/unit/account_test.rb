@@ -1437,6 +1437,9 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 34950.0, tr[3].fact.amount, "Wrong fact amount"
     assert_equal deals(:bankaccount), tr[3].fact.from, "Wrong fact from"
     assert_equal deals(:forex), tr[3].fact.to, "Wrong fact to"
+
+    assert_equal 100000.0 + 142000.0, tr.total_debits,
+      "Wrong total debits"
   end
 
   private
