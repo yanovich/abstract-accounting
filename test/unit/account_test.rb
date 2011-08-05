@@ -1445,6 +1445,8 @@ class AccountTest < ActiveSupport::TestCase
 
     assert_equal 70000.0 + 34950.0, tr.total_credits,
       "Wrong total credits"
+    assert_equal 70000.0 + 34950.0, tr.total_credits_value,
+      "Wrong total credits value"
   end
 
   private
