@@ -1840,6 +1840,7 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal Income::PASSIVE, bs[6].side, "Wrong income side"
 
     assert_equal 242300, bs.assets, "Wrong balance sheet assets"
+    assert_equal 242300, bs.liabilities, "Wrong balance sheet liabilities"
   end
 
   private
