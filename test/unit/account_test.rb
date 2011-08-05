@@ -1828,6 +1828,9 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 6, bs.count, "Wrong balance sheet items count"
     bs = bs + Income.find_all_by_time_frame(DateTime.now, DateTime.now)
     assert_equal 7, bs.count, "Wrong balance sheet items count"
+
+    dt = DateTime.now
+    assert_equal dt, BalanceSheet.new(dt).date, "Wrong balance sheet day"
   end
 
   private
