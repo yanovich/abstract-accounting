@@ -16,6 +16,12 @@ class Income < ActiveRecord::Base
   scope :open, where("incomes.paid IS NULL")
   after_initialize :do_initialize
 
+  def self.find_all_by_time_frame(start, stop)
+    where("incomes.start < :stop AND (incomes.paid > :start OR incomes.paid IS NULL)",
+          :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
+          :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
+  end
+
   def zero?
     self.value.accounting_zero?
   end
