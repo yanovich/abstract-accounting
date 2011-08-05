@@ -7,10 +7,12 @@
 #
 # Please see ./COPYING for details
 
-class BalanceSheet
+class BalanceSheet < Array
   attr_reader :date
 
-  def initialize(date)
+  def initialize(date = DateTime.now)
     @date = date
+    Balance.find_all_by_time_frame(date, date).each { |b| self << b }
+    Income.find_all_by_time_frame(date, date).each { |i| self << i }
   end
 end
