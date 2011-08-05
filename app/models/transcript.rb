@@ -13,13 +13,14 @@ class Transcript < Array
     @start = start
     @stop = stop
     @total_debits = 0.0
+    @total_debits_value = 0.0
     unless @deal.nil?
       load_list
       load_diffs
     end
   end
   attr_reader :deal, :start, :stop, :opening, :closing
-  attr_reader :total_debits
+  attr_reader :total_debits, :total_debits_value
 
   private
   def load_list
@@ -27,6 +28,7 @@ class Transcript < Array
       self << item
       if item.fact.to_deal_id == @deal.id
         @total_debits += item.fact.amount
+        @total_debits_value += item.value + item.earnings
       end
     end
   end
