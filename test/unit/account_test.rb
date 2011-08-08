@@ -1841,6 +1841,42 @@ class AccountTest < ActiveSupport::TestCase
 
     assert_equal 242300, bs.assets, "Wrong balance sheet assets"
     assert_equal 242300, bs.liabilities, "Wrong balance sheet liabilities"
+
+    bs = BalanceSheet.new DateTime.civil(2007, 9, 7, 12, 0, 0)
+    assert_equal 6, bs.count, "Wrong balance sheet count"
+    assert_equal 242000, bs.assets, "Wrong balance sheet assets"
+    assert_equal 242000, bs.liabilities, "Wrong balance sheet liabilities"
+
+    b = bs[0]
+    assert !b.nil?, "Balance is nil"
+    assert_equal 100000.0 / 10000.0, b.amount, "Wrong balance amount"
+    assert_equal 100000.0, b.value, "Wrong balance value"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+    b = bs[1]
+    assert !b.nil?, "Balance is nil"
+    assert_equal 142000.0 / 10000.0, b.amount, "Wrong balance amount"
+    assert_equal 142000.0, b.value, "Wrong balance value"
+    assert_equal Balance::PASSIVE, b.side, "Wrong balance side"
+    b = bs[2]
+    assert !b.nil?, "Balance is nil"
+    assert_equal 1.0, b.amount, "Wrong balance amount"
+    assert_equal 70000.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    b = bs[3]
+    assert !b.nil?, "Balance is nil"
+    assert_equal 2400.0, b.amount, "Wrong balance amount"
+    assert_equal (2400 * 34.2).accounting_norm, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    b = bs[4]
+    assert !b.nil?, "Balance is nil"
+    assert_equal 1.0, b.amount, "Wrong balance amount"
+    assert_equal 2000.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    b = bs[5]
+    assert !b.nil?, "Balance is nil"
+    assert_equal 87920.0, b.amount, "Wrong balance amount"
+    assert_equal 87920.0, b.value, "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
 
   private

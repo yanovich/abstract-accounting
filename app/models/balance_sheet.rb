@@ -22,7 +22,7 @@ class BalanceSheet < Array
         @liabilities += i.value
       end
     end
-    Balance.find_all_by_time_frame(date, date).each &p
-    Income.find_all_by_time_frame(date, date).each &p
+    Balance.find_all_by_time_frame(date + 1, date).each &p
+    Income.find_all_by_time_frame(date + 1, date).each &p
   end
 end
