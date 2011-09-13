@@ -31,6 +31,10 @@ ActiveRecord::Schema.define(:version => 20110104170520) do
     t.string  "tag"
     t.float   "rate"
     t.integer "entity_id"
+    t.integer "give_id"
+    t.string  "give_type"
+    t.integer "take_id"
+    t.string  "take_type"
   end
 
   add_index "deals", ["entity_id", "tag"], :name => "index_deals_on_entity_id_and_tag", :unique => true
@@ -39,7 +43,7 @@ ActiveRecord::Schema.define(:version => 20110104170520) do
     t.string "tag"
   end
 
-  create_table "money", :id => false, :force => true do |t|
+  create_table "money", :force => true do |t|
     t.integer "num_code"
     t.string  "alpha_code"
   end

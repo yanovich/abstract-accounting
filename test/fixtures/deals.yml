@@ -11,15 +11,19 @@ equityshare1:
   tag: "equity share 1"
   rate: 10000.0
   entity: sergey
+  give: aasiishare (Asset)
+  take: rub (Money)
 
 equityshare2:
   tag: "equity share 2"
   rate: 10000.0
   entity: jdow
+  give: aasiishare (Asset)
+  take: rub (Money)
 
 bankaccount:
   tag: "bank account 1"
   rate: 1.0
   entity: sbrfbank
-
-# vim: ts=2 sts=2 sw=2 et:
+  give: rub (Money)
+  take: rub (Money)
