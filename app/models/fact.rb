@@ -25,4 +25,19 @@ class Fact < ActiveRecord::Base
   belongs_to :resource, :polymorphic => true
   belongs_to :from, :class_name => "Deal", :foreign_key => "from_deal_id"
   belongs_to :to, :class_name => "Deal", :foreign_key => "to_deal_id"
+  before_save :do_save
+
+  private
+  def do_save
+    false if !init_state(self.from) or !init_state(self.to)
+  end
+
+  def init_state(deal)
+    return false if deal.nil?
+    state = deal.states.build
+    if state.apply_fact(self)
+      return state.save
+    end
+    false
+  end
 end

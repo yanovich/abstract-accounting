@@ -20,4 +20,17 @@ class FactTest < ActiveSupport::TestCase
     fact.to = deals(:bankaccount)
     assert fact.save, "Fact not saved"
   end
+
+  test "Check state calculation" do
+    fact = Fact.new :amount => 300, :day => DateTime.civil(2008, 02, 04, 0, 0, 0)
+    fact.to = deals(:bankaccount)
+    fact.from = deals(:equityshare2)
+    fact.resource = fact.from.take
+    assert fact.save, "Fact not saved"
+    f = Fact.find(fact.id)
+    assert_equal "passive", f.from.state(f.day).side
+    assert_equal 0.03, f.from.state(f.day).amount.round(2)
+    assert_equal "active", f.to.state(f.day).side
+    assert_equal 300, f.to.state(f.day).amount
+  end
 end
