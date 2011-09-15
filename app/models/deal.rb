@@ -24,6 +24,24 @@ class Deal < ActiveRecord::Base
       end).maximum("start")
     ).where("paid > ? OR paid is NULL", day).first
   end
+
+  def update_by_fact(fact)
+    return false if fact.nil?
+    state = self.state
+    state = self.states.build(:start => fact.day) if state.nil?
+    if !state.new_record? && state.start < fact.day
+      state_clone = state.clone
+      return false unless state.update_attributes(:paid => fact.day)
+      state = state_clone
+      state.start = fact.day
+    elsif !state.new_record? && state.start > fact.day
+      raise "State start day is great then fact day"
+    end
+    return false unless state.update_amount(self.id == fact.from.id ? State::PASSIVE : State::ACTIVE, fact.amount)
+    return state.destroy if state.zero? && !state.new_record?
+    return true if state.zero? && state.new_record?
+    state.save
+  end
 end
 
 # vim: ts=2 sts=2 sw=2 et:

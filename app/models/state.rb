@@ -8,46 +8,26 @@
 # Please see ./COPYING for details
 
 class State < ActiveRecord::Base
+  PASSIVE = "passive"
+  ACTIVE = "active"
+
   validates :amount, :start, :side, :deal_id, :presence => true
-  validates_inclusion_of :side, :in => ["passive", "active"]
+  validates_inclusion_of :side, :in => [PASSIVE, ACTIVE]
   belongs_to :deal
 
   after_initialize :do_init
 
   def resource
     return nil if self.deal.nil?
-    return self.deal.take if self.side == "active"
-    self.deal.give
+    self.side == ACTIVE ? self.deal.take : self.deal.give
   end
 
-  def apply_fact(fact)
+  def update_amount(side, amount)
     return false if self.deal.nil?
-    return false if fact.nil?
-    true if set_fact_side(fact) and update_time(fact.day)
-  end
-
-  def zero?
-    self.amount.accounting_zero?
-  end
-
-  private
-  def do_init
-    self.side ||= "active"
-    self.amount ||= 0.0
-  end
-
-  def set_fact_side(fact)
-    return false if fact.nil?
-    fact_side =
-      if self.deal.id == fact.from.id
-        "passive"
-      else
-        "active"
-      end
-    if self.side != fact_side
-      self.amount -= fact.amount
+    if self.side != side
+      self.amount -= amount
     else
-      self.amount += fact.amount * deal_rate
+      self.amount += amount * rate
     end
     if self.amount.accounting_negative?
       self.side =
@@ -56,22 +36,27 @@ class State < ActiveRecord::Base
         else
           "passive"
         end
-      self.amount *= -1 * deal_rate
+      self.amount *= -1 * rate
     end
     self.amount = self.amount.accounting_norm
     true
   end
 
-  def deal_rate
-    if self.side == "active"
+  def zero?
+    self.amount.accounting_zero?
+  end
+
+  private
+  def do_init
+    self.side ||= ACTIVE
+    self.amount ||= 0.0
+  end
+
+  def rate
+    if self.side == ACTIVE
       self.deal.rate
     else
       1/self.deal.rate
     end
-  end
-
-  def update_time(time)
-    self.start = time
-    true
   end
 end

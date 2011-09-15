@@ -30,41 +30,8 @@ class Fact < ActiveRecord::Base
   private
   def do_save
     if changed? or new_record?
-      return false unless init_state(self.from.state, self.from)
-      return false unless init_state(self.to.state, self.to)
+      return false unless self.from.update_by_fact(self)
+      return false unless self.to.update_by_fact(self)
     end
-  end
-
-  def init_state(old_state, deal)
-    return false if deal.nil?
-    state =
-      if old_state.nil?
-        deal.states.build
-      else
-        old_state
-      end
-    if state.new_record?
-      return state.save if state.apply_fact(self)
-    elsif state.start == self.day
-      if state.apply_fact(self)
-        if state.zero?
-          return state.destroy
-        else
-          return state.save
-        end
-      end
-    else
-      state.paid = self.day
-      if state.save
-        state2 = deal.states.build :start => self.day,
-                                   :amount => state.amount,
-                                   :side => state.side
-        if state2.apply_fact(self)
-          return true if state2.zero?
-          return state2.save
-        end
-      end
-    end
-    false
   end
 end
