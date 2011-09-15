@@ -30,7 +30,7 @@ class Deal < ActiveRecord::Base
     state = self.state
     state = self.states.build(:start => fact.day) if state.nil?
     if !state.new_record? && state.start < fact.day
-      state_clone = state.clone
+      state_clone = self.states.build(state.attributes)
       return false unless state.update_attributes(:paid => fact.day)
       state = state_clone
       state.start = fact.day

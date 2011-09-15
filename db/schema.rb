@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # Copyright (C) 2011 Sergey Yanovich <ynvich@gmail.com>
 #
 # This program is free software; you can redistribute it and/or

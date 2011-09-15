@@ -24,8 +24,8 @@ class DealTest < ActiveSupport::TestCase
     d.entity = deal_entity
     d.give = deal_give
     d.take = deal_take
-    assert_raise ActiveRecord::RecordNotUnique do
-      !d.save
+    assert_raise ActiveRecord::StatementInvalid do
+      d.save!
     end
     d = deals(:equityshare1)
     assert_equal d, deal_entity.deals.where(:tag => deal_tag).first,
