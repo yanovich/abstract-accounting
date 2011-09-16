@@ -26,6 +26,10 @@ class Txn < ActiveRecord::Base
   end
 
   def before_save
-    self.fact.from.update_by_txn(self)
+    if self.fact.from.update_by_txn(self)
+      self.value = self.fact.from.balance.value
+      return true
+    end
+    false
   end
 end

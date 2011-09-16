@@ -101,6 +101,8 @@ class AccountTest < ActiveSupport::TestCase
       "From balance amount is not equal"
     assert_equal pending_fact.amount, bfrom.value,
       "From balance value is not equal"
+    assert_equal pending_fact.amount, t.value,
+        "Wrong txn value"
   end
 
   private
