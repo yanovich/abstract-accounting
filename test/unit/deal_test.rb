@@ -49,6 +49,17 @@ class DealTest < ActiveSupport::TestCase
     assert Deal.first.state(DateTime.civil(2011, 1, 7)).nil?,
            "State is not nil"
   end
+
+  test "Deal has balances" do
+    b = Deal.first.balances.build :start => DateTime.civil(2011, 1, 8),
+                                  :amount => 5000,
+                                  :value => 100,
+                                  :side => Balance::ACTIVE
+    assert b.valid?, "Balance is not valid"
+    assert b.save, "Balance is not saved"
+    assert_equal b, Deal.first.balance,
+                 "Balance from first deal is not equal to saved balance"
+  end
 end
 
 # vim: ts=2 sts=2 sw=2 et:

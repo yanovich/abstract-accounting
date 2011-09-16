@@ -14,6 +14,7 @@ class Deal < ActiveRecord::Base
   belongs_to :give, :polymorphic => true
   belongs_to :take, :polymorphic => true
   has_many :states
+  has_many :balances
 
   def state(day = nil)
     states.where(:start =>
@@ -23,6 +24,10 @@ class Deal < ActiveRecord::Base
         states
       end).maximum("start")
     ).where("paid > ? OR paid is NULL", day).first
+  end
+
+  def balance
+    balances.first
   end
 
   def update_by_fact(fact)
