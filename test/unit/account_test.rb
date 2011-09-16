@@ -91,6 +91,9 @@ class AccountTest < ActiveSupport::TestCase
     t = Txn.new :fact => pending_fact
     assert t.valid?, "Transaction is not valid"
     assert t.save, "Txn is not saved"
+    bfrom = t.from_balance
+    assert !bfrom.nil?, "Balance is nil"
+    assert_equal pending_fact.from, bfrom.deal, "From balance invalid deal"
   end
 
   private

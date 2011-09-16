@@ -47,6 +47,14 @@ class Deal < ActiveRecord::Base
     return true if state.zero? && state.new_record?
     state.save
   end
+
+  def update_by_txn(txn)
+    return false if txn.nil? or txn.fact.nil?
+    balance = self.balances.build :start => txn.fact.day,
+                                  :value => 0.0,
+                                  :amount => 0.0
+    balance.save
+  end
 end
 
 # vim: ts=2 sts=2 sw=2 et:
