@@ -124,7 +124,7 @@ class AccountTest < ActiveSupport::TestCase
     t = Txn.new :fact => pending_fact
     assert t.valid?, "Transaction is not valid"
     assert t.save, "Txn is not saved"
-    assert_equal 3, Balance.all.count, "Balance count is not equal to 3"
+    assert_equal 3, Balance.pendings.count, "Balance count is not equal to 3"
     b = deals(:equityshare2).balance
     assert !b.nil?, "Balance is nil"
     assert_equal deals(:equityshare2), b.deal, "balance invalid deal"
@@ -168,7 +168,7 @@ class AccountTest < ActiveSupport::TestCase
     t = Txn.new :fact => pending_fact
     assert t.valid?, "Transaction is not valid"
     assert t.save, "Txn is not saved"
-    assert_equal 4, Balance.all.count, "Balance count is not equal to 4"
+    assert_equal 4, Balance.pendings.count, "Balance count is not equal to 4"
     b = deals(:equityshare2).balance
     assert !b.nil?, "Balance is nil"
     assert_equal deals(:equityshare2), b.deal, "balance invalid deal"
