@@ -210,6 +210,18 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 70000.0, b.value,
       "balance value is not equal"
     assert_equal 70000.0, t.value
+    b = Balance.where("balances.paid IS NOT NULL").
+                where(:deal_id => deals(:bankaccount).id).first
+    assert !b.nil?, "Wrong closed balance"
+    assert_equal DateTime.civil(2007, 8, 30, 12, 0, 0), b.paid,
+      "Wrong balance paid"
+    assert_equal deals(:bankaccount).take, b.resource,
+      "balance invalid resource"
+    assert_equal Balance::ACTIVE, b.side, "balance invalid side"
+    assert_equal 100000.0 + 142000.0, b.amount,
+      "balance amount is not equal"
+    assert_equal 100000.0 + 142000.0, b.value,
+      "balance value is not equal"
   end
 
   private

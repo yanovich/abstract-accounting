@@ -27,7 +27,7 @@ class Deal < ActiveRecord::Base
   end
 
   def balance
-    balances.first
+    balances.where("balances.paid IS NULL").first
   end
 
   def update_by_fact(fact)
@@ -52,6 +52,14 @@ class Deal < ActiveRecord::Base
     return false if txn.nil? or txn.fact.nil?
     balance = self.balance
     balance = self.balances.build :start => txn.fact.day if balance.nil?
+    if !balance.new_record? && balance.start < txn.fact.day
+      balance_clone = self.balances.build(balance.attributes)
+      return false unless balance.update_attributes(:paid => txn.fact.day)
+      balance = balance_clone
+      balance.start = txn.fact.day
+    elsif !balance.new_record? && balance.start > txn.fact.day
+      raise "Balance start day is greater then fact day"
+    end
     return false unless balance.update_value(self.id == txn.fact.from.id ? Balance::PASSIVE : Balance::ACTIVE,
                                               txn.fact.amount, txn.value)
     balance.save
