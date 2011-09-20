@@ -16,6 +16,7 @@ class State < ActiveRecord::Base
   validates_inclusion_of :side, :in => [PASSIVE, ACTIVE]
   belongs_to :deal
   after_initialize :do_init
+  scope :open, where("states.paid IS NULL")
 
   private
   def do_init

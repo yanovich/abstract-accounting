@@ -553,7 +553,7 @@ class AccountTest < ActiveSupport::TestCase
     assert f.valid?, "Fact is not valid"
     assert f.save, "Fact is not saved"
 
-    assert_equal 6, State.where("states.paid IS NULL").count, "State count is wrong"
+    assert_equal 6, State.open.count, "State count is wrong"
     s = office.state
     assert !s.nil?, "State is nil"
     assert_equal (1 / office.rate).accounting_norm, s.amount,
