@@ -13,6 +13,7 @@ class Income < ActiveRecord::Base
   validates :start, :side, :value, :presence => true
   validates :start, :uniqueness => true
   validates :side, :inclusion => { :in => [PASSIVE, ACTIVE] }
+  scope :open, where("incomes.paid IS NULL")
 
   def txn=(txn)
     return nil if txn.nil? or txn.status == 0

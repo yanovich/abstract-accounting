@@ -433,10 +433,10 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 1000.0 * deals(:forex2).rate, b.value,
       "balance value is not equal"
 
-    assert_equal 1, Income.all.count, "Income count is wrong"
+    assert_equal 1, Income.open.count, "Income count is wrong"
     profit = (1000.0 * (deals(:forex2).rate -
       (1/deals(:forex).rate))).accounting_norm
-    assert_equal profit, Income.all.first.value, "Invalid income value"
+    assert_equal profit, Income.open.first.value, "Invalid income value"
     assert_equal 0, Fact.pendings.count, "Pending facts count is wrong"
   end
 
@@ -578,7 +578,7 @@ class AccountTest < ActiveSupport::TestCase
       "From balance value is wrong"
     assert_equal Balance::PASSIVE, t.from_balance.side, "From balance side is wrong"
 
-    assert_equal 1, Income.all.count, "Income count is wrong"
+    assert_equal 1, Income.open.count, "Income count is wrong"
     profit = (1000.0 * (deals(:forex2).rate -
           (1/deals(:forex).rate))).accounting_norm
     profit -= (1 / office.rate).accounting_norm
@@ -681,7 +681,7 @@ class AccountTest < ActiveSupport::TestCase
       "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
 
-    assert_equal 1, Income.all.count, "Wrong income count"
+    assert_equal 1, Income.open.count, "Wrong income count"
 
     profit += (34.95 - 34.2) * t.fact.amount
     assert_equal profit, Income.first.value.accounting_norm,
@@ -703,7 +703,7 @@ class AccountTest < ActiveSupport::TestCase
 
     assert t.save, "Txn is not saved"
     assert_equal 87375.0, t.value, "Wrong txn value"
-    assert_equal 1, Income.all.count, "Wrong open income count"
+    assert_equal 1, Income.open.count, "Wrong open income count"
 
     assert_equal 7, Balance.open.count, "Wrong open balances count"
     b = forex.balance
@@ -726,8 +726,8 @@ class AccountTest < ActiveSupport::TestCase
       "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
 
-    assert_equal 1, Income.all.count, "Wrong open incomes count"
-    assert_equal profit, Income.first.value, "Wrong income value"
+    assert_equal 1, Income.open.count, "Wrong open incomes count"
+    assert_equal profit, Income.open.first.value, "Wrong income value"
 
     f = Fact.new(:amount => 600.0,
                 :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
