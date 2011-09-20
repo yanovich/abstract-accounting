@@ -17,7 +17,7 @@ class Balance < ActiveRecord::Base
   validates_uniqueness_of :start, :scope => :deal_id
   belongs_to :deal
   after_initialize :do_init
-  scope :pendings, where("balances.paid IS NULL")
+  scope :open, where("balances.paid IS NULL")
 
   def update_value(side, amount, value)
     old_value = self.accounting_value
