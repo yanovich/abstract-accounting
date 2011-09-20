@@ -44,7 +44,8 @@ class Txn < ActiveRecord::Base
       if self.fact.to.income?
         self.earnings = -self.value
         self.status = 1
-        income = Income.first
+        income = Income.open.first
+        income = Income.new if income.nil?
         income.txn = self
         return income.save
       else
