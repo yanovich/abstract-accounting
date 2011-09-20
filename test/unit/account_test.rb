@@ -686,6 +686,24 @@ class AccountTest < ActiveSupport::TestCase
     profit += (34.95 - 34.2) * t.fact.amount
     assert_equal profit, Income.first.value.accounting_norm,
       "Wrong income value"
+
+    f = Fact.new(:amount => (2500.0 * 34.95),
+                :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
+                :from => forex,
+                :to => deals(:bankaccount),
+                :resource => forex.take)
+    assert f.save, "Fact is not saved"
+    t = Txn.new :fact => f
+    assert_equal 7, State.open.count, "Wrong open states count"
+
+    s = forex.state
+    assert !s.nil?, "Forex state is nil"
+    assert_equal 2500.0 - 2000.0, s.amount, "Wrong forex state amount"
+    assert_equal money(:eur), s.resource, "Wrong forex state resource"
+
+    assert t.save, "Txn is not saved"
+    assert_equal 87375.0, t.value, "Wrong txn value"
+    assert_equal 1, Income.all.count, "Wrong open income count"
   end
 
   private
