@@ -69,6 +69,7 @@ class Txn < ActiveRecord::Base
               i = i_clone
             end
             i.txn = self
+            return i.destroy if !i.new_record? && i.zero?
             return i.save
           end
           return true
