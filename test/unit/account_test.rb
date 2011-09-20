@@ -752,6 +752,26 @@ class AccountTest < ActiveSupport::TestCase
 
     assert t.save, "Txn is not saved"
     assert_equal 450.0, t.earnings, "Wrong txn earnings"
+
+    assert_equal 7, Balance.open.count, "Wrong open balances count"
+    b = forex.balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal (100.0 * 34.95).accounting_norm, b.amount,
+      "Wrong balance amount"
+    assert_equal (100.0 * 34.95).accounting_norm, b.value,
+      "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    euros -= 600.0
+    b = deals(:bankaccount2).balance
+    assert !b.nil?, "Balance is nil"
+    assert_equal (euros).accounting_norm, b.amount,
+      "Wrong balance amount"
+    assert_equal (euros * 34.2).accounting_norm, b.value,
+      "Wrong balance value"
+    assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+
+    assert_equal 0, Income.open.count, "Wrong open income count"
   end
 
   private
