@@ -963,6 +963,7 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal rubs.accounting_norm, b.amount, "Wrong balance amount"
     assert_equal rubs.accounting_norm, b.value, "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
+    assert_equal 0, Income.open.count, "Wrong open incomes count"
   end
 
   private

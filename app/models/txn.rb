@@ -76,6 +76,7 @@ class Txn < ActiveRecord::Base
           end
           i.txn = self
           return i.destroy if !i.new_record? && i.zero?
+          return true if i.new_record? && i.zero?
           return i.save
         end
         return true
