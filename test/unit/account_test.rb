@@ -682,6 +682,10 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
 
     assert_equal 1, Income.all.count, "Wrong income count"
+
+    profit += (34.95 - 34.2) * t.fact.amount
+    assert_equal profit, Income.first.value.accounting_norm,
+      "Wrong income value"
   end
 
   private
