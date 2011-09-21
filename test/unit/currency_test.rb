@@ -221,5 +221,6 @@ class CurrencyTest < ActiveSupport::TestCase
     assert_equal 3000.0, q.diff, "Quote diff is wrong"
 
     assert_equal 1, Income.open.count, "Wrong open incomes count"
+    assert_equal Income::PASSIVE, Income.open.first.side, "Invalid open income side"
   end
 end
