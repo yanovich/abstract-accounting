@@ -8,8 +8,8 @@
 # Please see ./COPYING for details
 
 class Deal < ActiveRecord::Base
-  validates_presence_of :tag
-  validates_presence_of :rate
+  validates :tag, :rate, :entity_id, :give_id, :take_id, :presence => true
+  validates_uniqueness_of :tag, :scope => :entity_id
   belongs_to :entity
   belongs_to :give, :polymorphic => true
   belongs_to :take, :polymorphic => true

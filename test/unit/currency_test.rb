@@ -23,8 +23,12 @@ class CurrencyTest < ActiveSupport::TestCase
     x.save
     @B = Entity.new :tag => "B"
     @B.save
+    @s1 = Entity.new :tag => "S1"
+    @s1.save
     @S2 = Entity.new :tag => "S2"
     @S2.save
+    @p2 = Entity.new :tag => "P2"
+    @p2.save
     k = Entity.new :tag => "K"
     k.save
     @a2 = Deal.new :tag => "a2",
@@ -40,7 +44,7 @@ class CurrencyTest < ActiveSupport::TestCase
       :rate => 1.0
     @dy.save
     @bx1 = Deal.new :tag => "bx1",
-      :entity => Entity.new(:tag => "S1"),
+      :entity => @s1,
       :give => @c1,
       :take => x,
       :rate => (1.0 / 100.0)
@@ -52,8 +56,8 @@ class CurrencyTest < ActiveSupport::TestCase
       :rate => 1.0
     @dx.save
     @sy2 = Deal.new :tag => "sy2",
-      :entity => Entity.new(:tag => "P2"),
-      :give => Asset.new(:tag => "y"),
+      :entity => @p2,
+      :give => @y,
       :take => @c2,
       :rate => 150.0
     @sy2.save

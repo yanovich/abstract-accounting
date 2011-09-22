@@ -12,21 +12,26 @@ require 'test_helper'
 class DealTest < ActiveSupport::TestCase
   test "Deal should be stored" do
     d = Deal.new
-    assert !d.save, "Empty deal saved"
+    assert d.invalid?, "Deal is valid"
     deal_entity = entities(:sergey)
     deal_take = money(:rub)
     deal_give = assets(:aasiishare)
     deal_tag = deals(:equityshare1).tag
     deal_rate = deals(:equityshare1).rate
     d = Deal.new
+    assert d.invalid?, "Deal is valid"
     d.tag = deal_tag
+    assert d.invalid?, "Deal is valid"
     d.rate = deal_rate
+    assert d.invalid?, "Deal is valid"
     d.entity = deal_entity
+    assert d.invalid?, "Deal is valid"
     d.give = deal_give
+    assert d.invalid?, "Deal is valid"
     d.take = deal_take
-    assert_raise ActiveRecord::StatementInvalid do
-      d.save!
-    end
+    assert d.invalid?, "Deal is valid"
+    d.tag = "Some deal tag"
+    assert d.valid?, "Deal is not valid"
     d = deals(:equityshare1)
     assert_equal d, deal_entity.deals.where(:tag => deal_tag).first,
       "Entity deal is not equal to equityshare1"
