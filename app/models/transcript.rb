@@ -41,7 +41,7 @@ class Transcript < Array
 
   def load_diffs
     @deal.balances_by_time_frame(@start, @stop).each do |balance|
-      @opening = balance if balance.paid.nil?
+      @opening = balance if balance.start < @start
       @closing = balance unless balance.paid.nil?
     end
   end
