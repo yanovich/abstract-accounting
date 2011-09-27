@@ -22,6 +22,10 @@ class Income < ActiveRecord::Base
           :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
   end
 
+  def debit_diff
+    Quote.sum(:diff, :conditions => ["day = ? AND diff > 0.0", self.start])
+  end
+
   def zero?
     self.value.accounting_zero?
   end
