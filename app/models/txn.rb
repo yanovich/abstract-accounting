@@ -69,6 +69,8 @@ class Txn < ActiveRecord::Base
         old_balance_value *= -1 if !balance.nil? && old_balance_side != balance.side
         if !balance.nil? && balance.side == Balance::ACTIVE
           earnings_tmp = balance.value - old_balance_value - self.value
+        elsif balance.nil? && old_balance_side == Balance::PASSIVE
+          earnings_tmp = old_balance_value - self.value
         end
         unless earnings_tmp.accounting_zero?
           self.status = 1
