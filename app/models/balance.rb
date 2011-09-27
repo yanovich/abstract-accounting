@@ -77,6 +77,9 @@ class Balance < ActiveRecord::Base
   end
 
   def credit_diff
+    if Balance::PASSIVE == self.side && self.has_credit?
+      return (self.amount * self.credit - self.value).accounting_norm
+    end
     0.0
   end
 
@@ -98,8 +101,8 @@ class Balance < ActiveRecord::Base
   end
 
   def credit
-    if self.deal.give.is_a? Money and !self.deal.give.quotes.first.nil?
-      return self.deal.give.quotes.first.rate
+    if self.deal.give.is_a? Money and !self.deal.give.quote.nil?
+      return self.deal.give.quote.rate
     elsif !Chart.first.nil? and self.deal.give == Chart.first.currency
       return 1.0
     end
