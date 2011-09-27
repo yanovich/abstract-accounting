@@ -17,6 +17,7 @@ class Transcript < Array
     @total_debits_diff = 0.0
     @total_credits = 0.0
     @total_credits_value = 0.0
+    @total_credits_diff = 0.0
     unless @deal.nil?
       load_list
       load_diffs
@@ -24,7 +25,7 @@ class Transcript < Array
   end
   attr_reader :deal, :start, :stop, :opening, :closing
   attr_reader :total_debits, :total_debits_value, :total_debits_diff
-  attr_reader :total_credits, :total_credits_value
+  attr_reader :total_credits, :total_credits_value, :total_credits_diff
 
   private
   def load_list
@@ -51,6 +52,7 @@ class Transcript < Array
       else
         @closing = balance if balance.paid.nil? or balance.paid > @stop
         @total_debits_diff += balance.debit_diff if balance.is_a?(Balance)
+        @total_credits_diff += balance.credit_diff if balance.is_a?(Balance)
       end
     end
   end
