@@ -73,6 +73,8 @@ class CurrencyTest < ActiveSupport::TestCase
     rate_change
     forex_sale_after_rate_change
     transfer_rollback
+
+    transcript
   end
 
   private
@@ -325,5 +327,13 @@ class CurrencyTest < ActiveSupport::TestCase
     f.destroy
     assert_equal 6, Fact.all.count, "Wrong fact count"
     assert_equal 8, State.open.count, "Wrong open states count"
+  end
+
+  def transcript
+    tr = Transcript.new(@a2,
+      DateTime.civil(2008, 3, 25, 12, 0, 0),
+      DateTime.civil(2008, 3, 31, 12, 0, 0))
+    assert_equal 3000.0, tr.total_debits_diff,
+      "Wrong total debits diff in transcript"
   end
 end

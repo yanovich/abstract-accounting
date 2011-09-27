@@ -69,6 +69,13 @@ class Balance < ActiveRecord::Base
     self.value
   end
 
+  def debit_diff
+    if Balance::ACTIVE == self.side && self.has_debit?
+      return (self.amount * self.debit - self.value).accounting_norm
+    end
+    0.0
+  end
+
   protected
   def do_init
     self.side ||= ACTIVE if self.attributes.has_key?('side')
