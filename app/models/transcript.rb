@@ -52,7 +52,7 @@ class Transcript < Array
       else
         @closing = balance if balance.paid.nil? or balance.paid > @stop
         @total_debits_diff += balance.debit_diff
-        @total_credits_diff += balance.credit_diff if balance.is_a?(Balance)
+        @total_credits_diff += balance.credit_diff
       end
     end
   end

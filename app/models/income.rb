@@ -26,6 +26,10 @@ class Income < ActiveRecord::Base
     Quote.sum(:diff, :conditions => ["day = ? AND diff > 0.0", self.start])
   end
 
+  def credit_diff
+    Quote.sum(:diff, :conditions => ["day = ? AND diff < 0.0", self.start]) * -1
+  end
+
   def zero?
     self.value.accounting_zero?
   end
