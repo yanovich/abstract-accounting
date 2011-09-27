@@ -361,5 +361,11 @@ class CurrencyTest < ActiveSupport::TestCase
       "Wrong total debits value in transcript"
     assert_equal 45000.0, tr.total_credits_value,
       "Wrong total credits value in transcript"
+
+    tr = Transcript.new(Deal.income,
+      DateTime.civil(2008, 3, 24, 12, 0, 0),
+      DateTime.civil(2008, 3, 31, 12, 0, 0))
+    assert_equal 3000.0, tr.total_debits_diff,
+      "Wrong total debits diff in transcript"
   end
 end
