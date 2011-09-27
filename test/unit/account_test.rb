@@ -1668,6 +1668,9 @@ class AccountTest < ActiveSupport::TestCase
 
     assert tr.opening.nil?, "Wrong opening value"
     assert !tr.closing.nil?, "Wrong closing value"
+    assert_equal (400.0 * (34.95 - 34.2)).accounting_norm, tr.closing.value,
+      "Wrong income value"
+    assert_equal Income::PASSIVE, tr.closing.side, "Wrong income value"
   end
 
   private
