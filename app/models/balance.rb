@@ -76,6 +76,10 @@ class Balance < ActiveRecord::Base
     0.0
   end
 
+  def credit_diff
+    0.0
+  end
+
   protected
   def do_init
     self.side ||= ACTIVE if self.attributes.has_key?('side')
