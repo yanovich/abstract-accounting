@@ -367,5 +367,7 @@ class CurrencyTest < ActiveSupport::TestCase
       DateTime.civil(2008, 3, 31, 12, 0, 0))
     assert_equal 3000.0, tr.total_debits_diff,
       "Wrong total debits diff in transcript"
+    assert_equal 3000.0, tr.total_credits_diff,
+      "Wrong total debits diff in transcript"
   end
 end
