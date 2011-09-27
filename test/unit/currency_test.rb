@@ -369,5 +369,7 @@ class CurrencyTest < ActiveSupport::TestCase
       "Wrong total debits diff in transcript"
     assert_equal 3000.0, tr.total_credits_diff,
       "Wrong total debits diff in transcript"
+    assert_equal 500.0, tr.total_debits_value,
+      "Wrong total debits value in transcript"
   end
 end
