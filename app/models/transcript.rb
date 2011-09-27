@@ -31,7 +31,9 @@ class Transcript < Array
   def load_list
     @deal.txns(@start, @stop).each do |item|
       self << item
-      if item.fact.to_deal_id == @deal.id
+      if @deal.income? and item.earnings < 0.0
+        @total_debits_value -= item.earnings
+      elsif item.fact.to_deal_id == @deal.id
         @total_debits += item.fact.amount
         @total_debits_value += item.value + item.earnings
       elsif item.fact.from_deal_id == @deal.id
