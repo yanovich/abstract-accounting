@@ -184,4 +184,207 @@ class RuleTest < ActiveSupport::TestCase
     assert_equal 6720.0, b.value, "Wrong balance value"
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
+
+  test "rule change side attribute" do
+    storekeeper = Entity.new :tag => "SONY VAIO Storekeeper"
+    assert storekeeper.save, "Entity is not saved"
+    svwarehouse = Deal.new :tag => "sonyvaio warehouse",
+                           :rate => 1.0,
+                           :entity => storekeeper,
+                           :give => assets(:sonyvaio),
+                           :take => assets(:sonyvaio)
+    assert svwarehouse.save, "Deal is not saved"
+    buyer = Entity.new :tag => "SONY VAIO Buyer"
+    assert buyer.save, "Entity is not saved"
+    svsale = Deal.new :tag => "sony vaio sale",
+                      :rate => 80000,
+                      :entity => buyer,
+                      :give => assets(:sonyvaio),
+                      :take => money(:rub)
+    assert svsale.save, "Deal is not saved"
+
+    svwarehouse.rules.create :tag => "purchase payment",
+                             :from => deals(:bankaccount),
+                             :to => deals(:purchase),
+                             :fact_side => false,
+                             :change_side => true,
+                             :rate => (1 / deals(:purchase).rate).accounting_norm
+
+    assert_equal 0, State.count, "Wrong state count"
+    fact = Fact.new :day => DateTime.civil(2011, 9, 1, 12, 0, 0),
+                    :amount => 300,
+                    :from => deals(:purchase),
+                    :to => svwarehouse,
+                    :resource => svwarehouse.give
+    assert fact.save, "Fact is not saved"
+    assert_equal 2, State.count, "Wrong state count"
+    assert_equal 2, State.open.count, "Wrong open state count"
+    state = deals(:purchase).state
+    assert state.nil?, "Purchase state is not nil"
+    state = deals(:bankaccount).state
+    assert !state.nil?, "Bankaccount state is not nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal (1 / deals(:purchase).rate).accounting_norm * fact.amount, state.amount, "Wrong state amount"
+    state = svwarehouse.state
+    assert !state.nil?, "Warehouse bank state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount, state.amount, "Wrong state amount"
+
+    buyerbank = Deal.new :tag => "sony vaio buyerbank",
+                         :rate => 1.0,
+                         :entity => entities(:sbrfbank),
+                         :give => money(:rub),
+                         :take => money(:rub)
+    assert buyerbank.save, "Deal is not saved"
+
+    svsale.rules.create :tag => "sale payment",
+                        :from => buyerbank,
+                        :to => deals(:bankaccount),
+                        :fact_side => false,
+                        :change_side => true,
+                        :rate => 1.0
+
+    assert_equal 2, State.open.count, "Wrong state count"
+    fact = Fact.new :day => DateTime.civil(2011, 9, 2, 12, 0, 0),
+                    :amount => 300,
+                    :from => deals(:purchase),
+                    :to => svsale,
+                    :resource => svsale.give
+    assert fact.save, "Fact is not saved"
+    assert_equal 6, State.count, "Wrong state count"
+    assert_equal 5, State.open.count, "Wrong open state count"
+    state = deals(:purchase).state
+    assert !state.nil?, "Purchase state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal (fact.amount / deals(:purchase).rate).accounting_norm, state.amount, "Wrong state amount"
+    state = deals(:bankaccount).state
+    assert !state.nil?, "Bankaccount state is not nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount * svsale.rate - ((1 / deals(:purchase).rate).accounting_norm * 300),
+                 state.amount, "Wrong state amount"
+    state = svwarehouse.state
+    assert !state.nil?, "Warehouse bank state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount, state.amount, "Wrong state amount"
+    state = buyerbank.state
+    assert !state.nil?, "Buyer bank state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal fact.amount * svsale.rate, state.amount, "Wrong state amount"
+    state = svsale.state
+    assert !state.nil?, "Sale state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount * svsale.rate, state.amount, "Wrong state amount"
+
+    svsale2 = Deal.new :tag => "sony vaio sale2",
+                       :rate => 70000,
+                       :entity => buyer,
+                       :give => assets(:sonyvaio),
+                       :take => money(:rub)
+    assert svsale2.save, "Deal is not saved"
+
+    deals(:purchase).rules.create :tag => "sale payment",
+                                  :from => svsale2,
+                                  :to => deals(:bankaccount),
+                                  :fact_side => true,
+                                  :change_side => true,
+                                  :rate => 1.0
+
+    assert_equal 5, State.open.count, "Wrong state count"
+    fact = Fact.new :day => DateTime.civil(2011, 9, 2, 12, 0, 0),
+                    :amount => 300,
+                    :from => deals(:purchase),
+                    :to => svsale2,
+                    :resource => svsale2.give
+    assert fact.save, "Fact is not saved"
+    assert_equal 5, State.open.count, "Wrong open state count"
+    state = deals(:purchase).state
+    assert !state.nil?, "Purchase state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal 2 * (fact.amount / deals(:purchase).rate).accounting_norm, state.amount, "Wrong state amount"
+    state = deals(:bankaccount).state
+    assert !state.nil?, "Bankaccount state is not nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount * svsale.rate, state.amount, "Wrong state amount"
+    state = svwarehouse.state
+    assert !state.nil?, "Warehouse bank state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount, state.amount, "Wrong state amount"
+    state = buyerbank.state
+    assert !state.nil?, "Buyer bank state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal fact.amount * svsale.rate, state.amount, "Wrong state amount"
+    state = svsale.state
+    assert !state.nil?, "Sale state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount * svsale.rate, state.amount, "Wrong state amount"
+    state = svsale2.state
+    assert state.nil?, "Sale state is not nil"
+
+    galaxy = Asset.new :tag => "Samsung Galaxy"
+    assert galaxy.save, "Galaxy is not saved"
+    purchase_g = Deal.new :tag => "purchase galaxy",
+                       :rate => 0.0002,
+                       :entity => entities(:equipmentsupl),
+                       :give => money(:rub),
+                       :take => galaxy
+    assert purchase_g.save, "Deal is not saved"
+    sale_g = Deal.new :tag => "galaxy sale",
+                       :rate => 5000,
+                       :entity => buyer,
+                       :give => galaxy,
+                       :take => money(:rub)
+    assert sale_g.save, "Deal is not saved"
+
+    fact = Fact.new :day => DateTime.civil(2011, 9, 3, 12, 0, 0),
+                    :amount => 300,
+                    :from => purchase_g,
+                    :to => sale_g,
+                    :resource => sale_g.give
+    assert fact.save, "Fact is not saved"
+    state = purchase_g.state
+    assert !state.nil?, "Buyer bank state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal fact.amount / purchase_g.rate, state.amount, "Wrong state amount"
+    state = sale_g.state
+    assert !state.nil?, "Sale state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal fact.amount * sale_g.rate, state.amount, "Wrong state amount"
+
+    sale_g.rules.create :tag => "sale payment",
+                        :from => deals(:bankaccount),
+                        :to => purchase_g,
+                        :fact_side => true,
+                        :change_side => true,
+                        :rate => 5000
+
+    fact = Fact.new :day => DateTime.civil(2011, 9, 4, 12, 0, 0),
+                    :amount => sale_g.rate * 200,
+                    :from => sale_g,
+                    :to => deals(:bankaccount),
+                    :resource => deals(:bankaccount).give
+    assert fact.save, "Fact is not saved"
+    state = purchase_g.state
+    assert !state.nil?, "Buyer bank state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal 300 / purchase_g.rate, state.amount, "Wrong state amount"
+    state = sale_g.state
+    assert !state.nil?, "Sale state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal 100 * sale_g.rate, state.amount, "Wrong state amount"
+
+    fact = Fact.new :day => DateTime.civil(2011, 9, 4, 12, 0, 0),
+                    :amount => sale_g.rate * 200,
+                    :from => sale_g,
+                    :to => deals(:bankaccount),
+                    :resource => deals(:bankaccount).give
+    assert fact.save, "Fact is not saved"
+    state = purchase_g.state
+    assert !state.nil?, "Buyer bank state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal 200 / purchase_g.rate, state.amount, "Wrong state amount"
+    state = sale_g.state
+    assert !state.nil?, "Sale state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal 100, state.amount, "Wrong state amount"
+  end
 end

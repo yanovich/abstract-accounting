@@ -57,12 +57,29 @@ class Fact < ActiveRecord::Base
   end
 
   def update_states(deal)
+    state = deal.state
+    side = state.nil? ? State::ACTIVE : state.side
     if deal.update_by_fact(self)
+      state = deal.state
+      new_side = state.nil? ? State::ACTIVE : state.side
+      new_amount = state.nil? ? 0.0 : state.amount
       deal.rules.each do |rule|
-        fact = rule.to_fact
-        fact.day = self.day
-        @children << fact
-        return false unless fact.save
+        amount = 0.0
+        if rule.change_side
+          if from_deal_id == deal.id ? State::PASSIVE == side : State::ACTIVE == side
+            amount = self.amount * (side == State::ACTIVE ? deal.rate : (1 / deal.rate).accounting_norm)
+          end
+          if new_side != side
+            amount = new_amount
+          end
+        end
+        unless amount.accounting_zero?
+          fact = rule.to_fact
+          fact.day = self.day
+          fact.amount *= amount
+          @children << fact
+          return false unless fact.save
+        end
       end
       return true
     end
