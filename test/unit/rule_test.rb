@@ -386,5 +386,110 @@ class RuleTest < ActiveSupport::TestCase
     assert !state.nil?, "Sale state is nil"
     assert_equal State::PASSIVE, state.side, "Wrong state side"
     assert_equal 100, state.amount, "Wrong state amount"
+
+    nokia = Asset.new :tag => "Nokia 2310"
+    assert nokia.save, "Asset is not saved"
+    purchase_n = Deal.new :tag => "purchase nokia",
+                       :rate => 0.00033,
+                       :entity => entities(:equipmentsupl),
+                       :give => money(:rub),
+                       :take => nokia
+    assert purchase_n.save, "Deal is not saved"
+    sale_n = Deal.new :tag => "nokia sale",
+                       :rate => 3000,
+                       :entity => buyer,
+                       :give => nokia,
+                       :take => money(:rub)
+    assert sale_n.save, "Deal is not saved"
+
+    fact = Fact.new :day => DateTime.civil(2011, 9, 4, 12, 0, 0),
+                    :amount => (200 / purchase_n.rate).accounting_norm,
+                    :from => deals(:bankaccount),
+                    :to => purchase_n,
+                    :resource => purchase_n.give
+    assert fact.save, "Fact is not saved"
+    state = purchase_n.state
+    assert !state.nil?, "Purchase state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal 200.0, state.amount, "Wrong state amount"
+
+    purchase_n.rules.create :tag => "purchase payment",
+                            :from => sale_n,
+                            :to => deals(:bankaccount),
+                            :fact_side => true,
+                            :change_side => false,
+                            :rate => 3000
+
+    fact = Fact.new :day => DateTime.civil(2011, 9, 4, 12, 0, 0),
+                    :amount => 100,
+                    :from => purchase_n,
+                    :to => sale_n,
+                    :resource => sale_n.give
+    assert fact.save, "Fact is not saved"
+    state = purchase_n.state
+    assert !state.nil?, "Purchase state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal 100, state.amount, "Wrong state amount"
+    state = sale_n.state
+    assert state.nil?, "Sale state is not nil"
+
+    nokia33 = Asset.new :tag => "Nokia 3310"
+    assert nokia33.save, "Asset is not saved"
+    purchase_n33 = Deal.new :tag => "purchase nokia 3310",
+                       :rate => 0.00025,
+                       :entity => entities(:equipmentsupl),
+                       :give => money(:rub),
+                       :take => nokia33
+    assert purchase_n33.save, "Deal is not saved"
+    sale_n33 = Deal.new :tag => "nokia 3310 sale",
+                       :rate => 4000,
+                       :entity => buyer,
+                       :give => nokia33,
+                       :take => money(:rub)
+    assert sale_n33.save, "Deal is not saved"
+
+    sale_n33.rules.create :tag => "purchase payment 3310",
+                          :from => deals(:bankaccount),
+                          :to => purchase_n33,
+                          :fact_side => false,
+                          :change_side => false,
+                          :rate => 4000
+
+    fact = Fact.new :day => DateTime.civil(2011, 9, 4, 12, 0, 0),
+                    :amount => 100,
+                    :from => purchase_n33,
+                    :to => sale_n33,
+                    :resource => sale_n33.give
+    assert fact.save, "Fact is not saved"
+    state = purchase_n33.state
+    assert !state.nil?, "Purchase state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal 100 / purchase_n33.rate, state.amount, "Wrong state amount"
+    state = sale_n33.state
+    assert !state.nil?, "Sale state is nil"
+    assert_equal State::ACTIVE, state.side, "Wrong state side"
+    assert_equal 100 * sale_n33.rate, state.amount, "Wrong state amount"
+
+    sale_n33.rules.clear
+    sale_n33.rules.create :tag => "purchase payment 3310",
+                          :from => deals(:bankaccount),
+                          :to => purchase_n33,
+                          :fact_side => false,
+                          :change_side => false,
+                          :rate => 1.0
+
+
+    fact = Fact.new :day => DateTime.civil(2011, 9, 4, 12, 0, 0),
+                    :amount => 200 * sale_n33.rate,
+                    :from => sale_n33,
+                    :to => deals(:bankaccount),
+                    :resource => sale_n33.take
+    assert fact.save, "Fact is not saved"
+    state = purchase_n33.state
+    assert state.nil?, "Purchase state is not nil"
+    state = sale_n33.state
+    assert !state.nil?, "Sale state is nil"
+    assert_equal State::PASSIVE, state.side, "Wrong state side"
+    assert_equal 100, state.amount, "Wrong state amount"
   end
 end
