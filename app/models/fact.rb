@@ -59,6 +59,7 @@ class Fact < ActiveRecord::Base
   def update_states(deal)
     state = deal.state
     side = state.nil? ? State::ACTIVE : state.side
+    old_amount = state.nil? ? 0.0 : state.amount
     if deal.update_by_fact(self)
       state = deal.state
       new_side = state.nil? ? State::ACTIVE : state.side
@@ -69,9 +70,10 @@ class Fact < ActiveRecord::Base
           if from_deal_id == deal.id ? State::PASSIVE == side : State::ACTIVE == side
             amount = self.amount * (side == State::ACTIVE ? deal.rate : (1 / deal.rate).accounting_norm)
           end
-          if new_side != side
-            amount = new_amount
-          end
+          amount = new_amount if new_side != side
+        else
+          amount = self.amount if from_deal_id == deal.id ? State::PASSIVE != side : State::ACTIVE != side
+          amount = old_amount if new_side != side
         end
         unless amount.accounting_zero?
           fact = rule.to_fact
