@@ -734,7 +734,7 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
 
     assert_equal 1, Income.open.count, "Wrong open incomes count"
-    assert profit + Income.first.value, "Wrong income value"
+    assert_equal profit, Income.open.first.value, "Wrong income value"
 
     f = Fact.new(:amount => 600.0,
                 :day => DateTime.civil(2007, 9, 5, 12, 0, 0),
