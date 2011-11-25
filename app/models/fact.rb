@@ -7,7 +7,7 @@
 #
 # Please see ./COPYING for details
 
-class FactValidator
+class FactValidator < ActiveModel::Validator
   def validate(record)
     record.errors[:base] << "bad resource" unless
         (record.from.nil? and !record.to.nil?) or
