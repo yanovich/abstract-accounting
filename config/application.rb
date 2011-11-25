@@ -1,3 +1,12 @@
+# Copyright (C) 2011 Sergey Yanovich <ynvich@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or (at your option) any later version.
+#
+# Please see ./COPYING for details
+
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -38,5 +47,9 @@ module Abstract
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+
+    config.generators do |g|
+      g.test_framework :rspec
+    end
   end
 end
