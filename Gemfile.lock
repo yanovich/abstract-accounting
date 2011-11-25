@@ -88,6 +88,7 @@ GEM
       activesupport (~> 3.0)
       railties (~> 3.0)
       rspec (~> 2.7.0)
+    shoulda-matchers (1.0.0)
     sprockets (2.0.3)
       hike (~> 1.2)
       rack (~> 1.0)
@@ -110,4 +111,5 @@ DEPENDENCIES
   factory_girl
   rails (= 3.1.0)
   rspec-rails
+  shoulda-matchers
   sqlite3-ruby
