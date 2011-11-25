@@ -10,7 +10,13 @@
 require 'test_helper'
 
 class IncomeTest < ActiveSupport::TestCase
-  test "income should be saved" do
+  test "income" do
+    income_should_be_saved
+    assign_values_through_constructor
+  end
+
+  private
+  def income_should_be_saved
     i = Income.new
     assert i.invalid?, "Invalid income"
     assert_equal 0.0, i.value, "Wrong income value"
@@ -28,7 +34,7 @@ class IncomeTest < ActiveSupport::TestCase
     assert i.invalid?, "Invalid income"
   end
 
-  test "assign values through constructor" do
+  def assign_values_through_constructor
     Income.instance_eval do
       define_method :test= do |value|
         update_value DateTime.now, value

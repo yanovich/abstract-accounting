@@ -10,15 +10,20 @@
 require 'test_helper'
 
 class ResourceTest < ActiveSupport::TestCase
-  # Replace this with your real tests.
-  test "asset should store" do
+  test "resource" do
+    asset_should_store
+    money_should_store
+  end
+
+  private
+  def asset_should_store
     a = Asset.new
     assert !a.save, "Asset with empty tag saved"
     a.tag = assets(:aasiishare).tag
     assert !a.save, "Asset with repeating tag saved"
   end
 
-  test "money should store" do
+  def money_should_store
     m = Money.new
     m.num_code = 840
     m.alpha_code = money(:rub).alpha_code

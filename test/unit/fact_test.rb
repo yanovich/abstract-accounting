@@ -10,7 +10,13 @@
 require 'test_helper'
 
 class FactTest < ActiveSupport::TestCase
-  test "Store facts" do
+  test "fact" do
+    store_facts
+    check_state_calculation
+  end
+
+  private
+  def store_facts
     fact = Fact.new :amount => 100000.0,
       :day => DateTime.civil(2007, 8, 27, 12, 0, 0)
     fact.to = deals(:equityshare1)
@@ -21,7 +27,7 @@ class FactTest < ActiveSupport::TestCase
     assert fact.save, "Fact not saved"
   end
 
-  test "Check state calculation" do
+  def check_state_calculation
     fact = Fact.new :amount => 300, :day => DateTime.civil(2008, 02, 04, 0, 0, 0)
     fact.to = deals(:bankaccount)
     fact.from = deals(:equityshare2)
@@ -29,8 +35,8 @@ class FactTest < ActiveSupport::TestCase
     assert fact.save, "Fact not saved"
     f = Fact.find(fact.id)
     assert_equal "passive", f.from.state(f.day).side
-    assert_equal 0.03, f.from.state(f.day).amount
+    assert_equal 10.03, f.from.state(f.day).amount
     assert_equal "active", f.to.state(f.day).side
-    assert_equal 300, f.to.state(f.day).amount
+    assert_equal 100300, f.to.state(f.day).amount
   end
 end

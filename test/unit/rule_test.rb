@@ -10,7 +10,14 @@
 require 'test_helper'
 
 class RuleTest < ActiveSupport::TestCase
-  test "rule must be saved" do
+  test "rule" do
+    rule_must_be_saved
+    rule_workflow
+    rule_filter_attributes
+  end
+
+  private
+  def rule_must_be_saved
     r = Rule.new
     assert r.invalid?, "Empty rule valid"
     r.tag = "test rule"
@@ -28,7 +35,7 @@ class RuleTest < ActiveSupport::TestCase
     assert r.save, "Rule is not saved"
   end
 
-  test "rule workflow" do
+  def rule_workflow
     x = Asset.new :tag => "resource x"
     assert x.save, "Asset is not saved"
     y = Asset.new :tag => "resource y"
@@ -106,13 +113,13 @@ class RuleTest < ActiveSupport::TestCase
       :from => storage_x, :to => sale_x, :fact_side => false,
       :change_side => true, :rate => 27.0
 
-    assert_equal 1, Rule.all.count, "Rule count is wrong"
+    assert_equal 2, Rule.all.count, "Rule count is wrong"
 
     shipment_deal.rules.create :tag => "shipment1.rule2",
       :from => storage_y, :to => sale_y, :fact_side => false,
       :change_side => true, :rate => 42.0
 
-    assert_equal 2, Rule.all.count, "Rule count is wrong"
+    assert_equal 3, Rule.all.count, "Rule count is wrong"
 
     f = Fact.new(:amount => 1.0,
                 :day => DateTime.civil(2008, 9, 22, 12, 0, 0),
@@ -185,7 +192,7 @@ class RuleTest < ActiveSupport::TestCase
     assert_equal Balance::ACTIVE, b.side, "Wrong balance side"
   end
 
-  test "rule filter attributes" do
+  def rule_filter_attributes
     storekeeper = Entity.new :tag => "SONY VAIO Storekeeper"
     assert storekeeper.save, "Entity is not saved"
     svwarehouse = Deal.new :tag => "sonyvaio warehouse",
@@ -210,15 +217,15 @@ class RuleTest < ActiveSupport::TestCase
                              :change_side => true,
                              :rate => (1 / deals(:purchase).rate).accounting_norm
 
-    assert_equal 0, State.count, "Wrong state count"
+    assert_equal 9, State.count, "Wrong state count"
     fact = Fact.new :day => DateTime.civil(2011, 9, 1, 12, 0, 0),
                     :amount => 300,
                     :from => deals(:purchase),
                     :to => svwarehouse,
                     :resource => svwarehouse.give
     assert fact.save, "Fact is not saved"
-    assert_equal 2, State.count, "Wrong state count"
-    assert_equal 2, State.open.count, "Wrong open state count"
+    assert_equal 11, State.count, "Wrong state count"
+    assert_equal 9, State.open.count, "Wrong open state count"
     state = deals(:purchase).state
     assert state.nil?, "Purchase state is not nil"
     state = deals(:bankaccount).state
@@ -244,15 +251,15 @@ class RuleTest < ActiveSupport::TestCase
                         :change_side => true,
                         :rate => 1.0
 
-    assert_equal 2, State.open.count, "Wrong state count"
+    assert_equal 9, State.open.count, "Wrong state count"
     fact = Fact.new :day => DateTime.civil(2011, 9, 2, 12, 0, 0),
                     :amount => 300,
                     :from => deals(:purchase),
                     :to => svsale,
                     :resource => svsale.give
     assert fact.save, "Fact is not saved"
-    assert_equal 6, State.count, "Wrong state count"
-    assert_equal 5, State.open.count, "Wrong open state count"
+    assert_equal 15, State.count, "Wrong state count"
+    assert_equal 12, State.open.count, "Wrong open state count"
     state = deals(:purchase).state
     assert !state.nil?, "Purchase state is nil"
     assert_equal State::PASSIVE, state.side, "Wrong state side"
@@ -289,14 +296,14 @@ class RuleTest < ActiveSupport::TestCase
                                   :change_side => true,
                                   :rate => 1.0
 
-    assert_equal 5, State.open.count, "Wrong state count"
+    assert_equal 12, State.open.count, "Wrong state count"
     fact = Fact.new :day => DateTime.civil(2011, 9, 2, 12, 0, 0),
                     :amount => 300,
                     :from => deals(:purchase),
                     :to => svsale2,
                     :resource => svsale2.give
     assert fact.save, "Fact is not saved"
-    assert_equal 5, State.open.count, "Wrong open state count"
+    assert_equal 12, State.open.count, "Wrong open state count"
     state = deals(:purchase).state
     assert !state.nil?, "Purchase state is nil"
     assert_equal State::PASSIVE, state.side, "Wrong state side"

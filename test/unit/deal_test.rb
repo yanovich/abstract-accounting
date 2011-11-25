@@ -10,7 +10,14 @@
 require 'test_helper'
 
 class DealTest < ActiveSupport::TestCase
-  test "Deal should be stored" do
+  test "deal" do
+    deal_should_be_stored
+    deal_has_states
+    deal_has_balances
+  end
+
+  private
+  def deal_should_be_stored
     d = Deal.new
     assert d.invalid?, "Deal is valid"
     deal_entity = entities(:sergey)
@@ -41,7 +48,7 @@ class DealTest < ActiveSupport::TestCase
       "Give resource not contain equityshare1"
   end
 
-  test "Deal has states" do
+  def deal_has_states
     s = State.new
     s.deal = Deal.first
     assert s.invalid?, "State with deal is valid"
@@ -55,7 +62,7 @@ class DealTest < ActiveSupport::TestCase
            "State is not nil"
   end
 
-  test "Deal has balances" do
+  def deal_has_balances
     b = Deal.first.balances.build :start => DateTime.civil(2011, 1, 8),
                                   :amount => 5000,
                                   :value => 100,
