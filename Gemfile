@@ -32,4 +32,6 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'shoulda-matchers'
   gem 'guard-rspec'
+  gem 'spork', '~> 0.9.0.rc'
+  gem 'guard-spork'
 end
