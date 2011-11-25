@@ -7,15 +7,12 @@
 #
 # Please see ./COPYING for details
 
-require 'test_helper'
+require 'spec_helper'
 
-class EntityTest < ActiveSupport::TestCase
-  test "entity should save" do
-    e = Entity.new
-    assert !e.save, "Entity without tag saved"
-    e.tag = entities(:abstract).tag
-    assert !e.save, "Entity with repeating tag saved"
+describe Entity do
+  it "should have next behaviour" do
+    Factory(:entity)
+    should validate_presence_of :tag
+    should validate_uniqueness_of :tag
   end
 end
-
-# vim: ts=2 sts=2 sw=2 et:
