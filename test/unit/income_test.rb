@@ -10,7 +10,7 @@
 require 'test_helper'
 
 class IncomeTest < ActiveSupport::TestCase
-  test "income should be saved" do
+  test "income" do
     i = Income.new
     assert i.invalid?, "Invalid income"
     assert_equal 0.0, i.value, "Wrong income value"
