@@ -29,4 +29,5 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 group :development, :test do
   gem 'rspec-rails'
   gem 'factory_girl'
+  gem 'database_cleaner'
 end
