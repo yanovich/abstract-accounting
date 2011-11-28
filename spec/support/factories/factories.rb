@@ -24,4 +24,27 @@ FactoryGirl.define do
   factory :chart do |c|
     c.currency { |chart| chart.association(:money) }
   end
+
+  factory :deal do |d|
+    d.sequence(:tag) { |n| "deal#{n}" }
+    d.give { |deal| deal.association(:asset) }
+    d.take { |deal| deal.association(:asset) }
+    d.entity { |deal| deal.association(:entity) }
+    d.rate 1.0
+  end
+
+  factory :state do |s|
+    s.start DateTime.now
+    s.amount 1.0
+    s.side StateAction::ACTIVE
+    s.deal { |state| state.association(:deal) }
+  end
+
+  factory :balance do |b|
+    b.start DateTime.now
+    b.amount 1.0
+    b.value 1.0
+    b.side Balance::ACTIVE
+    b.deal { |balance| balance.association(:deal) }
+  end
 end
