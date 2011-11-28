@@ -6,7 +6,8 @@
 # License, or (at your option) any later version.
 #
 # Please see ./COPYING for details
-module FloatAccounting
+
+Float.class_eval do
   def accounting_zero?
     self < 0.00009 and self > -0.00009
   end
@@ -23,8 +24,4 @@ module FloatAccounting
   def accounting_negative?
     !self.accounting_zero? and self < 0.0
   end
-end
-
-class Float
-  include FloatAccounting
 end

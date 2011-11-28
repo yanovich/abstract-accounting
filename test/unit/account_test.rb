@@ -16,10 +16,6 @@ class AccountTest < ActiveSupport::TestCase
   end
 
   test "account" do
-    float_accounting_zero
-    float_accounting_round64
-    float_accounting_norm
-    float_accounting_negative
     balance_should_save
     account_test
     loss_transaction
@@ -33,47 +29,6 @@ class AccountTest < ActiveSupport::TestCase
   end
 
   private
-  def float_accounting_zero
-    assert 0.0.accounting_zero?, "0.0 is not zero"
-    assert !0.00009.accounting_zero?, "0.00009 is zero"
-    assert !-0.00009.accounting_zero?, "-0.00009 is zero"
-    assert -0.000071.accounting_zero?, "-0.000071 is not zero"
-    assert 0.000081.accounting_zero?, "0.000081 is not zero"
-    assert !0.03.accounting_zero?, "0.03 is zero"
-  end
-
-  def float_accounting_round64
-    assert_equal 100.0, 100.05.accounting_round64,
-      "100.05 accounting round fail"
-    assert_equal -100.0, -100.05.accounting_round64,
-      "-100.05 accounting round fail"
-    assert_equal 101.0, 100.8.accounting_round64,
-      "100.8 accounting round fail"
-    assert_equal -101.0, -100.8.accounting_round64,
-      "-100.8 accounting round fail"
-  end
-
-  def float_accounting_norm
-    assert_equal 1.0, 1.0005.accounting_norm,
-      "1.0005 accounting round fail"
-    assert_equal -1.0, -1.0005.accounting_norm,
-      "-1.0005 accounting round fail"
-    assert_equal 1.01, 1.008.accounting_norm,
-      "1.008 accounting round fail"
-    assert_equal -1.01, -1.008.accounting_norm,
-      "-1.008 accounting round fail"
-  end
-
-  def float_accounting_negative
-    assert !0.0.accounting_negative?, "0.0 is negative"
-    assert !0.00009.accounting_negative?, "0.00009 is negative"
-    assert -0.00009.accounting_negative?, "-0.00009 is not negative"
-    assert !-0.000071.accounting_negative?, "-0.000071 is negative"
-    assert !0.000081.accounting_negative?, "0.000081 is negative"
-    assert !0.03.accounting_negative?, "0.03 is negative"
-    assert -0.03.accounting_negative?, "-0.03 is not negative"
-  end
-
   def balance_should_save
     assert_equal 0, Balance.all.count, "Balance count is not 0"
     b = Balance.new
