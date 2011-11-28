@@ -20,4 +20,8 @@ FactoryGirl.define do
     m.sequence(:alpha_code) { |n| "MN#{n}" }
     m.sequence(:num_code) { |n| n }
   end
+
+  factory :chart do |c|
+    c.currency { |chart| chart.association(:money) }
+  end
 end
