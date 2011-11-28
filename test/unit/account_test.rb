@@ -16,7 +16,6 @@ class AccountTest < ActiveSupport::TestCase
   end
 
   test "account" do
-    balance_should_save
     account_test
     loss_transaction
     split_transaction
@@ -29,28 +28,6 @@ class AccountTest < ActiveSupport::TestCase
   end
 
   private
-  def balance_should_save
-    assert_equal 0, Balance.all.count, "Balance count is not 0"
-    b = Balance.new
-    assert_equal "active", b.side, "Balance is not initialized"
-    assert b.invalid?, "Empty Balance is valid"
-    b.deal = Deal.first
-    assert b.invalid?, "Balance with deal is valid"
-    b.start = DateTime.civil(2011, 1, 8)
-    b.amount = 5000
-    b.side = "passive"
-    b.value = 54.0
-    assert b.valid?, "Balance is invalid"
-    b.side = "passive2"
-    assert b.invalid?, "Balance with wrong side is valid"
-    b.side = "active"
-    assert b.save, "Balance is not saved"
-    assert Balance.new(:deal => Deal.first, :amount => 51, :value => 43,
-      :side => "passive", :start => DateTime.civil(2011, 1, 8)).invalid?,
-      "Balance with not unique deal and start is valid"
-    b.destroy
-    assert_equal 0, Balance.all.count, "Balance is not deleted"
-  end
 
   def account_test
     [ Fact.new(:amount => 100000.0,
