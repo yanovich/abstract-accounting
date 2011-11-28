@@ -59,4 +59,10 @@ FactoryGirl.define do
   factory :txn do |t|
     t.fact { |txn| txn.association(:fact) }
   end
+
+  factory :income do |i|
+    i.start DateTime.now
+    i.side Income::PASSIVE
+    i.value 1.0
+  end
 end
