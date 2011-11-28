@@ -53,4 +53,10 @@ FactoryGirl.define do
     i.side Income::ACTIVE
     i.value 1.0
   end
+
+  factory :quote do |q|
+    q.money { |quote| quote.association(:money) }
+    q.rate 1.0
+    q.day DateTime.now
+  end
 end
