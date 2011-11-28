@@ -7,17 +7,14 @@
 #
 # Please see ./COPYING for details
 
-FactoryGirl.define do
-  factory :entity do |e|
-    e.sequence(:tag) { |n| "entity#{n}" }
-  end
+require 'spec_helper'
 
-  factory :asset do |a|
-    a.sequence(:tag) { |n| "asset#{n}" }
-  end
-
-  factory :money do |m|
-    m.sequence(:alpha_code) { |n| "MN#{n}" }
-    m.sequence(:num_code) { |n| n }
+describe Asset do
+  it "asset" do
+    Factory(:asset)
+    should validate_presence_of :tag
+    should validate_uniqueness_of :tag
+    should have_many :deal_gives
+    should have_many :deal_takes
   end
 end
