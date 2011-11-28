@@ -47,4 +47,12 @@ FactoryGirl.define do
     b.side Balance::ACTIVE
     b.deal { |balance| balance.association(:deal) }
   end
+
+  factory :fact do |f|
+    f.day DateTime.now
+    f.amount 1.0
+    f.resource { |fact| fact.association(:money) }
+    f.from { |fact| fact.association(:deal, :take => fact.resource) }
+    f.to { |fact| fact.association(:deal, :give => fact.resource) }
+  end
 end
