@@ -9,7 +9,7 @@
 
 class Quote < ActiveRecord::Base
   validates :money_id, :day, :rate, :diff, :presence => true
-  validates_uniqueness_of :money_id, :scope => :day
+  validates_uniqueness_of :day, :scope => :money_id
   belongs_to :money
   after_initialize :do_initialize
   before_save :do_before_save
