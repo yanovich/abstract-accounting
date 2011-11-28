@@ -47,4 +47,10 @@ FactoryGirl.define do
     b.side Balance::ACTIVE
     b.deal { |balance| balance.association(:deal) }
   end
+
+  factory :income do |i|
+    i.start DateTime.now
+    i.side Income::ACTIVE
+    i.value 1.0
+  end
 end
