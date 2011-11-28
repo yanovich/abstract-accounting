@@ -7,13 +7,13 @@
 #
 # Please see ./COPYING for details
 
-require 'test_helper'
+require 'spec_helper'
 
-class ChartTest < ActiveSupport::TestCase
-  test "chart should be saved" do
-    c = Chart.new
-    assert !c.save, "Empty chart saved"
-    c.currency = money(:rub)
-    assert !c.save, "Duplicate chart saved"
+describe Chart do
+  it "should have next behaviour" do
+    Factory(:chart)
+    should belong_to :currency
+    should validate_presence_of :currency_id
+    should validate_uniqueness_of :currency_id
   end
 end
