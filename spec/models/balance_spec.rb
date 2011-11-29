@@ -30,5 +30,6 @@ describe Balance do
     should_not allow_value(22).for(:side)
     should validate_uniqueness_of(:start).scoped_to(:deal_id)
     should belong_to :deal
+    should have_many Balance.versions_association_name
   end
 end

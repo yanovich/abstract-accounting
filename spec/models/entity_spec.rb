@@ -21,5 +21,6 @@ describe Entity do
     Factory(:entity)
     should validate_presence_of :tag
     should validate_uniqueness_of :tag
+    should have_many Entity.versions_association_name
   end
 end

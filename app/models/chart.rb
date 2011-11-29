@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Chart < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :currency, :class_name => 'Money'
   validates_presence_of :currency_id
   validates_uniqueness_of :currency_id

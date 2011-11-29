@@ -18,6 +18,8 @@ class FactValidator < ActiveModel::Validator
 end
 
 class Fact < ActiveRecord::Base
+  has_paper_trail
+
   validates_presence_of :day
   validates_presence_of :amount
   validates_presence_of :resource_id

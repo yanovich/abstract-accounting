@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Txn < ActiveRecord::Base
+  has_paper_trail
+
   validates :value, :fact_id, :status, :presence => true
   validates_uniqueness_of :fact_id
   belongs_to :fact

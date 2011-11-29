@@ -26,5 +26,6 @@ describe Money do
     should have_many :deal_gives
     should have_many :deal_takes
     should have_many :quotes
+    should have_many Money.versions_association_name
   end
 end

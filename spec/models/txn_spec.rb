@@ -187,6 +187,7 @@ describe Txn do
     should validate_presence_of :status
     should validate_uniqueness_of :fact_id
     should belong_to :fact
+    should have_many Txn.versions_association_name
   end
 
   it "should update balances" do

@@ -46,6 +46,12 @@ Spork.prefork do
     config.filter_run :focus => true
     config.run_all_when_everything_filtered = true
 
+    config.before(:all) do
+      PaperTrail.enabled = false
+    end
+    config.after(:all) do
+      PaperTrail.enabled = true
+    end
     #config.before(:each) do
     #  pp "Hello suite"
     #  DatabaseCleaner.start
