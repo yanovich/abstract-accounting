@@ -16,5 +16,6 @@ describe Asset do
     should validate_uniqueness_of :tag
     should have_many :deal_gives
     should have_many :deal_takes
+    should have_many Asset.versions_association_name
   end
 end

@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Quote < ActiveRecord::Base
+  has_paper_trail
+
   validates :money_id, :day, :rate, :diff, :presence => true
   validates_uniqueness_of :day, :scope => :money_id
   belongs_to :money

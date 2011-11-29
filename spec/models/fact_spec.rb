@@ -9,11 +9,8 @@
 
 require 'spec_helper'
 
-describe Entity do
-  it "entity" do
-    Factory(:entity)
-    should validate_presence_of :tag
-    should validate_uniqueness_of :tag
-    should have_many Entity.versions_association_name
+describe Fact do
+  it "fact" do
+    should have_many Fact.versions_association_name
   end
 end

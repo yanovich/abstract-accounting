@@ -15,5 +15,6 @@ describe Chart do
     should belong_to :currency
     should validate_presence_of :currency_id
     should validate_uniqueness_of :currency_id
+    should have_many Chart.versions_association_name
   end
 end

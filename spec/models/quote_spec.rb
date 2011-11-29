@@ -18,5 +18,6 @@ describe Quote do
     should validate_presence_of :diff
     should validate_uniqueness_of(:day).scoped_to(:money_id)
     should belong_to :money
+    should have_many Quote.versions_association_name
   end
 end

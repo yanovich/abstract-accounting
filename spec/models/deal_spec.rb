@@ -24,6 +24,7 @@ describe Deal do
     should have_many(:states)
     should have_many(:balances)
     should have_many(:rules)
+    should have_many Deal.versions_association_name
 
     deal_has_states
     deal_has_balances

@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Entity < ActiveRecord::Base
+  has_paper_trail
+
   validates_presence_of :tag
   validates_uniqueness_of :tag
   has_many :deals

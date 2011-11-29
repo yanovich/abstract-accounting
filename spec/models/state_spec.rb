@@ -20,5 +20,6 @@ describe State do
     should_not allow_value("some value").for(:side)
     should_not allow_value(22).for(:side)
     should belong_to :deal
+    should have_many State.versions_association_name
   end
 end

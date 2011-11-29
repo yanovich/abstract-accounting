@@ -24,6 +24,7 @@ describe Rule do
     should belong_to :deal
     should belong_to :from
     should belong_to :to
+    should have_many Rule.versions_association_name
 
     rule_workflow
     rule_filter_attributes
