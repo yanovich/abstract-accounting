@@ -65,7 +65,7 @@ class Fact < ActiveRecord::Base
       state = deal.state
       new_side = state.nil? ? State::ACTIVE : state.side
       new_amount = state.nil? ? 0.0 : state.amount
-      deal.rules.each do |rule|
+      deal.rules(:force).each do |rule|
         if rule.fact_side ? from_deal_id == deal.id : to_deal_id == deal.id
           amount = 0.0
           if rule.change_side

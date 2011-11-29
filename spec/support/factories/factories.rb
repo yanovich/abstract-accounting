@@ -71,4 +71,14 @@ FactoryGirl.define do
     q.rate 1.0
     q.day DateTime.now
   end
+
+  factory :rule do |r|
+    r.sequence(:tag) { |n| "rule#{n}" }
+    r.deal { |rule| rule.association(:deal) }
+    r.from { |rule| rule.association(:deal) }
+    r.to { |rule| rule.association(:deal) }
+    r.fact_side false
+    r.change_side true
+    r.rate 1.0
+  end
 end
