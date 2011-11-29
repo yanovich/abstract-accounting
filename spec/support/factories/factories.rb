@@ -59,4 +59,22 @@ FactoryGirl.define do
     q.rate 1.0
     q.day DateTime.now
   end
+
+  factory :rule do |r|
+    r.sequence(:tag) { |n| "rule#{n}" }
+    r.deal { |rule| rule.association(:deal) }
+    r.from { |rule| rule.association(:deal) }
+    r.to { |rule| rule.association(:deal) }
+    r.fact_side false
+    r.change_side true
+    r.rate 1.0
+  end
+
+  factory :fact do |f|
+    f.amount 1.0
+    f.day DateTime.now
+    f.resource { |fact| fact.association(:asset) }
+    f.from { |fact| fact.association(:deal, :take => fact.resource) }
+    f.to { |fact| fact.association(:deal, :give => fact.resource) }
+  end
 end
