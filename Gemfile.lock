@@ -107,6 +107,7 @@ GEM
       activesupport (~> 3.0)
       railties (~> 3.0)
       rspec (~> 2.7.0)
+    settingslogic (2.0.6)
     shoulda-matchers (1.0.0)
     sorcery (0.7.5)
       bcrypt-ruby (~> 3.0.0)
@@ -140,6 +141,7 @@ DEPENDENCIES
   paper_trail
   rails (= 3.1.0)
   rspec-rails
+  settingslogic
   shoulda-matchers
   sorcery
   spork (~> 0.9.0.rc)
