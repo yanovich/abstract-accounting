@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Income < ActiveRecord::Base
+  has_paper_trail
+
   PASSIVE = "passive"
   ACTIVE = "active"
   validates :start, :side, :value, :presence => true

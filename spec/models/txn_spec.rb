@@ -45,6 +45,7 @@ describe Txn do
     should validate_presence_of :status
     should validate_uniqueness_of :fact_id
     should belong_to :fact
+    should have_many Txn.versions_association_name
 
     t_share2_to_bank.value.should eq(p_fact.amount)
     share2.balance.should_not be_nil

@@ -9,11 +9,15 @@
 
 require 'spec_helper'
 
-describe Entity do
-  it "entity" do
-    Factory(:entity)
-    should validate_presence_of :tag
-    should validate_uniqueness_of :tag
-    should have_many Entity.versions_association_name
+describe Quote do
+  it "quote" do
+    Factory(:quote)
+    should validate_presence_of :money_id
+    should validate_presence_of :day
+    should validate_presence_of :rate
+    should validate_presence_of :diff
+    should validate_uniqueness_of(:day).scoped_to(:money_id)
+    should belong_to :money
+    should have_many Quote.versions_association_name
   end
 end

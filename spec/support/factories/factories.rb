@@ -48,6 +48,28 @@ FactoryGirl.define do
     b.deal { |balance| balance.association(:deal) }
   end
 
+  factory :income do |i|
+    i.start DateTime.now
+    i.side Income::ACTIVE
+    i.value 1.0
+  end
+
+  factory :quote do |q|
+    q.money { |quote| quote.association(:money) }
+    q.rate 1.0
+    q.day DateTime.now
+  end
+
+  factory :rule do |r|
+    r.sequence(:tag) { |n| "rule#{n}" }
+    r.deal { |rule| rule.association(:deal) }
+    r.from { |rule| rule.association(:deal) }
+    r.to { |rule| rule.association(:deal) }
+    r.fact_side false
+    r.change_side true
+    r.rate 1.0
+  end
+
   factory :fact do |f|
     f.day DateTime.civil(DateTime.now.year, DateTime.now.month, DateTime.now.day, 12, 0, 0)
     f.amount 1.0

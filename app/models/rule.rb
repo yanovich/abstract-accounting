@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Rule < ActiveRecord::Base
+  has_paper_trail
+
   validates :deal_id, :from_id, :to_id, :rate, :presence => true
   validates_inclusion_of :fact_side, :in => [ true, false ]
   validates_inclusion_of :change_side, :in => [ true, false ]

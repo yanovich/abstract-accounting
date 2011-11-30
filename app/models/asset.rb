@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Asset < ActiveRecord::Base
+  has_paper_trail
+
   validates_presence_of :tag
   validates_uniqueness_of :tag
   has_many :deal_gives, :class_name => "Deal", :as => :give

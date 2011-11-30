@@ -19,6 +19,7 @@ describe Fact do
     should belong_to :from
     should belong_to :to
     should have_one :txn
+    should have_many Fact.versions_association_name
     Factory.build(:fact).should be_valid
     Factory.build(:fact, :from => Factory(:deal)).should_not be_valid
 

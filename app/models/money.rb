@@ -8,6 +8,8 @@
 # Please see ./COPYING for details
 
 class Money < ActiveRecord::Base
+  has_paper_trail
+
   validates_presence_of :num_code
   validates_presence_of :alpha_code
   validates_uniqueness_of :num_code

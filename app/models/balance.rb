@@ -10,6 +10,7 @@
 require "state_action"
 
 class Balance < ActiveRecord::Base
+  has_paper_trail
   include StateAction
 
   validates :amount, :value, :start, :side, :deal_id, :presence => true
