@@ -49,10 +49,14 @@ FactoryGirl.define do
   end
 
   factory :fact do |f|
-    f.day DateTime.now
+    f.day DateTime.civil(DateTime.now.year, DateTime.now.month, DateTime.now.day, 12, 0, 0)
     f.amount 1.0
     f.resource { |fact| fact.association(:money) }
     f.from { |fact| fact.association(:deal, :take => fact.resource) }
     f.to { |fact| fact.association(:deal, :give => fact.resource) }
+  end
+
+  factory :txn do |t|
+    t.fact { |txn| txn.association(:fact) }
   end
 end

@@ -46,12 +46,14 @@ Spork.prefork do
     config.filter_run :focus => true
     config.run_all_when_everything_filtered = true
 
-    config.before(:each) do
-      DatabaseCleaner.start
-    end
-
-    config.after(:each) do
-      DatabaseCleaner.clean
-    end
+    #config.before(:each) do
+    #  pp "Hello suite"
+    #  DatabaseCleaner.start
+    #end
+    #
+    #config.after(:each) do
+    #  pp "Bye suite"
+    #  DatabaseCleaner.clean
+    #end
   end
 end

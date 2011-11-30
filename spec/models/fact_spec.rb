@@ -10,6 +10,13 @@
 require 'spec_helper'
 
 describe Fact do
+  before(:all) do
+    DatabaseCleaner.start
+  end
+
+  after(:all) do
+    DatabaseCleaner.clean
+  end
   it "should have next behaviour" do
     should validate_presence_of :day
     should validate_presence_of :amount
@@ -21,123 +28,5 @@ describe Fact do
     should have_one :txn
     Factory.build(:fact).should be_valid
     Factory.build(:fact, :from => Factory(:deal)).should_not be_valid
-
-    #check state calculation
-    rub = Factory(:money)
-    eur = Factory(:money)
-    aasii = Factory(:asset)
-    share2 = Factory(:deal, :give => aasii, :take => rub, :rate => 10000.0)
-    share1 = Factory(:deal, :give => aasii, :take => rub, :rate => 10000.0)
-    bank = Factory(:deal, :give => rub, :take => rub, :rate => 1.0)
-    purchase = Factory(:deal, :give => rub, :rate => 0.0000142857143)
-    bank2 = Factory(:deal, :give => eur, :take => eur, :rate => 1.0)
-    forex = Factory(:deal, :give => rub, :take => eur, :rate => 0.028612303)
-    forex2 = Factory(:deal, :give => eur, :take => rub, :rate => 35.0)
-
-    fact = Factory(:fact, :day => DateTime.civil(2011, 11, 22, 12, 0, 0), :from => share2,
-                   :to => bank, :resource => rub, :amount => 100000.0)
-    share2.state(fact.day).resource.should eq(aasii)
-    share2.state(fact.day).amount.should eq(10.0)
-    share2.state(fact.day).side.should eq(State::PASSIVE)
-    bank.state(fact.day).resource.should eq(rub)
-    bank.state(fact.day).amount.should eq(100000.0)
-    bank.state(fact.day).side.should eq(State::ACTIVE)
-    State.all.count.should eq(2)
-
-    fact = Factory(:fact, :day => DateTime.civil(2011, 11, 22, 12, 0, 0), :from => share1,
-                   :to => bank, :resource => rub, :amount => 142000.0)
-    share2.state(fact.day).resource.should eq(aasii)
-    share2.state(fact.day).amount.should eq(10.0)
-    share2.state(fact.day).side.should eq(State::PASSIVE)
-    share1.state(fact.day).resource.should eq(aasii)
-    share1.state(fact.day).amount.should eq(14.2)
-    share1.state(fact.day).side.should eq(State::PASSIVE)
-    bank.state(fact.day).resource.should eq(rub)
-    bank.state(fact.day).amount.should eq(242000.0)
-    bank.state(fact.day).side.should eq(State::ACTIVE)
-    State.all.count.should eq(3)
-
-    fact = Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0), :from => bank,
-                   :to => purchase, :resource => rub, :amount => 70000.0)
-    share2.state(fact.day).resource.should eq(aasii)
-    share2.state(fact.day).amount.should eq(10.0)
-    share2.state(fact.day).side.should eq(State::PASSIVE)
-    share1.state(fact.day).resource.should eq(aasii)
-    share1.state(fact.day).amount.should eq(14.2)
-    share1.state(fact.day).side.should eq(State::PASSIVE)
-    bank.state(fact.day).resource.should eq(rub)
-    bank.state(fact.day).amount.should eq(172000.0)
-    bank.state(fact.day).side.should eq(State::ACTIVE)
-    purchase.state(fact.day).resource.should eq(purchase.take)
-    purchase.state(fact.day).amount.should eq(1.0)
-    purchase.state(fact.day).side.should eq(State::ACTIVE)
-    bank.states.first.resource.should eq(rub)
-    bank.states.first.amount.should eq(242000.0)
-    bank.states.first.side.should eq(State::ACTIVE)
-    bank.states.first.paid.to_s.should eq(fact.day.to_s)
-    State.all.count.should eq(5)
-
-    fact = Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0), :from => forex,
-                   :to => bank2, :resource => eur, :amount => 1000.0)
-    share2.state(fact.day).resource.should eq(aasii)
-    share2.state(fact.day).amount.should eq(10.0)
-    share2.state(fact.day).side.should eq(State::PASSIVE)
-    share1.state(fact.day).resource.should eq(aasii)
-    share1.state(fact.day).amount.should eq(14.2)
-    share1.state(fact.day).side.should eq(State::PASSIVE)
-    bank.state(fact.day).resource.should eq(rub)
-    bank.state(fact.day).amount.should eq(172000.0)
-    bank.state(fact.day).side.should eq(State::ACTIVE)
-    purchase.state(fact.day).resource.should eq(purchase.take)
-    purchase.state(fact.day).amount.should eq(1.0)
-    purchase.state(fact.day).side.should eq(State::ACTIVE)
-    bank2.state(fact.day).resource.should eq(eur)
-    bank2.state(fact.day).amount.should eq(1000.0)
-    bank2.state(fact.day).side.should eq(State::ACTIVE)
-    forex.state(fact.day).resource.should eq(rub)
-    forex.state(fact.day).amount.should eq(34950.0)
-    forex.state(fact.day).side.should eq(State::PASSIVE)
-    State.all.count.should eq(7)
-
-    fact = Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0), :from => bank,
-                   :to => forex, :resource => rub, :amount => 34950.0)
-    share2.state(fact.day).resource.should eq(aasii)
-    share2.state(fact.day).amount.should eq(10.0)
-    share2.state(fact.day).side.should eq(State::PASSIVE)
-    share1.state(fact.day).resource.should eq(aasii)
-    share1.state(fact.day).amount.should eq(14.2)
-    share1.state(fact.day).side.should eq(State::PASSIVE)
-    bank.state(fact.day).resource.should eq(rub)
-    bank.state(fact.day).amount.should eq(137050.0)
-    bank.state(fact.day).side.should eq(State::ACTIVE)
-    purchase.state(fact.day).resource.should eq(purchase.take)
-    purchase.state(fact.day).amount.should eq(1.0)
-    purchase.state(fact.day).side.should eq(State::ACTIVE)
-    bank2.state(fact.day).resource.should eq(eur)
-    bank2.state(fact.day).amount.should eq(1000.0)
-    bank2.state(fact.day).side.should eq(State::ACTIVE)
-    forex.state.should be_nil
-    State.all.count.should eq(6)
-
-    fact = Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0), :from => bank2,
-                   :to => forex2, :resource => eur, :amount => 1000.0)
-    share2.state(fact.day).resource.should eq(aasii)
-    share2.state(fact.day).amount.should eq(10.0)
-    share2.state(fact.day).side.should eq(State::PASSIVE)
-    share1.state(fact.day).resource.should eq(aasii)
-    share1.state(fact.day).amount.should eq(14.2)
-    share1.state(fact.day).side.should eq(State::PASSIVE)
-    bank.state(fact.day).resource.should eq(rub)
-    bank.state(fact.day).amount.should eq(137050.0)
-    bank.state(fact.day).side.should eq(State::ACTIVE)
-    purchase.state(fact.day).resource.should eq(purchase.take)
-    purchase.state(fact.day).amount.should eq(1.0)
-    purchase.state(fact.day).side.should eq(State::ACTIVE)
-    bank2.state.should be_nil
-    forex.state.should be_nil
-    forex2.state(fact.day).resource.should eq(rub)
-    forex2.state(fact.day).amount.should eq(35000.0)
-    forex2.state(fact.day).side.should eq(State::ACTIVE)
-    State.all.count.should eq(6)
   end
 end

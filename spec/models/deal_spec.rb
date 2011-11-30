@@ -10,6 +10,13 @@
 require 'spec_helper'
 
 describe Deal do
+  before(:all) do
+    DatabaseCleaner.start
+  end
+
+  after(:all) do
+    DatabaseCleaner.clean
+  end
   it "should have next behaviour" do
     Factory(:deal)
     should validate_presence_of :tag
