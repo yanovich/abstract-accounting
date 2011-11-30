@@ -120,4 +120,10 @@ FactoryGirl.define do
     p.birthday Date.today
     p.place_of_birth "Minsk"
   end
+
+  factory :user do |u|
+    u.sequence(:email) { |n| "user#{n}@aasii.org" }
+    u.crypted_password "secret"
+    u.entity { |user| user.association(:entity) }
+  end
 end
