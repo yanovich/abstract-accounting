@@ -7,13 +7,11 @@
 #
 # Please see ./COPYING for details
 
-Rails.application.config.sorcery.submodules = [:remember_me]
-
-Rails.application.config.sorcery.configure do |config|
-
-  config.user_config do |user|
-    user.username_attribute_names = [:email]
+class SorceryRememberMe < ActiveRecord::Migration
+  def change
+    add_column :users, :remember_me_token, :string, :default => nil
+    add_column :users, :remember_me_token_expires_at, :datetime, :default => nil
+    
+    add_index :users, :remember_me_token
   end
-
-  config.user_class = "User"
 end

@@ -35,4 +35,11 @@ describe User do
     user.should_not be_nil
     user.root?.should be_true
   end
+
+  it "should remember user" do
+    user = Factory(:user)
+    expect { user.remember_me! }.to change{user.remember_me_token}.from(nil)
+    user = Factory(:user)
+    expect { user.remember_me! }.to change{user.remember_me_token_expires_at}.from(nil)
+  end
 end

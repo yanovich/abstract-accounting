@@ -301,13 +301,16 @@ ActiveRecord::Schema.define(:version => 20120217103037) do
   add_index "txns", ["fact_id"], :name => "index_txns_on_fact_id", :unique => true
 
   create_table "users", :force => true do |t|
-    t.integer "entity_id"
-    t.string  "email"
-    t.string  "crypted_password"
-    t.string  "salt"
+    t.integer  "entity_id"
+    t.string   "email"
+    t.string   "crypted_password"
+    t.string   "salt"
+    t.string   "remember_me_token"
+    t.datetime "remember_me_token_expires_at"
   end
 
   add_index "users", ["entity_id", "email"], :name => "index_users_on_entity_id_and_email", :unique => true
+  add_index "users", ["remember_me_token"], :name => "index_users_on_remember_me_token"
 
   create_table "versions", :force => true do |t|
     t.string   "item_type",  :null => false
