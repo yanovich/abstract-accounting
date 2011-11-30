@@ -123,7 +123,8 @@ FactoryGirl.define do
 
   factory :user do |u|
     u.sequence(:email) { |n| "user#{n}@aasii.org" }
-    u.crypted_password "secret"
+    u.password "secret"
+    u.password_confirmation "secret"
     u.entity { |user| user.association(:entity) }
   end
 end

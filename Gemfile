@@ -7,6 +7,7 @@ gem 'rails', '3.1.0'
 
 gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'paper_trail'
+gem 'sorcery'
 
 # Use unicorn as the web server
 # gem 'unicorn'

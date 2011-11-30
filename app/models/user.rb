@@ -8,10 +8,14 @@
 # Please see ./COPYING for details
 
 class User < ActiveRecord::Base
+  attr_accessible :email, :entity, :password, :password_confirmation
+  authenticates_with_sorcery!
   has_paper_trail
 
   validates :entity_id, :email, :presence => true
   validates_uniqueness_of :email, :scope => :entity_id
   validates :email, :format => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i
+  validates_length_of :password, :minimum => 6, :on => :create
+  validates_confirmation_of :password
   belongs_to :entity
 end

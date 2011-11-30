@@ -16,6 +16,13 @@ describe User do
     should validate_presence_of :entity_id
     should validate_uniqueness_of(:email).scoped_to(:entity_id)
     should validate_format_of(:email).not_with("test@test").with_message(/invalid/)
+    should ensure_length_of(:password).is_at_least(6)
+    should allow_mass_assignment_of(:email)
+    should allow_mass_assignment_of(:password)
+    should allow_mass_assignment_of(:password_confirmation)
+    should allow_mass_assignment_of(:entity)
+    should_not allow_mass_assignment_of(:crypted_password)
+    should_not allow_mass_assignment_of(:salt)
     should belong_to(:entity)
     should have_many User.versions_association_name
   end
