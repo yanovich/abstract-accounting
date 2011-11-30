@@ -11,112 +11,45 @@ require 'spec_helper'
 
 describe GeneralLedger do
   it "should have next behaviour" do
-    rub =  Factory(:chart).currency
-    eur = Factory(:money)
-    aasii = Factory(:asset)
-    share2 = Factory(:deal, :give => aasii, :take => rub, :rate => 10000.0)
-    share1 = Factory(:deal, :give => aasii, :take => rub, :rate => 10000.0)
-    bank = Factory(:deal, :give => rub, :take => rub, :rate => 1.0)
-    purchase = Factory(:deal, :give => rub, :rate => 0.0000142857143)
-    bank2 = Factory(:deal, :give => eur, :take => eur, :rate => 1.0)
-    forex1 = Factory(:deal, :give => rub, :take => eur, :rate => 0.028612303)
-    forex2 = Factory(:deal, :give => eur, :take => rub, :rate => 35.0)
+    cf = Factory(:money)
+    c1 = Factory(:money)
+    c2 = Factory(:money)
+    y = Factory(:asset)
+    x = Factory(:asset)
+    a2 = Factory(:deal, :give => c2, :take => c2)
+    bx1 = Factory(:deal, :give => c1, :take => x, :rate => (1.0 / 100.0))
+    dx = Factory(:deal, :give => x, :take => x)
+    sy2 = Factory(:deal, :give => y, :take => c2, :rate => 150.0)
+    Factory(:quote, :money => c1, :rate => 1.5, :day => DateTime.civil(2008, 3, 24, 12, 0, 0))
+    Txn.create!(:fact => Factory(:fact, :amount => 300.0,
+                                        :day => DateTime.civil(2008, 3, 24, 12, 0, 0),
+                                        :from => bx1, :to => dx, :resource => dx.give))
+    Factory(:quote, :money => c1, :rate => 1.6, :day => DateTime.civil(2008, 3, 25, 12, 0, 0))
+    Factory(:quote, :money => c2, :rate => 2.0, :day => DateTime.civil(2008, 3, 25, 12, 0, 0))
+    Txn.create!(:fact => Factory(:fact, :amount => 60000.0,
+                                        :day => DateTime.civil(2008, 3, 25, 12, 0, 0),
+                                        :from => sy2, :to => a2, :resource => a2.give))
+    Factory(:quote, :money => cf, :rate => 1.0, :day => DateTime.civil(2008, 3, 24, 12, 0, 0))
+    f1 = Factory(:deal, :give => c2, :take => cf, :rate => 2.1)
+    Txn.create!(:fact => Factory(:fact, :amount => 10000.0,
+                                        :day => DateTime.civil(2008, 3, 25, 12, 0, 0),
+                                        :from => a2, :to => f1, :resource => f1.give))
+    f2 = Factory(:deal, :give => c2, :take => cf, :rate => 2.0)
+    Txn.create!(:fact => Factory(:fact, :amount => 10000.0,
+                                        :day => DateTime.civil(2008, 3, 25, 12, 0, 0),
+                                        :from => a2, :to => f2, :resource => f2.give))
+    f3 = Factory(:deal, :give => c2, :take => cf, :rate => 1.95)
+    Txn.create!(:fact => Factory(:fact, :amount => 10000.0,
+                                        :day => DateTime.civil(2008, 3, 25, 12, 0, 0),
+                                        :from => a2, :to => f3, :resource => f3.give))
+    q = Factory(:quote, :money => c2, :rate => 2.1, :day => DateTime.civil(2008, 3, 31, 12, 0, 0))
+    f4 = Factory(:deal, :give => c2, :take => c1, :rate => (2.1 / 1.6))
+    Txn.create!(:fact => Factory(:fact, :amount => 10000.0,
+                                        :day => DateTime.civil(2008, 3, 31, 12, 0, 0),
+                                        :from => a2, :to => f4, :resource => f4.give))
 
-    Txn.create!(:fact => Factory(:fact,
-                                   :day => DateTime.civil(2011, 11, 22, 12, 0, 0),
-                                   :from => share2,
-                                   :to => bank,
-                                   :resource => rub,
-                                   :amount => 100000.0))
-    Txn.create!(:fact => Factory(:fact,
-                                   :day => DateTime.civil(2011, 11, 22, 12, 0, 0),
-                                   :from => share1,
-                                   :to => bank,
-                                   :resource => rub,
-                                   :amount => 142000.0))
-    Txn.create!(:fact => Factory(:fact,
-                                      :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                                      :from => bank,
-                                      :to => purchase,
-                                      :resource => rub,
-                                      :amount => 70000.0))
-    Txn.create!(:fact => Factory(:fact,
-                :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                :from => forex1,
-                :to => bank2,
-                :resource => eur,
-                :amount => 1000.0))
-    Txn.create!(:fact => Factory(:fact,
-                                   :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                                   :from => bank,
-                                   :to => forex1,
-                                   :resource => rub,
-                                   :amount => 34950.0))
-    Txn.create!(:fact => Factory(:fact,
-                 :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                 :from => bank2,
-                 :to => forex2,
-                 :resource => eur,
-                 :amount => 1000.0))
-    Txn.create!(:fact => Factory(:fact,
-                                    :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                                    :from => forex2,
-                                    :to => bank,
-                                    :resource => forex2.take,
-                                    :amount => 1000.0 * forex2.rate))
-    forex = Factory(:deal, :rate => (1 / 34.2), :give => bank.give, :take => bank2.take)
-    Txn.create!(:fact => Factory(:fact,
-                                    :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                                    :amount => (5000.0 / forex.rate).accounting_norm,
-                                    :from => bank,
-                                    :to => forex,
-                                    :resource => forex.give))
-    Txn.create!(:fact => Factory(:fact,
-                 :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                 :amount => 5000.0,
-                 :from => forex,
-                 :to => bank2,
-                 :resource => forex.take))
-    office = Factory(:deal, :rate => (1 / 2000.0), :give => bank.give, :take => Factory(:asset))
-    Txn.create!(:fact => Factory(:fact,
-                :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                :from => office,
-                :to => Deal.income,
-                :resource => office.take))
-    forex = Factory(:deal, :rate => 34.95, :give => bank2.give, :take => bank.give)
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                   :amount => 2000.0, :from => bank2, :to => forex,
-                                   :resource => forex.give))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                       :amount => (2500.0 * 34.95), :from => forex, :to => bank,
-                                       :resource => forex.take))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                   :amount => 600.0, :from => bank2, :to => forex,
-                                   :resource => forex.give))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                   :amount => (100.0 * 34.95), :from => forex, :to => bank,
-                                   :resource => forex.take))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                 :amount => (2 * 2000.0), :from => bank, :to => office,
-                                 :resource => office.give))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 25, 12, 0, 0),
-                                   :amount => 50.0, :from => bank, :to => Deal.income,
-                                   :resource => bank.take))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 26, 12, 0, 0),
-                                   :amount => 50.0, :from => Deal.income, :to => bank,
-                                   :resource => bank.give))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
-                                   :amount => (400.0 * 34.95), :from => forex, :to => bank,
-                                   :resource => bank.give))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
-                                   :amount => 400.0, :from => bank2, :to => Deal.income,
-                                   :resource => bank2.take))
-    Txn.create!(:fact => Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
-                                   :amount => 400.0, :from => Deal.income, :to => forex,
-                                   :resource => forex.give))
-
-    Txn.all.count.should eq(20)
-    GeneralLedger.new.count.should eq(20)
+    Txn.all.count.should eq(6)
+    GeneralLedger.new.count.should eq(6)
     GeneralLedger.new.to_a.should =~ Txn.all
   end
 end
