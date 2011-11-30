@@ -18,4 +18,17 @@ class User < ActiveRecord::Base
   validates_length_of :password, :minimum => 6, :on => :create
   validates_confirmation_of :password
   belongs_to :entity
+
+  def self.authenticate(email, password, *credentials)
+    if "root@localhost" == email &&
+       Settings.root.password.to_s == password.to_s
+      RootUser.new
+    else
+      super(email, password, *credentials)
+    end
+  end
+
+  def root?
+    false
+  end
 end
