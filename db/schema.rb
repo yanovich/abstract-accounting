@@ -307,6 +307,9 @@ ActiveRecord::Schema.define(:version => 20120217103037) do
     t.string   "salt"
     t.string   "remember_me_token"
     t.datetime "remember_me_token_expires_at"
+    t.string   "reset_password_token"
+    t.datetime "reset_password_token_expires_at"
+    t.datetime "reset_password_email_sent_at"
   end
 
   add_index "users", ["entity_id", "email"], :name => "index_users_on_entity_id_and_email", :unique => true

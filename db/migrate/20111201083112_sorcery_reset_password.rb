@@ -7,14 +7,10 @@
 #
 # Please see ./COPYING for details
 
-Rails.application.config.sorcery.submodules = [:remember_me, :reset_password]
-
-Rails.application.config.sorcery.configure do |config|
-
-  config.user_config do |user|
-    user.username_attribute_names = [:email]
-    user.reset_password_mailer = UserMailer
+class SorceryResetPassword < ActiveRecord::Migration
+  def change
+    add_column :users, :reset_password_token, :string, :default => nil
+    add_column :users, :reset_password_token_expires_at, :datetime, :default => nil
+    add_column :users, :reset_password_email_sent_at, :datetime, :default => nil
   end
-
-  config.user_class = "User"
 end

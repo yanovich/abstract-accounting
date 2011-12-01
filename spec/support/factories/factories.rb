@@ -126,5 +126,6 @@ FactoryGirl.define do
     u.password "secret"
     u.password_confirmation "secret"
     u.entity { |user| user.association(:entity) }
+    u.sequence(:reset_password_token) { |n| "anything#{n}" }
   end
 end

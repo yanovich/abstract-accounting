@@ -42,4 +42,12 @@ describe User do
     user = Factory(:user)
     expect { user.remember_me! }.to change{user.remember_me_token_expires_at}.from(nil)
   end
+
+  it "should change password" do
+    user = Factory(:user)
+    new_user = User.load_from_reset_password_token(user.reset_password_token)
+    new_user.should eq(user)
+    new_user.change_password!("changed")
+    new_user.crypted_password.should_not eq(user.crypted_password)
+  end
 end

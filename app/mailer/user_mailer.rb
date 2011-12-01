@@ -7,14 +7,13 @@
 #
 # Please see ./COPYING for details
 
-Rails.application.config.sorcery.submodules = [:remember_me, :reset_password]
+class UserMailer < ActionMailer::Base
+  default from: "admin@aasii.org"
 
-Rails.application.config.sorcery.configure do |config|
+  def reset_password_email(user)
+    @user = user
+    @url  = "http://some_url_reset_password/#{user.reset_password_token}"
 
-  config.user_config do |user|
-    user.username_attribute_names = [:email]
-    user.reset_password_mailer = UserMailer
+    mail(:to => user.email, :subject => "Your password has been reset")
   end
-
-  config.user_class = "User"
 end
