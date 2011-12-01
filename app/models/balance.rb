@@ -20,10 +20,12 @@ class Balance < ActiveRecord::Base
   after_initialize :do_init
   scope :open, where("balances.paid IS NULL")
 
-  def self.find_all_by_time_frame(start, stop)
-    where("balances.start < :stop AND (balances.paid > :start OR balances.paid IS NULL)",
-          :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
-          :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
+  class << self
+    def in_time_frame(start, stop)
+      where("balances.start < :stop AND (balances.paid > :start OR balances.paid IS NULL)",
+            :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
+            :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0))
+    end
   end
 
   def update_value(side, amount, value)

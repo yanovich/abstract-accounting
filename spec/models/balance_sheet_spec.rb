@@ -48,27 +48,31 @@ describe BalanceSheet do
                                         :day => DateTime.civil(2008, 3, 31, 12, 0, 0),
                                         :from => a2, :to => f4, :resource => f4.give))
 
-    bs = Balance.find_all_by_time_frame DateTime.now, DateTime.now
+    bs = Balance.in_time_frame DateTime.now, DateTime.now
     bs.count.should eq(8)
-    (bs + Income.find_all_by_time_frame(DateTime.now, DateTime.now)).count.should eq(9)
+    (bs + Income.in_time_frame(DateTime.now, DateTime.now)).count.should eq(9)
 
     dt = DateTime.now
     dt.should eq(BalanceSheet.new(dt).date)
 
-    bs = BalanceSheet.new
+    bs = BalanceSheet.all
     bs.count.should eq(9)
-    bs.last.value.should eq(500.0)
-    bs.last.side.should eq(Income::PASSIVE)
+    bs.each do |income|
+      if income.kind_of?(Income)
+        income.value.should eq(500.0)
+        income.side.should eq(Income::PASSIVE)
+      end
+    end
     bs.assets.should eq(165500.0)
     bs.liabilities.should eq(168500.0)
 
-    bs = BalanceSheet.new DateTime.civil(2008, 3, 25, 12, 0, 0)
+    bs = BalanceSheet.all DateTime.civil(2008, 3, 25, 12, 0, 0)
     bs.count.should eq(8)
     bs.assets.should eq(162500.0)
     bs.liabilities.should eq(165500.0)
-    bs.to_a.should =~ (Balance.find_all_by_time_frame(DateTime.civil(2008, 3, 26, 12, 0, 0),
+    bs.to_a.should =~ (Balance.in_time_frame(DateTime.civil(2008, 3, 26, 12, 0, 0),
                                                      DateTime.civil(2008, 3, 25, 12, 0, 0)) +
-                      Income.find_all_by_time_frame(DateTime.civil(2008, 3, 26, 12, 0, 0),
+                      Income.in_time_frame(DateTime.civil(2008, 3, 26, 12, 0, 0),
                                                      DateTime.civil(2008, 3, 25, 12, 0, 0)))
   end
 end
