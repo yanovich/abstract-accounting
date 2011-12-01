@@ -49,7 +49,7 @@ class Transcript < Array
 
   def load_diffs
     if @deal.income?
-      Income.find_all_by_time_frame(@start, @stop)
+      Income.in_time_frame(@start, @stop)
     else
       @deal.balances_by_time_frame(@start, @stop)
     end.each do |balance|

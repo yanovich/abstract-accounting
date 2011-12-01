@@ -680,26 +680,30 @@ describe Txn do
   end
 
   it "should produce balance sheet" do
-    bs = Balance.find_all_by_time_frame DateTime.now, DateTime.now
+    bs = Balance.in_time_frame DateTime.now, DateTime.now
     bs.count.should eq(6)
-    (bs + Income.find_all_by_time_frame(DateTime.now, DateTime.now)).count.should eq(7)
+    (bs + Income.in_time_frame(DateTime.now, DateTime.now)).count.should eq(7)
 
     dt = DateTime.now
-    dt.should eq(BalanceSheet.new(dt).date)
+    dt.should eq(BalanceSheet.all(dt).date)
 
-    bs = BalanceSheet.new
+    bs = BalanceSheet.all
     bs.count.should eq(7)
-    bs.last.value.should eq((400.0 * (34.95 - 34.2)).accounting_norm)
-    bs.last.side.should eq(Income::PASSIVE)
+    bs.each do |income|
+      if income.kind_of?(Income)
+        income.value.should eq((400.0 * (34.95 - 34.2)).accounting_norm)
+        income.side.should eq(Income::PASSIVE)
+      end
+    end
     bs.assets.should eq(242300.0)
     bs.liabilities.should eq(242300.0)
 
-    bs = BalanceSheet.new DateTime.civil(2011, 11, 26, 12, 0, 0)
+    bs = BalanceSheet.all DateTime.civil(2011, 11, 26, 12, 0, 0)
     bs.count.should eq(6)
     bs.assets.should eq(242000.0)
     bs.liabilities.should eq(242000.0)
-    bs.to_a.should =~ Balance.find_all_by_time_frame(DateTime.civil(2011, 11, 27, 12, 0, 0),
-                                                     DateTime.civil(2011, 11, 26, 12, 0, 0))
+    bs.to_a.should =~ Balance.in_time_frame(DateTime.civil(2011, 11, 27, 12, 0, 0),
+                                            DateTime.civil(2011, 11, 26, 12, 0, 0))
   end
 
   it "should produce general ledger" do
