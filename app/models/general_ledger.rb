@@ -7,8 +7,10 @@
 #
 # Please see ./COPYING for details
 
-class GeneralLedger < Array
-  def initialize
-    Txn.all.each { |i| self << i }
+class GeneralLedger
+  class << self
+    def all
+      Txn.all
+    end
   end
 end

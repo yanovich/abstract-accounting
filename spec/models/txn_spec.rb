@@ -704,7 +704,7 @@ describe Txn do
 
   it "should produce general ledger" do
     Txn.all.count.should eq(20)
-    GeneralLedger.new.count.should eq(20)
-    GeneralLedger.new.to_a.should =~ Txn.all
+    GeneralLedger.all.count.should eq(20)
+    GeneralLedger.all.should =~ Txn.all
   end
 end
