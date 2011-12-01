@@ -49,7 +49,7 @@ describe GeneralLedger do
                                         :from => a2, :to => f4, :resource => f4.give))
 
     Txn.all.count.should eq(6)
-    GeneralLedger.new.count.should eq(6)
-    GeneralLedger.new.to_a.should =~ Txn.all
+    GeneralLedger.all.count.should eq(6)
+    GeneralLedger.all.should =~ Txn.all
   end
 end
