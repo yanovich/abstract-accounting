@@ -62,7 +62,7 @@ describe Txn do
     Fact.pendings.count.should eq(5)
     p_fact = Fact.pendings.first
     t_share_to_bank = Txn.create!(:fact => p_fact)
-    Balance.open.count.should eq(3)
+    Balance.not_paid.count.should eq(3)
     t_share_to_bank.value.should eq(p_fact.amount)
     share2.balance.side.should eq(Balance::PASSIVE)
     share2.balance.amount.should eq(100000.0 / share2.rate)
@@ -77,7 +77,7 @@ describe Txn do
     Fact.pendings.count.should eq(4)
     p_fact = Fact.pendings.first
     t_bank_to_purchase = Txn.create!(:fact => p_fact)
-    Balance.open.count.should eq(4)
+    Balance.not_paid.count.should eq(4)
     t_bank_to_purchase.value.should eq(p_fact.amount)
     share2.balance.side.should eq(Balance::PASSIVE)
     share2.balance.amount.should eq(100000.0 / share2.rate)
@@ -100,7 +100,7 @@ describe Txn do
     Fact.pendings.count.should eq(3)
     p_fact = Fact.pendings.first
     t = Txn.create!(:fact => p_fact)
-    Balance.open.count.should eq(6)
+    Balance.not_paid.count.should eq(6)
     t.value.should eq((1000.0 / forex1.rate).accounting_norm)
     share2.balance.side.should eq(Balance::PASSIVE)
     share2.balance.amount.should eq(100000.0 / share2.rate)
@@ -124,7 +124,7 @@ describe Txn do
     Fact.pendings.count.should eq(2)
     p_fact = Fact.pendings.first
     t_bank_to_forex = Txn.create!(:fact => p_fact)
-    Balance.open.count.should eq(5)
+    Balance.not_paid.count.should eq(5)
     t_bank_to_forex.value.should eq((1000.0 / forex1.rate).accounting_norm)
     share2.balance.side.should eq(Balance::PASSIVE)
     share2.balance.amount.should eq(100000.0 / share2.rate)
@@ -152,7 +152,7 @@ describe Txn do
     Fact.find(p_fact.id).txn.status.should eq(1)
     Fact.find(p_fact.id).txn.earnings.should eq((1000.0 * (forex2.rate -
                                                 (1/forex1.rate))).accounting_norm)
-    Balance.open.count.should eq(5)
+    Balance.not_paid.count.should eq(5)
     share2.balance.side.should eq(Balance::PASSIVE)
     share2.balance.amount.should eq(100000.0 / share2.rate)
     share2.balance.value.should eq(100000.0)
@@ -184,7 +184,7 @@ describe Txn do
                                                       :to => bank,
                                                       :resource => forex2.take,
                                                       :amount => 1000.0 * forex2.rate))
-    Balance.open.count.should eq(4)
+    Balance.not_paid.count.should eq(4)
     share2.balance.side.should eq(Balance::PASSIVE)
     share2.balance.amount.should eq(100000.0 / share2.rate)
     share2.balance.value.should eq(100000.0)
@@ -206,7 +206,7 @@ describe Txn do
     t_bank_to_forex3 = Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
                                           :amount => (5000.0 / forex.rate).accounting_norm,
                                           :from => bank, :to => forex, :resource => forex.give))
-    Balance.open.count.should eq(5)
+    Balance.not_paid.count.should eq(5)
     bank.balance.side.should eq(Balance::ACTIVE)
     value -= (5000.0 / forex.rate).accounting_norm
     bank.balance.amount.should eq(value)
@@ -217,7 +217,7 @@ describe Txn do
 
     Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0), :amount => 5000.0,
                                           :from => forex, :to => bank2, :resource => forex.take))
-    Balance.open.count.should eq(5)
+    Balance.not_paid.count.should eq(5)
     bank2.balance.side.should eq(Balance::ACTIVE)
     bank2.balance.amount.should eq(5000.0)
     bank2.balance.value.should eq((5000.0 / forex.rate).accounting_norm)
@@ -232,7 +232,7 @@ describe Txn do
     bank.state.amount.should eq(value.accounting_norm)
     bank.state.resource.should eq(bank.give)
     t = Txn.create!(:fact => f)
-    Balance.open.count.should eq(6)
+    Balance.not_paid.count.should eq(6)
     t.to_balance.should be_nil
     office.balance.amount.should eq((1 / office.rate).accounting_norm)
     office.balance.value.should eq((1 / office.rate).accounting_norm)
@@ -247,7 +247,7 @@ describe Txn do
     t = Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
                                        :amount => 2000.0, :from => bank2, :to => forex,
                                        :resource => forex.give))
-    Balance.open.count.should eq(7)
+    Balance.not_paid.count.should eq(7)
     euros = 5000.0 - t.fact.amount
     bank2.balance.amount.should eq(euros)
     bank2.balance.value.should eq((euros * 34.2).accounting_norm)
@@ -277,7 +277,7 @@ describe Txn do
     t_forex4_to_bank.value.should eq(87375.0)
     Income.open.count.should eq(1)
 
-    Balance.open.count.should eq(7)
+    Balance.not_paid.count.should eq(7)
     forex.balance.amount.should eq(2500.0 - 2000.0)
     forex.balance.value.should eq(((2500.0 - 2000.0) * 34.95).accounting_norm)
     forex.balance.side.should eq(Balance::PASSIVE)
@@ -301,7 +301,7 @@ describe Txn do
     forex.state.resource.should eq(forex.take)
     t.earnings.should eq(450.0)
 
-    Balance.open.count.should eq(7)
+    Balance.not_paid.count.should eq(7)
     forex.balance.amount.should eq((100.0 * 34.95).accounting_norm)
     forex.balance.value.should eq((100.0 * 34.95).accounting_norm)
     forex.balance.side.should eq(Balance::ACTIVE)
@@ -317,7 +317,7 @@ describe Txn do
     t2_forex4_to_bank = Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
                                    :amount => (100.0 * 34.95), :from => forex, :to => bank,
                                    :resource => forex.take))
-    Balance.open.count.should eq(6)
+    Balance.not_paid.count.should eq(6)
     forex.balances.count.should eq(0)
 
     rubs += 100.0 * 34.95
@@ -332,7 +332,7 @@ describe Txn do
     office.state.amount.should eq(1.0)
     office.state.resource.should eq(office.take)
 
-    Balance.open.count.should eq(6)
+    Balance.not_paid.count.should eq(6)
     rubs -= 2 * 2000.0
     bank.balance.amount.should eq(rubs.accounting_norm)
     bank.balance.value.should eq(rubs.accounting_norm)
@@ -345,7 +345,7 @@ describe Txn do
     Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 25, 12, 0, 0),
                                    :amount => 50.0, :from => bank, :to => Deal.income,
                                    :resource => bank.take))
-    Balance.open.count.should eq(6)
+    Balance.not_paid.count.should eq(6)
     rubs -= 50.0
     bank.balance.amount.should eq(rubs.accounting_norm)
     bank.balance.value.should eq(rubs.accounting_norm)
@@ -358,7 +358,7 @@ describe Txn do
     Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 26, 12, 0, 0),
                                    :amount => 50.0, :from => Deal.income, :to => bank,
                                    :resource => bank.give))
-    Balance.open.count.should eq(6)
+    Balance.not_paid.count.should eq(6)
     rubs += 50.0
     bank.balance.amount.should eq(rubs.accounting_norm)
     bank.balance.value.should eq(rubs.accounting_norm)
@@ -370,7 +370,7 @@ describe Txn do
     Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
                                    :amount => (400.0 * 34.95), :from => forex, :to => bank,
                                    :resource => bank.give))
-    Balance.open.count.should eq(7)
+    Balance.not_paid.count.should eq(7)
     forex.balance.amount.should eq(400.0)
     forex.balance.value.should eq((400.0 * 34.95).accounting_norm)
     forex.balance.side.should eq(Balance::PASSIVE)
@@ -382,7 +382,7 @@ describe Txn do
     Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
                                    :amount => 400.0, :from => bank2, :to => Deal.income,
                                    :resource => bank2.take))
-    Balance.open.count.should eq(7)
+    Balance.not_paid.count.should eq(7)
     euros -= 400.0
     bank2.balance.amount.should eq(euros.accounting_norm)
     bank2.balance.value.should eq((euros * 34.2).accounting_norm)
@@ -395,7 +395,7 @@ describe Txn do
     Factory(:txn, :fact => Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
                                    :amount => 400.0, :from => Deal.income, :to => forex,
                                    :resource => forex.give))
-    Balance.open.count.should eq(6)
+    Balance.not_paid.count.should eq(6)
     share2.balance.side.should eq(Balance::PASSIVE)
     share2.balance.amount.should eq(100000.0 / share2.rate)
     share2.balance.value.should eq(100000.0)

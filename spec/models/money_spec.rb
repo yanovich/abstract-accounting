@@ -20,5 +20,7 @@ describe Money do
     should have_many :deal_takes
     should have_many :quotes
     should have_many Money.versions_association_name
+    should have_many(:balances_gives).through(:deal_gives)
+    should have_many(:balances_takes).through(:deal_takes)
   end
 end

@@ -18,7 +18,9 @@ class Balance < ActiveRecord::Base
   validates_uniqueness_of :start, :scope => :deal_id
   belongs_to :deal
   after_initialize :do_init
-  scope :open, where("balances.paid IS NULL")
+  scope :not_paid, where("balances.paid IS NULL")
+  scope :passive, where(:side => Balance::PASSIVE)
+  scope :active, where(:side => Balance::ACTIVE)
 
   class << self
     def in_time_frame(start, stop)

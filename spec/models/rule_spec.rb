@@ -52,7 +52,7 @@ describe Rule do
     f = Factory(:fact, :amount => 50.0, :day => DateTime.civil(2008, 9, 16, 12, 0, 0),
       :from => purchase_y, :to => storage_y, :resource => purchase_y.take)
     Txn.create!(:fact => f)
-    Balance.open.count.should eq(4), "Wrong open balances count"
+    Balance.not_paid.count.should eq(4), "Wrong open balances count"
     b = purchase_x.balance
     b.should_not be_nil, "Balance is nil"
     b.amount.should eq(5000.0), "Wrong balance amount"
@@ -119,7 +119,7 @@ describe Rule do
     s.amount.should eq(1.0), "State amount is wrong"
 
     Txn.create!(:fact => f)
-    Balance.open.count.should eq(6), "Wrong open balances count"
+    Balance.not_paid.count.should eq(6), "Wrong open balances count"
 
     b = purchase_x.balance
     b.should_not be_nil, "Balance is nil"
