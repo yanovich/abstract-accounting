@@ -7,51 +7,92 @@
 #
 # Please see ./COPYING for details
 
-class Transcript < Array
+class Transcript
+  attr_reader :deal, :start, :stop
+
   def initialize(deal, start, stop)
     @deal = deal
     @start = start
     @stop = stop
-    @total_debits = 0.0
-    @total_debits_value = 0.0
+    @diff_loaded = false
+    @opening = nil
+    @closing = nil
     @total_debits_diff = 0.0
-    @total_credits = 0.0
-    @total_credits_value = 0.0
     @total_credits_diff = 0.0
-    unless @deal.nil?
-      load_list
-      load_diffs
-    end
+    @total_loaded = false
   end
-  attr_reader :deal, :start, :stop, :opening, :closing
-  attr_reader :total_debits, :total_debits_value, :total_debits_diff
-  attr_reader :total_credits, :total_credits_value, :total_credits_diff
+
+  def all()
+    deal.txns(start, stop)
+  end
+
+  def total_debits
+    load_total unless @total_loaded
+    @debits
+  end
+
+  def total_debits_value
+    load_total unless @total_loaded
+    @debits_value
+  end
+
+  def total_credits
+    load_total unless @total_loaded
+    @credits
+  end
+
+  def total_credits_value
+    load_total unless @total_loaded
+    @credits_value
+  end
+
+  def opening
+    load_diffs unless @diff_loaded
+    @opening
+  end
+
+  def closing
+    load_diffs unless @diff_loaded
+    @closing
+  end
+
+  def total_debits_diff
+    load_diffs unless @diff_loaded
+    @total_debits_diff
+  end
+
+  def total_credits_diff
+    load_diffs unless @diff_loaded
+    @total_credits_diff
+  end
 
   private
-  def load_list
-    @deal.txns(@start, @stop).each do |item|
-      self << item
-      if @deal.income?
-        if item.earnings < 0.0
-          @total_debits_value -= item.earnings
-        else
-          @total_credits_value += item.earnings
-        end
-      elsif item.fact.to_deal_id == @deal.id
-        @total_debits += item.fact.amount
-        @total_debits_value += item.value + item.earnings
-      elsif item.fact.from_deal_id == @deal.id
-        @total_credits += item.fact.amount
-        @total_credits_value += item.value
-      end
+  def load_total
+    object = if @deal.income?
+      @deal.txns(@start, @stop).
+          select("SUM(CASE WHEN txns.earnings > 0.0 THEN txns.earnings ELSE 0.0 END) as credits_value,
+                  0.0 as credits,
+                  SUM(CASE WHEN txns.earnings < 0.0 THEN -txns.earnings ELSE 0.0 END) as debits_value,
+                  0.0 as debits").first
+    else
+      @deal.txns(@start, @stop).
+          select("SUM(CASE WHEN facts.from_deal_id = #{@deal.id} THEN txns.value ELSE 0.0 END) as credits_value,
+                  SUM(CASE WHEN facts.from_deal_id = #{@deal.id} THEN facts.amount ELSE 0.0 END) as credits,
+                  SUM(CASE WHEN facts.to_deal_id = #{@deal.id} THEN txns.value + txns.earnings ELSE 0.0 END) as debits_value,
+                  SUM(CASE WHEN facts.to_deal_id = #{@deal.id} THEN facts.amount ELSE 0.0 END) as debits").first
     end
+    @credits_value = object ? object.credits_value : 0.0
+    @credits = object ? object.credits : 0.0
+    @debits_value = object ? object.debits_value : 0.0
+    @debits = object ? object.debits : 0.0
+    @total_loaded = true
   end
 
   def load_diffs
     if @deal.income?
       Income.in_time_frame(@start, @stop)
     else
-      @deal.balances_by_time_frame(@start, @stop)
+      @deal.balances.in_time_frame(@start, @stop)
     end.each do |balance|
       if balance.start < @start
         @opening = balance
@@ -61,5 +102,6 @@ class Transcript < Array
         @total_credits_diff += balance.credit_diff
       end
     end
+    @diff_loaded = true
   end
 end

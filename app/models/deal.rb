@@ -85,12 +85,6 @@ class Deal < ActiveRecord::Base
     balance.save
   end
 
-  def balances_by_time_frame(start, stop)
-    self.balances.where("balances.start < :stop AND (balances.paid > :start OR balances.paid IS NULL)",
-                        :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
-                        :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0)).all
-  end
-
   def facts(start, stop)
     if self.income?
       Fact
@@ -103,10 +97,15 @@ class Deal < ActiveRecord::Base
   end
 
   def txns(start, stop)
+    scoped_txn = Txn.joins("INNER JOIN facts ON facts.id = txns.fact_id").
+        where("facts.day > :start AND facts.day < :stop",
+              :start => DateTime.civil(start.year, start.month, start.day, 0, 0, 0),
+              :stop => DateTime.civil(stop.year, stop.month, stop.day, 13, 0, 0))
     if self.income?
-      Txn.find_all_by_fact_id_and_status(self.facts(start, stop), 1)
+      scoped_txn.where("txns.status = 1")
     else
-      Txn.find_all_by_fact_id(self.facts(start, stop))
+      scoped_txn.where("(facts.from_deal_id = :id OR facts.to_deal_id = :id)",
+                  :id => self.id)
     end
   end
 
