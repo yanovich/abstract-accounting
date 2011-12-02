@@ -16,6 +16,8 @@ class Money < ActiveRecord::Base
   validates_uniqueness_of :alpha_code
   has_many :deal_gives, :class_name => "Deal", :as => :give
   has_many :deal_takes, :class_name => "Deal", :as => :take
+  has_many :balances_gives, :class_name => "Balance", :through => :deal_gives, :source => :balances
+  has_many :balances_takes, :class_name => "Balance", :through => :deal_takes, :source => :balances
   has_many :quotes
 
   def quote

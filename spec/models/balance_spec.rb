@@ -18,7 +18,7 @@ describe Balance do
     DatabaseCleaner.clean
   end
   it "should have next behaviour" do
-    Factory(:balance)
+    Factory(:balance, :side => Balance::ACTIVE)
     should validate_presence_of :amount
     should validate_presence_of :value
     should validate_presence_of :start
@@ -31,5 +31,12 @@ describe Balance do
     should validate_uniqueness_of(:start).scoped_to(:deal_id)
     should belong_to :deal
     should have_many Balance.versions_association_name
+
+    10.times { Factory(:balance, :side => Balance::PASSIVE) }
+    5.times { Factory(:balance, :side => Balance::ACTIVE) }
+    Balance.passive.count.should eq(10)
+    Balance.active.count.should eq(6)
+    Balance.passive.each { |b| b.side.should eq(Balance::PASSIVE) }
+    Balance.active.each { |b| b.side.should eq(Balance::ACTIVE) }
   end
 end

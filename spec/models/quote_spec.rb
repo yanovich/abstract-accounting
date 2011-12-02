@@ -42,6 +42,8 @@ describe Quote do
     should validate_uniqueness_of(:day).scoped_to(:money_id)
     should belong_to :money
     should have_many Quote.versions_association_name
+    should have_many(:balances_as_give).through(:money).class_name(Balance)
+    should have_many(:balances_as_take).through(:money).class_name(Balance)
   end
 
   it "should process purchase" do

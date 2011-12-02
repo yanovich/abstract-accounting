@@ -15,6 +15,8 @@ class Quote < ActiveRecord::Base
   belongs_to :money
   after_initialize :do_initialize
   before_save :do_before_save
+  has_many :balances_as_give, :class_name => "Balance", :through => :money, :source => :balances_gives
+  has_many :balances_as_take, :class_name => "Balance", :through => :money, :source => :balances_takes
 
   private
   def do_initialize
@@ -22,21 +24,13 @@ class Quote < ActiveRecord::Base
   end
 
   def do_before_save
-    if !self.money.deal_gives.empty? and !self.money.quotes(:force_reload).empty?
-      q = self.money.quote
-      self.money.deal_gives.each do |deal|
-        b = deal.balance
-        self.diff += (b.amount * (q.rate - self.rate)).accounting_norm \
-          if b.side == Balance::PASSIVE
-      end
+    if !self.balances_as_give.empty? and !self.money.quotes(:force_reload).empty?
+      self.diff += (self.balances_as_give.not_paid.passive.sum("amount").to_f *
+                    (self.money.quote.rate - self.rate)) .accounting_norm
     end
-    if !self.money.deal_takes(:force_reload).empty? and !self.money.quotes(:force_reload).empty?
-      q = self.money.quote
-      self.money.deal_takes.each do |deal|
-        b = deal.balance
-        self.diff += (b.amount * (self.rate - q.rate)).accounting_norm \
-          if b.side == Balance::ACTIVE
-      end
+    if !self.balances_as_take.empty? and !self.money.quotes(:force_reload).empty?
+      self.diff += (self.balances_as_take.not_paid.active.sum("amount").to_f *
+                    (self.rate - self.money.quote.rate)) .accounting_norm
     end
     unless self.diff.accounting_zero?
       income = Income.open.first
