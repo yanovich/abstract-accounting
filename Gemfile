@@ -9,6 +9,7 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'paper_trail'
 gem 'sorcery'
 gem 'settingslogic'
+gem 'cancan'
 
 # Use unicorn as the web server
 # gem 'unicorn'
