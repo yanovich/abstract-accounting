@@ -55,13 +55,13 @@ describe Transcript do
     txns.count.should eq(5)
     txns.each { |txn| txn.should be_kind_of(Txn); [txn.fact.from, txn.fact.to].should include(a2) }
 
-    balances = a2.balances_by_time_frame(DateTime.civil(2008, 3, 25, 12, 0, 0),
+    balances = a2.balances.in_time_frame(DateTime.civil(2008, 3, 25, 12, 0, 0),
                                           DateTime.civil(2008, 3, 25, 12, 0, 0))
     balances.count.should eq(1)
     balances.first.start.should eq(DateTime.civil(2008, 3, 25, 12, 0, 0))
     balances.first.paid.should eq(DateTime.civil(2008, 3, 31, 12, 0, 0))
 
-    tr = Transcript.new(a2, DateTime.civil(2008, 3, 25, 12, 0, 0), DateTime.civil(2008, 3, 25, 12, 0, 0))
+    tr = Transcript.all(a2, DateTime.civil(2008, 3, 25, 12, 0, 0), DateTime.civil(2008, 3, 25, 12, 0, 0))
     tr.deal.should eq(a2)
     tr.start.should eq(DateTime.civil(2008, 3, 25, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2008, 3, 25, 12, 0, 0))
@@ -74,7 +74,7 @@ describe Transcript do
     tr.count.should eq(4)
     tr.to_a.should =~ [t2, t3, t4, t5]
 
-    tr = Transcript.new(a2, DateTime.civil(2008, 3, 25, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
+    tr = Transcript.all(a2, DateTime.civil(2008, 3, 25, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
     tr.deal.should eq(a2)
     tr.start.should eq(DateTime.civil(2008, 3, 25, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2008, 3, 31, 12, 0, 0))
@@ -93,7 +93,7 @@ describe Transcript do
     tr.total_debits_value.should eq(120000.0)
     tr.total_credits_value.should eq(81000.0)
 
-    tr = Transcript.new(a2, DateTime.civil(2008, 3, 31, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
+    tr = Transcript.all(a2, DateTime.civil(2008, 3, 31, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
     tr.deal.should eq(a2)
     tr.start.should eq(DateTime.civil(2008, 3, 31, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2008, 3, 31, 12, 0, 0))
@@ -108,7 +108,7 @@ describe Transcript do
     tr.count.should eq(1)
     tr.to_a.should =~ [t6]
 
-    tr = Transcript.new(a2, DateTime.civil(2008, 3, 20, 12, 0, 0), DateTime.civil(2008, 3, 20, 12, 0, 0))
+    tr = Transcript.all(a2, DateTime.civil(2008, 3, 20, 12, 0, 0), DateTime.civil(2008, 3, 20, 12, 0, 0))
     tr.deal.should eq(a2)
     tr.start.should eq(DateTime.civil(2008, 3, 20, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2008, 3, 20, 12, 0, 0))
@@ -116,7 +116,7 @@ describe Transcript do
     tr.closing.should be_nil
     tr.should be_empty
 
-    tr = Transcript.new(bx1, DateTime.civil(2008, 3, 24, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
+    tr = Transcript.all(bx1, DateTime.civil(2008, 3, 24, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
     tr.deal.should eq(bx1)
     tr.start.should eq(DateTime.civil(2008, 3, 24, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2008, 3, 31, 12, 0, 0))
@@ -135,7 +135,7 @@ describe Transcript do
     tr.total_debits_value.should eq(0.0)
     tr.total_credits_value.should eq(45000.0)
 
-    tr = Transcript.new(Deal.income, DateTime.civil(2008, 3, 24, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
+    tr = Transcript.all(Deal.income, DateTime.civil(2008, 3, 24, 12, 0, 0), DateTime.civil(2008, 3, 31, 12, 0, 0))
     tr.deal.should eq(Deal.income)
     tr.start.should eq(DateTime.civil(2008, 3, 24, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2008, 3, 31, 12, 0, 0))
@@ -150,5 +150,7 @@ describe Transcript do
     tr.total_credits_diff.should eq(3000.0)
     tr.total_debits_value.should eq(500.0)
     tr.total_credits_value.should eq(1000.0)
+    tr.total_debits.should eq(0.0)
+    tr.total_credits.should eq(0.0)
   end
 end
