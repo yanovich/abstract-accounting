@@ -11,6 +11,15 @@ gem 'sorcery'
 gem 'settingslogic'
 gem 'cancan'
 
+group :assets do
+  gem 'sass-rails', "  ~> 3.1.0"
+  gem 'coffee-rails', "~> 3.1.0"
+  gem 'uglifier'
+end
+
+gem 'jquery-rails'
+gem 'therubyracer'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
