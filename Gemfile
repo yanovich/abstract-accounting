@@ -47,4 +47,5 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'spork', '~> 0.9.0.rc'
   gem 'guard-spork'
+  gem 'capybara'
 end
