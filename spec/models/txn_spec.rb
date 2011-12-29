@@ -27,7 +27,6 @@ end
 
 describe Txn do
   before(:all) do
-    DatabaseCleaner.start
     @rub = Factory(:chart).currency
     @eur = Factory(:money)
     @aasii = Factory(:asset)
@@ -41,10 +40,6 @@ describe Txn do
     @forex3 = Factory(:deal, :rate => (1 / 34.2), :give => @bank.give, :take => @bank2.take)
     @forex4 = Factory(:deal, :rate => 34.95, :give => @bank2.give, :take => @bank.give)
     @office = Factory(:deal, :rate => (1 / 2000.0), :give => @bank.give, :take => Factory(:asset))
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
   end
 
   it "should create states" do

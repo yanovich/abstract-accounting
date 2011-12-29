@@ -10,13 +10,6 @@
 require 'spec_helper'
 
 describe Chart do
-  before(:all) do
-    DatabaseCleaner.start
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
-  end
   it "should have next behaviour" do
     Factory(:chart)
     should belong_to :currency

@@ -11,8 +11,6 @@ require 'spec_helper'
 
 describe Quote do
   before(:all) do
-    DatabaseCleaner.start
-
     @cf = Factory(:money)
     @c1 = Factory(:money)
     @c2 = Factory(:money)
@@ -23,10 +21,6 @@ describe Quote do
     @bx1 = Factory(:deal, :give => @c1, :take => x, :rate => (1.0 / 100.0))
     @dx = Factory(:deal, :give => x, :take => x)
     @sy2 = Factory(:deal, :give => @y, :take => @c2, :rate => 150.0)
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
   end
 
   it "should create quote" do

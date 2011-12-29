@@ -10,13 +10,6 @@
 require 'spec_helper'
 
 describe Fact do
-  before(:all) do
-    DatabaseCleaner.start
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
-  end
   it "should have next behaviour" do
     should validate_presence_of :day
     should validate_presence_of :amount

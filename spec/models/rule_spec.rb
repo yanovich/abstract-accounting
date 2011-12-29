@@ -10,13 +10,6 @@
 require 'spec_helper'
 
 describe Rule do
-  before(:all) do
-    DatabaseCleaner.start
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
-  end
   let(:rub) { Factory(:chart).currency }
 
   it "should have next behaviour" do

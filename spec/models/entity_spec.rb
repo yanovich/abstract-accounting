@@ -10,13 +10,6 @@
 require 'spec_helper'
 
 describe Entity do
-  before(:all) do
-    DatabaseCleaner.start
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
-  end
   it "should have next behaviour" do
     Factory(:entity)
     should validate_presence_of :tag

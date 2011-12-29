@@ -10,13 +10,6 @@
 require 'spec_helper'
 
 describe "Bug133" do
-  before(:all) do
-    DatabaseCleaner.start
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
-  end
   it "should fix bug #133" do
     x = Factory(:money)
     y = Factory(:asset)

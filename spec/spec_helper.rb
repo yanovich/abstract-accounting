@@ -48,18 +48,11 @@ Spork.prefork do
 
     config.before(:all) do
       PaperTrail.enabled = false
+      DatabaseCleaner.start
     end
     config.after(:all) do
+      DatabaseCleaner.clean
       PaperTrail.enabled = true
     end
-    #config.before(:each) do
-    #  pp "Hello suite"
-    #  DatabaseCleaner.start
-    #end
-    #
-    #config.after(:each) do
-    #  pp "Bye suite"
-    #  DatabaseCleaner.clean
-    #end
   end
 end

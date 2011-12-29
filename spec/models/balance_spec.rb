@@ -10,13 +10,6 @@
 require 'spec_helper'
 
 describe Balance do
-  before(:all) do
-    DatabaseCleaner.start
-  end
-
-  after(:all) do
-    DatabaseCleaner.clean
-  end
   it "should have next behaviour" do
     Factory(:balance, :side => Balance::ACTIVE)
     should validate_presence_of :amount
