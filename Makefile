@@ -1,5 +1,6 @@
+BUNDLE=$(shell test -d ./vendor/bundle && echo bundle exec)
 check:
 #	rake test
-	rspec spec --drb --color
+	$(BUNDLE) rspec spec --drb --color
 
 PHONY: check
