@@ -1,0 +1,1 @@
+--require ./config/rspec_formatter.rb --format CustomFormatter
