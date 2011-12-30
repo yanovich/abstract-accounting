@@ -1,5 +1,5 @@
 check:
 #	rake test
-	rspec spec/ --drb
+	rspec spec --drb
 
 PHONY: check
