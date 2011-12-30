@@ -55,5 +55,8 @@ Spork.prefork do
       DatabaseCleaner.clean
       PaperTrail.enabled = true
     end
+
+    User.sorcery_config.stretches = 0
+    User.sorcery_config.encryption_algorithm = :none
   end
 end
