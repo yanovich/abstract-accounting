@@ -11,6 +11,9 @@ require 'spec_helper'
 
 class TestData
   class_attribute :bank_value
+  class_attribute :bank_value1
+  class_attribute :bank_value2
+  class_attribute :bank_value3
   class_attribute :bank2_value
   class_attribute :profit
 
@@ -39,7 +42,8 @@ describe Txn do
     @forex2 = Factory(:deal, :give => @eur, :take => @rub, :rate => 35.0)
     @forex3 = Factory(:deal, :rate => (1 / 34.2), :give => @bank.give, :take => @bank2.take)
     @forex4 = Factory(:deal, :rate => 34.95, :give => @bank2.give, :take => @bank.give)
-    @office = Factory(:deal, :rate => (1 / 2000.0), :give => @bank.give, :take => Factory(:asset))
+    @office = Factory(:deal, :rate => (1 / 2000.0), :give => @bank.give,
+                             :take => Factory(:asset))
   end
 
   it "should create states" do
@@ -194,9 +198,12 @@ describe Txn do
     @share2.balance.side.should eq(Balance::PASSIVE)
     @share2.balance.amount.should eq(100000.0 / @share2.rate)
     @share2.balance.value.should eq(100000.0)
+
+    TestData.bank_value = 100000.0 + 142000.0
     @bank.balance.side.should eq(Balance::ACTIVE)
-    @bank.balance.amount.should eq(100000.0 + 142000.0)
-    @bank.balance.value.should eq(100000.0 + 142000.0)
+    @bank.balance.amount.should eq(TestData.bank_value)
+    @bank.balance.value.should eq(TestData.bank_value)
+
     @share1.balance.side.should eq(Balance::PASSIVE)
     @share1.balance.amount.should eq(142000.0 / @share1.rate)
     @share1.balance.value.should eq(142000.0)
@@ -205,26 +212,34 @@ describe Txn do
   it "should replace balances" do
     Fact.pendings.count.should eq(4)
     p_fact = Fact.pendings.first
+
     TestData.t_bank_to_purchase = Txn.create!(:fact => p_fact)
+
     Balance.not_paid.count.should eq(4)
     TestData.t_bank_to_purchase.value.should eq(p_fact.amount)
     @share2.balance.side.should eq(Balance::PASSIVE)
     @share2.balance.amount.should eq(100000.0 / @share2.rate)
     @share2.balance.value.should eq(100000.0)
+
+    TestData.bank_value1 = TestData.bank_value
+    TestData.bank_value -= 70000.0
     @bank.balance.side.should eq(Balance::ACTIVE)
-    @bank.balance.amount.should eq(100000.0 + 142000.0 - 70000.0)
-    @bank.balance.value.should eq(100000.0 + 142000.0 - 70000.0)
+    @bank.balance.amount.should eq(TestData.bank_value)
+    @bank.balance.value.should eq(TestData.bank_value)
+
     @share1.balance.side.should eq(Balance::PASSIVE)
     @share1.balance.amount.should eq(142000.0 / @share1.rate)
     @share1.balance.value.should eq(142000.0)
+
     @purchase.balance.side.should eq(Balance::ACTIVE)
     @purchase.balance.amount.should eq(1.0)
     @purchase.balance.value.should eq(70000.0)
+
     @bank.balances.where("balances.paid IS NOT NULL").count.should eq(1)
     b = @bank.balances.where("balances.paid IS NOT NULL").first
     b.side.should eq(Balance::ACTIVE)
-    b.amount.should eq(100000.0 + 142000.0)
-    b.value.should eq(100000.0 + 142000.0)
+    b.amount.should eq(TestData.bank_value1)
+    b.value.should eq(TestData.bank_value1)
   end
 
   it "should delete balances" do
@@ -237,8 +252,8 @@ describe Txn do
     @share2.balance.amount.should eq(100000.0 / @share2.rate)
     @share2.balance.value.should eq(100000.0)
     @bank.balance.side.should eq(Balance::ACTIVE)
-    @bank.balance.amount.should eq(100000.0 + 142000.0 - 70000.0)
-    @bank.balance.value.should eq(100000.0 + 142000.0 - 70000.0)
+    @bank.balance.amount.should eq(TestData.bank_value)
+    @bank.balance.value.should eq(TestData.bank_value)
     @share1.balance.side.should eq(Balance::PASSIVE)
     @share1.balance.amount.should eq(142000.0 / @share1.rate)
     @share1.balance.value.should eq(142000.0)
@@ -260,18 +275,22 @@ describe Txn do
     @share2.balance.side.should eq(Balance::PASSIVE)
     @share2.balance.amount.should eq(100000.0 / @share2.rate)
     @share2.balance.value.should eq(100000.0)
+
+    TestData.bank_value -= (1000.0 / @forex1.rate).accounting_norm
     @bank.balance.side.should eq(Balance::ACTIVE)
-    @bank.balance.amount.should eq(100000.0 + 142000.0 - 70000.0 -
-                                (1000.0 / @forex1.rate).accounting_norm)
-    @bank.balance.value.should eq(100000.0 + 142000.0 - 70000.0 -
-                               (1000.0 / @forex1.rate).accounting_norm)
+    @bank.balance.amount.should eq(TestData.bank_value)
+    @bank.balance.value.should eq(TestData.bank_value)
+
     @share1.balance.side.should eq(Balance::PASSIVE)
     @share1.balance.amount.should eq(142000.0 / @share1.rate)
     @share1.balance.value.should eq(142000.0)
+    
     @purchase.balance.side.should eq(Balance::ACTIVE)
     @purchase.balance.amount.should eq(1.0)
     @purchase.balance.value.should eq(70000.0)
+    
     @forex1.balance.should be_nil
+    
     @bank2.balance.side.should eq(Balance::ACTIVE)
     @bank2.balance.amount.should eq(1000.0)
     @bank2.balance.value.should eq((1000.0 / @forex1.rate).accounting_norm)
@@ -290,19 +309,23 @@ describe Txn do
     @share2.balance.side.should eq(Balance::PASSIVE)
     @share2.balance.amount.should eq(100000.0 / @share2.rate)
     @share2.balance.value.should eq(100000.0)
+
     @bank.balance.side.should eq(Balance::ACTIVE)
-    @bank.balance.amount.should eq(100000.0 + 142000.0 - 70000.0 -
-                                (1000.0 / @forex1.rate).accounting_norm)
-    @bank.balance.value.should eq(100000.0 + 142000.0 - 70000.0 -
-                               (1000.0 / @forex1.rate).accounting_norm)
+    @bank.balance.amount.should eq(TestData.bank_value)
+    @bank.balance.value.should eq(TestData.bank_value)
+    
     @share1.balance.side.should eq(Balance::PASSIVE)
     @share1.balance.amount.should eq(142000.0 / @share1.rate)
     @share1.balance.value.should eq(142000.0)
+    
     @purchase.balance.side.should eq(Balance::ACTIVE)
     @purchase.balance.amount.should eq(1.0)
     @purchase.balance.value.should eq(70000.0)
+    
     @forex1.balance.should be_nil
+    
     @bank2.balance.should be_nil
+    
     @forex2.balance.side.should eq(Balance::ACTIVE)
     @forex2.balance.amount.should eq(1000.0 * @forex2.rate)
     @forex2.balance.value.should eq(1000.0 * @forex2.rate)
@@ -314,10 +337,8 @@ describe Txn do
 
   it "should process loss transaction" do
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                                                      :from => @forex2,
-                                                      :to => @bank,
-                                                      :resource => @forex2.take,
-                                                      :amount => 1000.0 * @forex2.rate)
+                          :from => @forex2, :to => @bank, :resource => @forex2.take,
+                          :amount => 1000.0 * @forex2.rate)
     TestData.t_forex2_to_bank = Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(4)
     @share2.balance.side.should eq(Balance::PASSIVE)
@@ -330,7 +351,7 @@ describe Txn do
     @purchase.balance.amount.should eq(1.0)
     @purchase.balance.value.should eq(70000.0)
     @bank.balance.side.should eq(Balance::ACTIVE)
-    TestData.bank_value = 100000.0 + 142000.0 - 70000.0 + (1000.0 * (@forex2.rate - (1 / @forex1.rate))).accounting_norm
+    TestData.bank_value += 1000.0 * @forex2.rate
     @bank.balance.amount.should eq(TestData.bank_value)
     @bank.balance.value.should eq(TestData.bank_value)
     @forex1.balance.should be_nil
@@ -338,9 +359,9 @@ describe Txn do
     @forex2.balance.should be_nil
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0),
-                                          :amount => (5000.0 / @forex3.rate).accounting_norm,
-                                          :from => @bank, :to => @forex3,
-                                          :resource => @forex3.give)
+                          :amount => (5000.0 / @forex3.rate).accounting_norm,
+                          :from => @bank, :to => @forex3,
+                          :resource => @forex3.give)
     TestData.t_bank_to_forex3 = Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(5)
     @bank.balance.side.should eq(Balance::ACTIVE)
@@ -352,8 +373,8 @@ describe Txn do
     @forex3.balance.value.should eq((5000.0 / @forex3.rate).accounting_norm)
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 23, 12, 0, 0), :amount => 5000.0,
-                                          :from => @forex3, :to => @bank2,
-                                          :resource => @forex3.take)
+                          :from => @forex3, :to => @bank2,
+                          :resource => @forex3.take)
     Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(5)
     @bank2.balance.side.should eq(Balance::ACTIVE)
@@ -381,8 +402,8 @@ describe Txn do
 
   it "should process split transaction" do
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                       :amount => 2000.0, :from => @bank2, :to => @forex4,
-                                       :resource => @forex4.give)
+                          :amount => 2000.0, :from => @bank2, :to => @forex4,
+                          :resource => @forex4.give)
     t = Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(7)
     TestData.bank2_value = 5000.0 - t.fact.amount
@@ -405,8 +426,9 @@ describe Txn do
     Income.open.first.value.should eq(TestData.profit)
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                       :amount => (2500.0 * 34.95), :from => @forex4, :to => @bank,
-                                       :resource => @forex4.take)
+                          :amount => (2500.0 * 34.95),
+                          :from => @forex4, :to => @bank,
+                          :resource => @forex4.take)
     TestData.t_forex4_to_bank = Factory(:txn, :fact => fact)
     State.open.count.should eq(7)
     @forex4.state.amount.should eq(2500.0 - 2000.0)
@@ -419,6 +441,7 @@ describe Txn do
     @forex4.balance.value.should eq(((2500.0 - 2000.0) * 34.95).accounting_norm)
     @forex4.balance.side.should eq(Balance::PASSIVE)
 
+    TestData.bank_value2 = TestData.bank_value
     TestData.bank_value += TestData.t_forex4_to_bank.fact.amount
     @bank.balance.amount.should eq(TestData.bank_value.accounting_norm)
     @bank.balance.value.should eq(TestData.bank_value.accounting_norm)
@@ -428,8 +451,8 @@ describe Txn do
     Income.open.first.value.should eq(TestData.profit)
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                       :amount => 600.0, :from => @bank2, :to => @forex4,
-                                       :resource => @forex4.give)
+                          :amount => 600.0, :from => @bank2, :to => @forex4,
+                          :resource => @forex4.give)
     t = Factory(:txn, :fact => fact)
     State.open.count.should eq(7)
     @forex4.state.amount.should eq((100.0 * 34.95).accounting_norm)
@@ -451,8 +474,9 @@ describe Txn do
 
   it "should process gain transaction" do
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                   :amount => (100.0 * 34.95), :from => @forex4, :to => @bank,
-                                   :resource => @forex4.take)
+                          :amount => (100.0 * 34.95),
+                          :from => @forex4, :to => @bank,
+                          :resource => @forex4.take)
     TestData.t2_forex4_to_bank = Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(6)
     @forex4.balances(:force_update).should be_empty
@@ -463,8 +487,9 @@ describe Txn do
     @bank.balance.side.should eq(Balance::ACTIVE)
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 24, 12, 0, 0),
-                                   :amount => (2 * 2000.0), :from => @bank, :to => @office,
-                                   :resource => @office.give)
+                          :amount => (2 * 2000.0),
+                          :from => @bank, :to => @office,
+                          :resource => @office.give)
     TestData.t_bank_to_office = Factory(:txn, :fact => fact)
     State.open.count.should eq(6)
     @office.state.amount.should eq(1.0)
@@ -481,10 +506,12 @@ describe Txn do
     Income.open.should be_empty
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 25, 12, 0, 0),
-                                   :amount => 50.0, :from => @bank, :to => Deal.income,
-                                   :resource => @bank.take)
+                          :amount => 50.0,
+                          :from => @bank, :to => Deal.income,
+                          :resource => @bank.take)
     Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(6)
+    TestData.bank_value3 = TestData.bank_value
     TestData.bank_value -= 50.0
     @bank.balance.amount.should eq(TestData.bank_value.accounting_norm)
     @bank.balance.value.should eq(TestData.bank_value.accounting_norm)
@@ -509,8 +536,9 @@ describe Txn do
   it "should process direct gains losses" do
     TestData.profit += 50.0
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
-                                   :amount => (400.0 * 34.95), :from => @forex4, :to => @bank,
-                                   :resource => @bank.give)
+                          :amount => (400.0 * 34.95),
+                          :from => @forex4, :to => @bank,
+                          :resource => @bank.give)
     Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(7)
     @forex4.balance.amount.should eq(400.0)
@@ -522,8 +550,9 @@ describe Txn do
     @bank.balance.side.should eq(Balance::ACTIVE)
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
-                                   :amount => 400.0, :from => @bank2, :to => Deal.income,
-                                   :resource => @bank2.take)
+                          :amount => 400.0,
+                          :from => @bank2, :to => Deal.income,
+                          :resource => @bank2.take)
     Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(7)
     TestData.bank2_value -= 400.0
@@ -536,8 +565,9 @@ describe Txn do
     Income.open.first.value.should eq(TestData.profit.accounting_norm)
 
     fact = Factory(:fact, :day => DateTime.civil(2011, 11, 27, 12, 0, 0),
-                                   :amount => 400.0, :from => Deal.income, :to => @forex4,
-                                   :resource => @forex4.give)
+                          :amount => 400.0,
+                          :from => Deal.income, :to => @forex4,
+                          :resource => @forex4.give)
     Factory(:txn, :fact => fact)
     Balance.not_paid.count.should eq(6)
     @share2.balance.side.should eq(Balance::PASSIVE)
@@ -561,12 +591,18 @@ describe Txn do
   end
 
   it "should produce transcript" do
-    txns = @bank.txns(DateTime.civil(2011, 11, 22, 12, 0, 0), DateTime.civil(2011, 11, 22, 12, 0, 0))
+    txns = @bank.txns(DateTime.civil(2011, 11, 22, 12, 0, 0),
+                      DateTime.civil(2011, 11, 22, 12, 0, 0))
     txns.count.should eq(2)
-    txns.each { |txn| txn.should be_kind_of(Txn); [txn.fact.from, txn.fact.to].should include(@bank) }
-    txns = @bank.txns(DateTime.civil(2011, 11, 23, 12, 0, 0), DateTime.civil(2011, 11, 23, 12, 0, 0))
+    txns.each { |txn|
+      txn.should be_kind_of(Txn);
+      [txn.fact.from, txn.fact.to].should include(@bank) }
+    txns = @bank.txns(DateTime.civil(2011, 11, 23, 12, 0, 0),
+                      DateTime.civil(2011, 11, 23, 12, 0, 0))
     txns.count.should eq(4)
-    txns.each { |txn| txn.should be_kind_of(Txn); [txn.fact.from, txn.fact.to].should include(@bank) }
+    txns.each { |txn|
+      txn.should be_kind_of(Txn);
+      [txn.fact.from, txn.fact.to].should include(@bank) }
 
     balances = @bank.balances.in_time_frame(DateTime.civil(2011, 11, 22, 12, 0, 0),
                                             DateTime.civil(2011, 11, 22, 12, 0, 0))
@@ -574,7 +610,8 @@ describe Txn do
     balances.first.start.should eq(DateTime.civil(2011, 11, 22, 12, 0, 0))
     balances.first.paid.should eq(DateTime.civil(2011, 11, 23, 12, 0, 0))
 
-    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 22, 12, 0, 0), DateTime.civil(2011, 11, 22, 12, 0, 0))
+    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 22, 12, 0, 0),
+                        DateTime.civil(2011, 11, 22, 12, 0, 0))
     tr.deal.should eq(@bank)
     tr.start.should eq(DateTime.civil(2011, 11, 22, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2011, 11, 22, 12, 0, 0))
@@ -588,21 +625,21 @@ describe Txn do
     tr.all.to_a.should =~ [TestData.t_share2_to_bank, TestData.t_share_to_bank]
 
 
-    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 22, 12, 0, 0), DateTime.civil(2011, 11, 23, 12, 0, 0))
+    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 22, 12, 0, 0),
+                        DateTime.civil(2011, 11, 23, 12, 0, 0))
     tr.deal.should eq(@bank)
     tr.start.should eq(DateTime.civil(2011, 11, 22, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2011, 11, 23, 12, 0, 0))
 
     tr.opening.should be_nil
-    tr.closing.amount.should eq(100000.0 + 142000.0 - 70000.0 +
-                                (1000.0 * (@forex2.rate - (1 / @forex1.rate))).accounting_norm - (5000.0 * 34.2))
-    tr.closing.value.should eq(100000.0 + 142000.0 - 70000.0 +
-                              (1000.0 * (@forex2.rate - (1 / @forex1.rate))).accounting_norm - (5000.0 * 34.2))
+    tr.closing.amount.should eq(TestData.bank_value2)
+    tr.closing.value.should eq(TestData.bank_value2)
     tr.closing.side.should eq(Balance::ACTIVE)
 
     tr.all.count.should eq(6)
-    tr.all.to_a.should =~ [TestData.t_share2_to_bank, TestData.t_share_to_bank, TestData.t_bank_to_forex,
-                       TestData.t_bank_to_forex3, TestData.t_bank_to_purchase, TestData.t_forex2_to_bank]
+    tr.all.to_a.should =~ [TestData.t_share2_to_bank, TestData.t_share_to_bank,
+                           TestData.t_bank_to_forex,  TestData.t_bank_to_forex3,
+                           TestData.t_bank_to_purchase, TestData.t_forex2_to_bank]
 
     tr.total_debits.should eq(100000.0 + 142000.0 + 1000.0 * @forex2.rate)
     tr.total_debits_value.should eq(100000.0 + 142000.0 + 1000.0 * @forex2.rate)
@@ -611,7 +648,8 @@ describe Txn do
     tr.total_credits_value.should eq(70000.0 + 5000.0 * 34.2 + 34950.0)
 
 
-    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 23, 12, 0, 0), DateTime.civil(2011, 11, 24, 12, 0, 0))
+    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 23, 12, 0, 0),
+                        DateTime.civil(2011, 11, 24, 12, 0, 0))
     tr.deal.should eq(@bank)
     tr.start.should eq(DateTime.civil(2011, 11, 23, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2011, 11, 24, 12, 0, 0))
@@ -619,21 +657,19 @@ describe Txn do
     tr.opening.amount.should eq(100000.0 + 142000.0)
     tr.opening.value.should eq(100000.0 + 142000.0)
     tr.opening.side.should eq(Balance::ACTIVE)
-    tr.closing.amount.should eq(100000.0 + 142000.0 - 70000.0 +
-                                (1000.0 * (@forex2.rate - (1 / @forex1.rate))).accounting_norm - (5000.0 * 34.2) +
-                                (2500.0 * 34.95) + (100 * 34.95) - (2 * 2000.0))
-    tr.closing.value.should eq(100000.0 + 142000.0 - 70000.0 +
-                              (1000.0 * (@forex2.rate - (1 / @forex1.rate))).accounting_norm - (5000.0 * 34.2) +
-                              (2500.0 * 34.95) + (100 * 34.95) - (2 * 2000.0))
+    tr.closing.amount.should eq(TestData.bank_value3)
+    tr.closing.value.should eq(TestData.bank_value3)
     tr.closing.side.should eq(Balance::ACTIVE)
 
     tr.all.count.should eq(7)
-    tr.all.to_a.should =~ [TestData.t_bank_to_forex, TestData.t_bank_to_forex3, TestData.t_bank_to_purchase,
-                       TestData.t_forex2_to_bank,
-                       TestData.t_forex4_to_bank, TestData.t2_forex4_to_bank, TestData.t_bank_to_office]
+    tr.all.to_a.should =~ [TestData.t_bank_to_forex, TestData.t_bank_to_forex3,
+                           TestData.t_bank_to_purchase, TestData.t_forex2_to_bank,
+                           TestData.t_forex4_to_bank, TestData.t2_forex4_to_bank,
+                           TestData.t_bank_to_office]
 
 
-    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 21, 12, 0, 0), DateTime.civil(2011, 11, 21, 12, 0, 0))
+    tr = Transcript.new(@bank, DateTime.civil(2011, 11, 21, 12, 0, 0),
+                        DateTime.civil(2011, 11, 21, 12, 0, 0))
     tr.deal.should eq(@bank)
     tr.start.should eq(DateTime.civil(2011, 11, 21, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2011, 11, 21, 12, 0, 0))
@@ -641,7 +677,8 @@ describe Txn do
     tr.closing.should be_nil
     tr.all.should be_empty
 
-    tr = Transcript.new(@purchase, DateTime.civil(2011, 11, 22, 12, 0, 0), DateTime.civil(2011, 11, 23, 12, 0, 0))
+    tr = Transcript.new(@purchase, DateTime.civil(2011, 11, 22, 12, 0, 0),
+                        DateTime.civil(2011, 11, 23, 12, 0, 0))
     tr.deal.should eq(@purchase)
     tr.start.should eq(DateTime.civil(2011, 11, 22, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2011, 11, 23, 12, 0, 0))
@@ -656,7 +693,8 @@ describe Txn do
   end
 
   it "should produce pnl transcript" do
-    tr = Transcript.new(Deal.income, DateTime.civil(2011, 11, 22, 12, 0, 0), DateTime.civil(2011, 11, 27, 12, 0, 0))
+    tr = Transcript.new(Deal.income, DateTime.civil(2011, 11, 22, 12, 0, 0),
+                        DateTime.civil(2011, 11, 27, 12, 0, 0))
     tr.deal.should eq(Deal.income)
     tr.start.should eq(DateTime.civil(2011, 11, 22, 12, 0, 0))
     tr.stop.should eq(DateTime.civil(2011, 11, 27, 12, 0, 0))
