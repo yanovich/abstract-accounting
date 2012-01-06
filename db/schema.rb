@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120106092811) do
+ActiveRecord::Schema.define(:version => 20120106100947) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -91,6 +91,13 @@ ActiveRecord::Schema.define(:version => 20120106092811) do
 
   add_index "money", ["alpha_code"], :name => "index_money_on_alpha_code", :unique => true
   add_index "money", ["num_code"], :name => "index_money_on_num_code", :unique => true
+
+  create_table "price_lists", :force => true do |t|
+    t.integer  "resource_id"
+    t.datetime "date"
+  end
+
+  add_index "price_lists", ["resource_id"], :name => "index_price_lists_on_resource_id"
 
   create_table "quotes", :force => true do |t|
     t.integer  "money_id"
