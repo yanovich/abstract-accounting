@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120106085248) do
+ActiveRecord::Schema.define(:version => 20120106092811) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -29,6 +29,15 @@ ActiveRecord::Schema.define(:version => 20120106085248) do
   end
 
   add_index "balances", ["deal_id", "start"], :name => "index_balances_on_deal_id_and_start", :unique => true
+
+  create_table "bo_m_elements", :force => true do |t|
+    t.integer "bom_id"
+    t.integer "resource_id"
+    t.float   "rate"
+  end
+
+  add_index "bo_m_elements", ["bom_id"], :name => "index_bo_m_elements_on_bom_id"
+  add_index "bo_m_elements", ["resource_id"], :name => "index_bo_m_elements_on_resource_id"
 
   create_table "bo_ms", :force => true do |t|
     t.integer "resource_id"

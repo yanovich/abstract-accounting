@@ -7,10 +7,14 @@
 #
 # Please see ./COPYING for details
 
-class BoM < ActiveRecord::Base
-  has_paper_trail
-
-  validates_presence_of :resource_id
-  belongs_to :resource, :class_name => 'Asset'
-  has_many :items, :class_name => "BoMElement", :foreign_key => :bom_id
+class CreateBoMElements < ActiveRecord::Migration
+  def change
+    create_table :bo_m_elements do |t|
+      t.references :bom
+      t.references :resource
+      t.float :rate
+    end
+    add_index :bo_m_elements, :resource_id
+    add_index :bo_m_elements, :bom_id
+  end
 end

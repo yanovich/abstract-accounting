@@ -9,11 +9,13 @@
 
 require 'spec_helper'
 
-describe BoM do
+describe BoMElement do
   it "should have next behaviour" do
-    should validate_presence_of(:resource_id)
+    should validate_presence_of :resource_id
+    should validate_presence_of :bom_id
+    should validate_presence_of :rate
     should belong_to(:resource).class_name(Asset)
-    should have_many(BoM.versions_association_name)
-    should have_many(:items).class_name(BoMElement)
+    should belong_to(:bom).class_name(BoM)
+    should have_many(BoMElement.versions_association_name)
   end
 end

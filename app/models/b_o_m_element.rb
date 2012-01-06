@@ -7,10 +7,10 @@
 #
 # Please see ./COPYING for details
 
-class BoM < ActiveRecord::Base
+class BoMElement < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :resource_id
-  belongs_to :resource, :class_name => 'Asset'
-  has_many :items, :class_name => "BoMElement", :foreign_key => :bom_id
+  validates_presence_of :resource_id, :bom_id, :rate
+  belongs_to :resource, :class_name => "Asset"
+  belongs_to :bom, :class_name => "BoM"
 end
