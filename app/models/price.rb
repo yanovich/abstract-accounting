@@ -7,14 +7,10 @@
 #
 # Please see ./COPYING for details
 
-require 'spec_helper'
+class Price < ActiveRecord::Base
+  has_paper_trail
 
-describe PriceList do
-  it "should have next behaviour" do
-    should validate_presence_of :resource_id
-    should validate_presence_of :date
-    should belong_to(:resource).class_name(Asset)
-    should have_many(PriceList.versions_association_name)
-    should have_many(:items).class_name(Price)
-  end
+  validates_presence_of :resource_id, :price_list_id, :rate
+  belongs_to :resource, :class_name => "Asset"
+  belongs_to :price_list
 end

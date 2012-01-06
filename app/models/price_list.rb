@@ -12,4 +12,5 @@ class PriceList < ActiveRecord::Base
 
   validates_presence_of :resource_id, :date
   belongs_to :resource, :class_name => "Asset"
+  has_many :items, :class_name => "Price"
 end

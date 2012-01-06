@@ -7,14 +7,14 @@
 #
 # Please see ./COPYING for details
 
-require 'spec_helper'
-
-describe PriceList do
-  it "should have next behaviour" do
-    should validate_presence_of :resource_id
-    should validate_presence_of :date
-    should belong_to(:resource).class_name(Asset)
-    should have_many(PriceList.versions_association_name)
-    should have_many(:items).class_name(Price)
+class CreatePrices < ActiveRecord::Migration
+  def change
+    create_table :prices do |t|
+      t.references :resource
+      t.float :rate
+      t.references :price_list
+    end
+    add_index :prices, :resource_id
+    add_index :prices, :price_list_id
   end
 end
