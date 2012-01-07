@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120106102840) do
+ActiveRecord::Schema.define(:version => 20120106121854) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -65,6 +65,16 @@ ActiveRecord::Schema.define(:version => 20120106102840) do
   create_table "entities", :force => true do |t|
     t.string "tag"
   end
+
+  create_table "estimates", :force => true do |t|
+    t.integer "entity_id"
+    t.integer "price_list_id"
+    t.integer "deal_id"
+  end
+
+  add_index "estimates", ["deal_id"], :name => "index_estimates_on_deal_id"
+  add_index "estimates", ["entity_id"], :name => "index_estimates_on_entity_id"
+  add_index "estimates", ["price_list_id"], :name => "index_estimates_on_price_list_id"
 
   create_table "facts", :force => true do |t|
     t.datetime "day"
