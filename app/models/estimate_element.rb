@@ -7,12 +7,11 @@
 #
 # Please see ./COPYING for details
 
-class Estimate < ActiveRecord::Base
+class EstimateElement < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :entity_id, :price_list_id, :deal_id
-  belongs_to :entity
-  belongs_to :price_list
-  belongs_to :deal
-  has_many :items, :class_name => "EstimateElement"
+  validates_presence_of :amount, :bom_id, :estimate_id
+  validates_uniqueness_of :bom_id, :scope => :estimate_id
+  belongs_to :bom, :class_name => "BoM"
+  belongs_to :estimate
 end

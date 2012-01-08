@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120106121854) do
+ActiveRecord::Schema.define(:version => 20120108102312) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -65,6 +65,15 @@ ActiveRecord::Schema.define(:version => 20120106121854) do
   create_table "entities", :force => true do |t|
     t.string "tag"
   end
+
+  create_table "estimate_elements", :force => true do |t|
+    t.integer "estimate_id"
+    t.integer "bom_id"
+    t.float   "amount"
+  end
+
+  add_index "estimate_elements", ["bom_id"], :name => "index_estimate_elements_on_bom_id"
+  add_index "estimate_elements", ["estimate_id"], :name => "index_estimate_elements_on_estimate_id"
 
   create_table "estimates", :force => true do |t|
     t.integer "entity_id"

@@ -18,5 +18,6 @@ describe Estimate do
     should belong_to(:entity)
     should belong_to(:price_list)
     should have_many Estimate.versions_association_name
+    should have_many(:items).class_name(EstimateElement)
   end
 end

@@ -7,12 +7,14 @@
 #
 # Please see ./COPYING for details
 
-class Estimate < ActiveRecord::Base
-  has_paper_trail
-
-  validates_presence_of :entity_id, :price_list_id, :deal_id
-  belongs_to :entity
-  belongs_to :price_list
-  belongs_to :deal
-  has_many :items, :class_name => "EstimateElement"
+class CreateEstimateElements < ActiveRecord::Migration
+  def change
+    create_table :estimate_elements do |t|
+      t.references :estimate
+      t.references :bom
+      t.float :amount
+    end
+    add_index :estimate_elements, :estimate_id
+    add_index :estimate_elements, :bom_id
+  end
 end
