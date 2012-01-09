@@ -19,25 +19,47 @@ describe BoMElement do
     should have_many(BoMElement.versions_association_name)
   end
 
-  it "should convert self to rule" do
-    chart = Factory(:chart)
-    bom_deal = Factory(:deal)
-    resource = Factory(:asset, :tag => "Avtopogruzchik 5t")
-    price = Factory(:price, :resource => resource, :rate => (74.03 * 4.70))
-    element = BoMElement.create!(:resource => resource, :bom_id => 1, :rate => 0.33)
-    lambda {
-      element.to_rule(bom_deal, price)
-    }.should change(bom_deal.rules, :count).by(1)
-    rule = bom_deal.rules.first
-    rule.rate.should eq(0.33 * (74.03 * 4.70))
-    rule.deal_id.should eq(bom_deal.id)
-    rule.from.rate.should eq(0.33)
-    rule.from.give.should eq(resource)
-    rule.from.take.should eq(chart.currency)
-    rule.from.entity.should eq(bom_deal.entity)
-    rule.to.rate.should eq(1.0)
-    rule.to.give.should eq(chart.currency)
-    rule.to.take.should eq(chart.currency)
-    rule.to.entity.should eq(bom_deal.entity)
+  describe "#to_rule" do
+    before(:all) do
+      @chart = Factory(:chart)
+      @bom_deal = Factory(:deal)
+    end
+
+    it "should create rule" do
+      resource = Factory(:asset, :tag => "Avtopogruzchik 5t")
+      price = Factory(:price, :resource => resource, :rate => (74.03 * 4.70))
+      element = Factory(:bo_m_element, :resource => resource, :rate => 0.33)
+      lambda {
+        element.to_rule(@bom_deal, price)
+      }.should change(@bom_deal.rules, :count).by(1)
+      rule = @bom_deal.rules.first
+      rule.rate.should eq(0.33 * (74.03 * 4.70))
+      rule.deal_id.should eq(@bom_deal.id)
+      rule.from.rate.should eq(0.33)
+      rule.from.give.should eq(resource)
+      rule.from.take.should eq(@chart.currency)
+      rule.from.entity.should eq(@bom_deal.entity)
+      rule.to.rate.should eq(1.0)
+      rule.to.give.should eq(@chart.currency)
+      rule.to.take.should eq(@chart.currency)
+      rule.to.entity.should eq(@bom_deal.entity)
+    end
+
+    it "should use same deal for money storage in rule" do
+      resource = Factory(:asset, :tag => "Rompressory peredvignie")
+      price = Factory(:price, :resource => resource, :rate => (59.76 * 4.70))
+      element = Factory(:bo_m_element, :resource => resource, :rate => 0.46)
+      lambda {
+        element.to_rule(@bom_deal, price)
+      }.should change(Deal, :count).by(1)
+      rule = @bom_deal.rules.last
+      rule.rate.should eq(0.46 * (59.76 * 4.70))
+      rule.deal_id.should eq(@bom_deal.id)
+      rule.from.rate.should eq(0.46)
+      rule.from.give.should eq(resource)
+      rule.from.take.should eq(@chart.currency)
+      rule.from.entity.should eq(@bom_deal.entity)
+      rule.to.should eq(@bom_deal.rules.first.to)
+    end
   end
 end

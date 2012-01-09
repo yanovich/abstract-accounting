@@ -19,12 +19,20 @@ class BoMElement < ActiveRecord::Base
                  :tag => "resource converter from #{resource.tag} to #{Chart.first.currency}",
                  :rate => self.rate, :give => self.resource, :take => Chart.first.currency,
                  :entity => deal.entity)
-    to = Deal.create!(
-                 :tag => "storage from #{Chart.first.currency} to #{Chart.first.currency}",
-                 :rate => 1.0, :give => Chart.first.currency, :take => Chart.first.currency,
-                 :entity => deal.entity)
     deal.rules.create!(:tag => "deal rule ##{deal.rules.count() + 1}",
-                       :from => from, :to => to, :rate => self.rate * price.rate,
+                       :from => from, :to => money_storage(deal.entity),
+                       :rate => self.rate * price.rate,
                        :fact_side => false, :change_side => true)
+  end
+
+  private
+  def money_storage(entity)
+    deal = Deal.find_all_by_entity_id_and_give_id_and_take_id_and_give_type_and_take_type(
+        entity, Chart.first.currency_id, Chart.first.currency_id, Money, Money).first
+    deal = Deal.create!(
+                   :tag => "storage from #{Chart.first.currency} to #{Chart.first.currency}",
+                   :rate => 1.0, :give => Chart.first.currency, :take => Chart.first.currency,
+                   :entity => entity) if deal.nil?
+    deal
   end
 end
