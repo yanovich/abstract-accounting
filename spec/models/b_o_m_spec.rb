@@ -17,41 +17,50 @@ describe BoM do
     should have_many(:items).class_name(BoMElement)
   end
 
-  it "should create deal with rules" do
-    Factory(:chart)
-    entity = Factory(:entity)
-    truck = Factory(:asset)
-    compressor = Factory(:asset)
-    compaction = Factory(:asset)
-    prices = PriceList.create!(
-        :resource => Factory(:asset,:tag => "TUP of the Leningrad region"),
-        :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
-    prices.items.create!(:resource => truck, :rate => (74.03 * 4.70))
-    prices.items.create!(:resource => compressor, :rate => (59.76 * 4.70))
-    bom = BoM.create!(:resource => compaction)
-    bom.items.create!(:resource => truck, :rate => 0.33)
-    bom.items.create!(:resource => compressor,
-                      :rate => 0.46)
-    deal = nil
-    lambda {
-      deal = bom.to_deal(entity, prices)
-    }.should change(Deal, :count).by(4)
-    deal.should_not be_nil
-    deal.entity.should eq(entity)
-    deal.give.should eq(compaction)
-    deal.take.should eq(compaction)
-    deal.rate.should eq(1.00)
-    deal.isOffBalance.should be_true
-    deal.rules.count.should eq(2)
-    [deal.rules.first.from.give, deal.rules.last.from.give].should =~ [compressor, truck]
-    deal.rules.each do |rule|
-      if rule.from.give == truck
-        rule.rate.should eq(0.33 * (74.03 * 4.70))
-        rule.from.rate.should eq(0.33)
-      elsif rule.from.give == compressor
-        rule.rate.should eq(0.46 * (59.76 * 4.70))
-        rule.from.rate.should eq(0.46)
+  describe "#to_deal" do
+    before(:all) do
+      Factory(:chart)
+      @entity = Factory(:entity)
+      @truck = Factory(:asset)
+      @compressor = Factory(:asset)
+      @compaction = Factory(:asset)
+      @prices = PriceList.create!(
+          :resource => Factory(:asset,:tag => "TUP of the Leningrad region"),
+          :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
+      @prices.items.create!(:resource => @truck, :rate => (74.03 * 4.70))
+      @prices.items.create!(:resource => @compressor, :rate => (59.76 * 4.70))
+      @bom = BoM.create!(:resource => @compaction)
+      @bom.items.create!(:resource => @truck, :rate => 0.33)
+      @bom.items.create!(:resource => @compressor,
+                        :rate => 0.46)
+    end
+
+    it "should create deal with rules" do
+      deal = nil
+      lambda {
+        deal = @bom.to_deal(@entity, @prices, 1)
+      }.should change(Deal, :count).by(4)
+      deal.should_not be_nil
+      deal.entity.should eq(@entity)
+      deal.give.should eq(@compaction)
+      deal.take.should eq(@compaction)
+      deal.rate.should eq(1.00)
+      deal.isOffBalance.should be_true
+      deal.rules.count.should eq(2)
+      [deal.rules.first.from.give, deal.rules.last.from.give].should =~ [@compressor, @truck]
+      deal.rules.each do |rule|
+        if rule.from.give == @truck
+          rule.rate.should eq(0.33 * (74.03 * 4.70))
+          rule.from.rate.should eq(0.33)
+        elsif rule.from.give == @compressor
+          rule.rate.should eq(0.46 * (59.76 * 4.70))
+          rule.from.rate.should eq(0.46)
+        end
       end
+    end
+
+    it "should create different deal for same entity and bom" do
+      @bom.to_deal(@entity, @prices, 1).should_not be_nil
     end
   end
 end

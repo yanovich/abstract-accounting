@@ -15,9 +15,11 @@ class BoM < ActiveRecord::Base
   has_many :items, :class_name => "BoMElement", :foreign_key => :bom_id
 
   def to_deal(entity, prices)
-    deal = Deal.create!(:tag => "estimate deal for bom: #{self.id}", :entity => entity,
-                        :give => self.resource, :take => self.resource, :rate => 1.0,
-                        :isOffBalance => true)
+    deal = Deal.create!(:tag => "estimate deal for bom: #{self.id}; ##{
+      Deal.where("tag LIKE 'estimate deal for bom: #{self.id}; #%'").count() + 1
+    }",
+                        :entity => entity, :give => self.resource, :take => self.resource,
+                        :rate => 1.0, :isOffBalance => true)
     self.items.each do |element|
       price = prices.items.where("resource_id = ?", element.resource_id).first
       element.to_rule(deal, price, 1)
