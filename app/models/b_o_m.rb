@@ -13,4 +13,15 @@ class BoM < ActiveRecord::Base
   validates_presence_of :resource_id
   belongs_to :resource, :class_name => 'Asset'
   has_many :items, :class_name => "BoMElement", :foreign_key => :bom_id
+
+  def to_deal(entity, prices)
+    deal = Deal.create!(:tag => "estimate deal for bom: #{self.id}", :entity => entity,
+                        :give => self.resource, :take => self.resource, :rate => 1.0,
+                        :isOffBalance => true)
+    self.items.each do |element|
+      price = prices.items.where("resource_id = ?", element.resource_id).first
+      element.to_rule(deal, price)
+    end
+    deal
+  end
 end
