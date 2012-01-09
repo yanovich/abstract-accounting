@@ -15,24 +15,29 @@ class BoMElement < ActiveRecord::Base
   belongs_to :bom, :class_name => "BoM"
 
   def to_rule(deal, price)
-    from = Deal.create!(
-                 :tag => "resource converter from #{resource.tag} to #{Chart.first.currency}",
-                 :rate => self.rate, :give => self.resource, :take => Chart.first.currency,
-                 :entity => deal.entity)
     deal.rules.create!(:tag => "deal rule ##{deal.rules.count() + 1}",
-                       :from => from, :to => money_storage(deal.entity),
+                       :from => convertation_deal(deal.entity),
+                       :to => money_storage(deal.entity),
                        :rate => self.rate * price.rate,
                        :fact_side => false, :change_side => true)
   end
 
   private
   def money_storage(entity)
+    find_or_create_deal("storage from #{Chart.first.currency} to #{Chart.first.currency}",
+                        entity, Chart.first.currency, Chart.first.currency, 1.0)
+  end
+
+  def convertation_deal(entity)
+    find_or_create_deal("resource converter from #{resource.tag} to #{Chart.first.currency}",
+                        entity, self.resource, Chart.first.currency, self.rate)
+  end
+
+  def find_or_create_deal(tag, entity, give, take, rate)
     deal = Deal.find_all_by_entity_id_and_give_id_and_take_id_and_give_type_and_take_type(
-        entity, Chart.first.currency_id, Chart.first.currency_id, Money, Money).first
-    deal = Deal.create!(
-                   :tag => "storage from #{Chart.first.currency} to #{Chart.first.currency}",
-                   :rate => 1.0, :give => Chart.first.currency, :take => Chart.first.currency,
-                   :entity => entity) if deal.nil?
+        entity, give, take, give.class, take.class).first
+    deal = Deal.create!(:tag => tag, :rate => rate, :give => give, :take => take,
+                        :entity => entity) if deal.nil?
     deal
   end
 end

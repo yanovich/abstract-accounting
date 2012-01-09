@@ -23,20 +23,20 @@ describe BoMElement do
     before(:all) do
       @chart = Factory(:chart)
       @bom_deal = Factory(:deal)
+      @auto = Factory(:asset, :tag => "Avtopogruzchik 5t")
+      @bom_element = Factory(:bo_m_element, :resource => @auto, :rate => 0.33)
     end
 
     it "should create rule" do
-      resource = Factory(:asset, :tag => "Avtopogruzchik 5t")
-      price = Factory(:price, :resource => resource, :rate => (74.03 * 4.70))
-      element = Factory(:bo_m_element, :resource => resource, :rate => 0.33)
+      price = Factory(:price, :resource => @auto, :rate => (74.03 * 4.70))
       lambda {
-        element.to_rule(@bom_deal, price)
+        @bom_element.to_rule(@bom_deal, price)
       }.should change(@bom_deal.rules, :count).by(1)
       rule = @bom_deal.rules.first
       rule.rate.should eq(0.33 * (74.03 * 4.70))
       rule.deal_id.should eq(@bom_deal.id)
       rule.from.rate.should eq(0.33)
-      rule.from.give.should eq(resource)
+      rule.from.give.should eq(@auto)
       rule.from.take.should eq(@chart.currency)
       rule.from.entity.should eq(@bom_deal.entity)
       rule.to.rate.should eq(1.0)
@@ -59,6 +59,18 @@ describe BoMElement do
       rule.from.give.should eq(resource)
       rule.from.take.should eq(@chart.currency)
       rule.from.entity.should eq(@bom_deal.entity)
+      rule.to.should eq(@bom_deal.rules.first.to)
+    end
+
+    it "should use same convertation deal" do
+      price = Factory(:price, :resource => @auto, :rate => (78.03 * 4.70))
+      lambda {
+        @bom_element.to_rule(@bom_deal, price)
+      }.should change(Deal, :count).by(0)
+      rule = @bom_deal.rules.last
+      rule.rate.should eq(0.33 * (78.03 * 4.70))
+      rule.deal_id.should eq(@bom_deal.id)
+      rule.from.should eq(@bom_deal.rules.first.from)
       rule.to.should eq(@bom_deal.rules.first.to)
     end
   end
