@@ -20,7 +20,7 @@ class BoM < ActiveRecord::Base
                         :isOffBalance => true)
     self.items.each do |element|
       price = prices.items.where("resource_id = ?", element.resource_id).first
-      element.to_rule(deal, price)
+      element.to_rule(deal, price, 1)
     end
     deal
   end

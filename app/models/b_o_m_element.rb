@@ -14,11 +14,11 @@ class BoMElement < ActiveRecord::Base
   belongs_to :resource, :class_name => "Asset"
   belongs_to :bom, :class_name => "BoM"
 
-  def to_rule(deal, price)
+  def to_rule(deal, price, physical_volume)
     deal.rules.create!(:tag => "deal rule ##{deal.rules.count() + 1}",
                        :from => convertation_deal(deal.entity),
                        :to => money_storage(deal.entity),
-                       :rate => self.rate * price.rate,
+                       :rate => self.rate * price.rate * physical_volume,
                        :fact_side => false, :change_side => true)
   end
 
