@@ -14,7 +14,7 @@ class BoM < ActiveRecord::Base
   belongs_to :resource, :class_name => 'Asset'
   has_many :items, :class_name => "BoMElement", :foreign_key => :bom_id
 
-  def to_deal(entity, prices)
+  def to_deal(entity, prices, physical_volume)
     deal = Deal.create!(:tag => "estimate deal for bom: #{self.id}; ##{
       Deal.where("tag LIKE 'estimate deal for bom: #{self.id}; #%'").count() + 1
     }",
@@ -22,7 +22,7 @@ class BoM < ActiveRecord::Base
                         :rate => 1.0, :isOffBalance => true)
     self.items.each do |element|
       price = prices.items.where("resource_id = ?", element.resource_id).first
-      element.to_rule(deal, price, 1)
+      element.to_rule(deal, price, physical_volume)
     end
     deal
   end

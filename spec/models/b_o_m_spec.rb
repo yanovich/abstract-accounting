@@ -62,5 +62,20 @@ describe BoM do
     it "should create different deal for same entity and bom" do
       @bom.to_deal(@entity, @prices, 1).should_not be_nil
     end
+
+    it "should resend physical volume to rule creation" do
+      deal = @bom.to_deal(@entity, @prices, 2)
+      deal.rules.count.should eq(2)
+      [deal.rules.first.from.give, deal.rules.last.from.give].should =~ [@compressor, @truck]
+      deal.rules.each do |rule|
+        if rule.from.give == @truck
+          rule.rate.should eq(0.33 * (74.03 * 4.70) * 2)
+          rule.from.rate.should eq(0.33)
+        elsif rule.from.give == @compressor
+          rule.rate.should eq(0.46 * (59.76 * 4.70) * 2)
+          rule.from.rate.should eq(0.46)
+        end
+      end
+    end
   end
 end
