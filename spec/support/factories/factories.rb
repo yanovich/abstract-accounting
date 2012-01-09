@@ -81,4 +81,10 @@ FactoryGirl.define do
     r.change_side true
     r.rate 1.0
   end
+
+  factory :price do |p|
+    p.resource { |price| price.association(:asset) }
+    p.rate 10.0
+    p.price_list_id 1
+  end
 end
