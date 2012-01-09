@@ -14,4 +14,10 @@ class EstimateElement < ActiveRecord::Base
   validates_uniqueness_of :bom_id, :scope => :estimate_id
   belongs_to :bom, :class_name => "BoM"
   belongs_to :estimate
+
+  def to_rule(deal)
+    deal.rules.create!(:tag => "deal: #{deal.tag}; rule ##{deal.rules.count() + 1}",
+                       :from => nil, :rate => 1.0, :fact_side => false, :change_side => true,
+                       :to => self.bom.to_deal(deal.entity, self.estimate.price_list))
+  end
 end

@@ -14,7 +14,6 @@ describe Rule do
 
   it "should have next behaviour" do
     should validate_presence_of :deal_id
-    should validate_presence_of :from_id
     should validate_presence_of :to_id
     should validate_presence_of :rate
     should allow_value(true).for(:fact_side)
