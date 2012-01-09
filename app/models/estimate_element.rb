@@ -10,15 +10,15 @@
 class EstimateElement < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :amount, :bom_id, :estimate_id
+  validates_presence_of :amount, :bom_id
   validates_uniqueness_of :bom_id, :scope => :estimate_id
   belongs_to :bom, :class_name => "BoM"
   belongs_to :estimate
 
-  def to_rule(deal)
+  def to_rule(deal, price_list = nil)
     deal.rules.create!(:tag => "deal: #{deal.tag}; rule ##{deal.rules.count() + 1}",
                        :from => nil, :rate => 1.0, :fact_side => false, :change_side => true,
-                       :to => self.bom.to_deal(deal.entity, self.estimate.price_list,
+                       :to => self.bom.to_deal(deal.entity, self.estimate ? self.estimate.price_list : price_list,
                                                self.amount))
   end
 end

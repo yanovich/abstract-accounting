@@ -12,7 +12,6 @@ require 'spec_helper'
 describe EstimateElement do
   it "should have next behaviour" do
     EstimateElement.create!(:estimate_id => 0, :bom_id => 0, :amount => 10)
-    should validate_presence_of :estimate_id
     should validate_presence_of :bom_id
     should validate_presence_of :amount
     should validate_uniqueness_of(:bom_id).scoped_to(:estimate_id)
