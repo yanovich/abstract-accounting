@@ -14,7 +14,7 @@ class Estimate < ActiveRecord::Base
   belongs_to :entity
   belongs_to :price_list
   belongs_to :deal
-  has_many :items, :class_name => "EstimateElement"
+  has_many :items, :class_name => "EstimateElement", :after_remove => :remove_item
 
   before_save :do_before_save
 
@@ -32,5 +32,11 @@ class Estimate < ActiveRecord::Base
       end
     end
     true
+  end
+
+  def remove_item(element)
+    self.deal.rules.each do |rule|
+      self.deal.rules.delete(rule.destroy) if rule.to.give == element.bom.resource
+    end
   end
 end
