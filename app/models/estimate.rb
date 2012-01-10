@@ -36,6 +36,7 @@ class Estimate < ActiveRecord::Base
         :give => estimate_shipment, :take => estimate_shipment,
         :rate => 1.0, :entity => self.entity
       )
+      self.save!
     end
     element.to_rule(self.deal, self.price_list)
   end

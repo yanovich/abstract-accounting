@@ -47,6 +47,7 @@ describe Estimate do
       @estimate.items.create!(:bom => bom, :amount => 1.0)
       @estimate.deal.entity.should eq(@entity)
       @estimate.deal.isOffBalance.should be_true
+      Estimate.find(@estimate).deal.should eq(@estimate.deal)
     end
 
     it "should create rules when item added" do
