@@ -32,7 +32,8 @@ describe EstimateElement do
       @prices.items.create!(:resource => truck, :rate => (74.03 * 4.70))
       @bom = BoM.create!(:resource => compaction)
       @bom.items.create!(:resource => truck, :rate => 0.33)
-      @estimate = Estimate.create!(:entity => @entity, :price_list => @prices, :deal_id => 1)
+      @estimate = Estimate.create!(:entity => @entity, :price_list => @prices,
+                                   :deal =>Factory(:deal, :entity => @entity))
     end
 
     it "should convert self to rule" do
