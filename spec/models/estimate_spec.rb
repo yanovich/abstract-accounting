@@ -68,5 +68,14 @@ describe Estimate do
       @estimate.deal.rules.count.should eq(1)
       @estimate.deal.rules.first.to.give.should eq(@estimate.items.first.bom.resource)
     end
+
+    it "should remove deal when item removed and items.count = 0" do
+      @estimate.deal.rules.count.should eq(1)
+      lambda {
+        @estimate.items.delete(@estimate.items.last.destroy)
+      }.should change(Deal, :count).by(-1)
+      @estimate.deal.should be_nil
+      Estimate.find(@estimate.id).deal.should be_nil
+    end
   end
 end

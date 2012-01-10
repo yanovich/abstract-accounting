@@ -23,6 +23,7 @@ class Estimate < ActiveRecord::Base
     self.deal.rules.each do |rule|
       self.deal.rules.delete(rule.destroy) if rule.to.give == element.bom.resource
     end
+    (self.deal.destroy && self.update_attributes(:deal_id => nil)) if self.deal.rules.empty?
   end
 
   def add_item(element)
