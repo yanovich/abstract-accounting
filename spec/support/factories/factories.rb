@@ -93,4 +93,8 @@ FactoryGirl.define do
     be.rate 0.45
     be.bom_id 1
   end
+
+  factory :mu do |m|
+    m.sequence(:tag) { |n| "mu#{n}" }
+  end
 end
