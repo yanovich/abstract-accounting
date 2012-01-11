@@ -6,12 +6,14 @@
 # License, or (at your option) any later version.
 #
 # Please see ./COPYING for details
-
-class DetailedService < ActiveRecord::Base
-  has_paper_trail
-
-  validates_presence_of :tag, :mu_id
-  validates_uniqueness_of :tag, :scope => :mu_id
-  belongs_to :mu
-  has_many :surrogates, :class_name => "Service", :foreign_key => :detailed_id
+class CreateServices < ActiveRecord::Migration
+  def change
+    create_table :services do |t|
+      t.string :tag
+      t.string :mu
+      t.references :detailed
+    end
+    add_index :services, :detailed_id
+    add_index :services, [:tag, :mu], :unique => true
+  end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120111132116) do
+ActiveRecord::Schema.define(:version => 20120111133639) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -170,6 +170,15 @@ ActiveRecord::Schema.define(:version => 20120111132116) do
     t.integer "from_id"
     t.integer "to_id"
   end
+
+  create_table "services", :force => true do |t|
+    t.string  "tag"
+    t.string  "mu"
+    t.integer "detailed_id"
+  end
+
+  add_index "services", ["detailed_id"], :name => "index_services_on_detailed_id"
+  add_index "services", ["tag", "mu"], :name => "index_services_on_tag_and_mu", :unique => true
 
   create_table "states", :force => true do |t|
     t.integer  "deal_id"

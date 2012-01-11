@@ -7,11 +7,10 @@
 #
 # Please see ./COPYING for details
 
-class DetailedService < ActiveRecord::Base
+class Service < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :tag, :mu_id
-  validates_uniqueness_of :tag, :scope => :mu_id
-  belongs_to :mu
-  has_many :surrogates, :class_name => "Service", :foreign_key => :detailed_id
+  validates_presence_of :tag, :mu
+  validates_uniqueness_of :tag, :scope => :mu
+  belongs_to :detailed, :class_name => "DetailedService"
 end
