@@ -9,15 +9,13 @@
 
 require 'spec_helper'
 
-describe DetailedService do
+describe Description do
   it "should have next behaviour" do
-    DetailedService.create!(:tag => "service", :mu => Factory(:mu))
-    should validate_presence_of :tag
-    should validate_presence_of :mu_id
-    should validate_uniqueness_of(:tag).scoped_to(:mu_id)
-    should belong_to :mu
-    should have_many DetailedService.versions_association_name
-    should have_many(:surrogates).class_name(Service)
-    should have_one(:description)
+    Description.create!(:description => "das", :item => Factory(:entity))
+    should validate_presence_of :description
+    should validate_presence_of :item_id
+    should validate_uniqueness_of(:item_id).scoped_to(:item_type)
+    should belong_to(:item)
+    should have_many Description.versions_association_name
   end
 end

@@ -19,5 +19,6 @@ describe DetailedAsset do
     should belong_to(:mu)
     should belong_to(:manufacturer).class_name(Entity)
     should have_many DetailedAsset.versions_association_name
+    should have_one(:description)
   end
 end

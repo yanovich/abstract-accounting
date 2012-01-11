@@ -7,12 +7,12 @@
 #
 # Please see ./COPYING for details
 
-class DetailedService < ActiveRecord::Base
-  has_paper_trail
-
-  validates_presence_of :tag, :mu_id
-  validates_uniqueness_of :tag, :scope => :mu_id
-  belongs_to :mu
-  has_many :surrogates, :class_name => "Service", :foreign_key => :detailed_id
-  has_one :description, :as => :item
+class CreateDescriptions < ActiveRecord::Migration
+  def change
+    create_table :descriptions do |t|
+      t.text :description
+      t.references :item, :polymorphic => true
+    end
+    add_index :descriptions, [:item_id, :item_type], :unique => true
+  end
 end

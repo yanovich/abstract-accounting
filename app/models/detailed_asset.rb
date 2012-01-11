@@ -14,4 +14,5 @@ class DetailedAsset < ActiveRecord::Base
   validates_uniqueness_of :tag, :scope => [:brand, :mu_id]
   belongs_to :mu
   belongs_to :manufacturer, :class_name => "Entity"
+  has_one :description, :as => :item
 end

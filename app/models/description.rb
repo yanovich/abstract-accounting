@@ -7,12 +7,10 @@
 #
 # Please see ./COPYING for details
 
-class DetailedService < ActiveRecord::Base
+class Description < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :tag, :mu_id
-  validates_uniqueness_of :tag, :scope => :mu_id
-  belongs_to :mu
-  has_many :surrogates, :class_name => "Service", :foreign_key => :detailed_id
-  has_one :description, :as => :item
+  validates_presence_of :description, :item_id
+  validates_uniqueness_of :item_id, :scope => :item_type
+  belongs_to :item, :polymorphic => true
 end
