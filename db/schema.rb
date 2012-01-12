@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120112133231) do
+ActiveRecord::Schema.define(:version => 20120112134503) do
 
   create_table "assets", :force => true do |t|
     t.string  "tag"
@@ -163,6 +163,19 @@ ActiveRecord::Schema.define(:version => 20120112133231) do
   end
 
   add_index "incomes", ["start"], :name => "index_incomes_on_start", :unique => true
+
+  create_table "legal_entities", :force => true do |t|
+    t.string  "name"
+    t.integer "country_id"
+    t.string  "identifier_name"
+    t.string  "identifier_value"
+    t.integer "detail_id"
+    t.string  "detail_type"
+  end
+
+  add_index "legal_entities", ["country_id"], :name => "index_legal_entities_on_country_id"
+  add_index "legal_entities", ["detail_id"], :name => "index_legal_entities_on_detail_id"
+  add_index "legal_entities", ["name", "country_id"], :name => "index_legal_entities_on_name_and_country_id", :unique => true
 
   create_table "money", :force => true do |t|
     t.integer "num_code"
