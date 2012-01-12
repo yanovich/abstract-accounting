@@ -7,14 +7,9 @@
 #
 # Please see ./COPYING for details
 
-require 'spec_helper'
-
-describe Entity do
-  it "should have next behaviour" do
-    Factory(:entity)
-    should validate_presence_of :tag
-    should validate_uniqueness_of :tag
-    should have_many Entity.versions_association_name
-    should belong_to(:detail).class_name(Person)
+class AddDetailColumnToEntities < ActiveRecord::Migration
+  def change
+    add_column :entities, :detail_id, :integer
+    add_index :entities, :detail_id
   end
 end

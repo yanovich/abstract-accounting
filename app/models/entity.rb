@@ -13,6 +13,7 @@ class Entity < ActiveRecord::Base
   validates_presence_of :tag
   validates_uniqueness_of :tag
   has_many :deals
+  belongs_to :detail, :class_name => "Person"
 end
 
 # vim: ts=2 sts=2 sw=2 et:

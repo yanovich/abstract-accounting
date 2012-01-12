@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120112124633) do
+ActiveRecord::Schema.define(:version => 20120112131741) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -107,8 +107,11 @@ ActiveRecord::Schema.define(:version => 20120112124633) do
   add_index "detailed_services", ["tag"], :name => "index_detailed_services_on_tag", :unique => true
 
   create_table "entities", :force => true do |t|
-    t.string "tag"
+    t.string  "tag"
+    t.integer "detail_id"
   end
+
+  add_index "entities", ["detail_id"], :name => "index_entities_on_detail_id"
 
   create_table "estimate_elements", :force => true do |t|
     t.integer "estimate_id"
