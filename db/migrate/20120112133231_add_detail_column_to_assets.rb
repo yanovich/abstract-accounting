@@ -7,16 +7,9 @@
 #
 # Please see ./COPYING for details
 
-require 'spec_helper'
-
-describe Asset do
-  it "should have next behaviour" do
-    Factory(:asset)
-    should validate_presence_of :tag
-    should validate_uniqueness_of :tag
-    should have_many :deal_gives
-    should have_many :deal_takes
-    should have_many Asset.versions_association_name
-    should belong_to(:detail).class_name(DetailedAsset)
+class AddDetailColumnToAssets < ActiveRecord::Migration
+  def change
+    add_column :assets, :detail_id, :integer
+    add_index :assets, :detail_id
   end
 end

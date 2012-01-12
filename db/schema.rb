@@ -11,12 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120112131741) do
+ActiveRecord::Schema.define(:version => 20120112133231) do
 
   create_table "assets", :force => true do |t|
-    t.string "tag"
+    t.string  "tag"
+    t.integer "detail_id"
   end
 
+  add_index "assets", ["detail_id"], :name => "index_assets_on_detail_id"
   add_index "assets", ["tag"], :name => "index_assets_on_tag", :unique => true
 
   create_table "balances", :force => true do |t|

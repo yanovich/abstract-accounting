@@ -14,6 +14,7 @@ class Asset < ActiveRecord::Base
   validates_uniqueness_of :tag
   has_many :deal_gives, :class_name => "Deal", :as => :give
   has_many :deal_takes, :class_name => "Deal", :as => :take
+  belongs_to :detail, :class_name => "DetailedAsset"
 end
 
 # vim: ts=2 sts=2 sw=2 et:
