@@ -7,10 +7,11 @@
 #
 # Please see ./COPYING for details
 
-class Person < ActiveRecord::Base
+class IdentityDocument < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :first_name, :second_name, :birthday, :place_of_birth
-  validates_uniqueness_of :first_name, :scope => :second_name
-  has_one :identity, :class_name => "IdentityDocument"
+  validates_presence_of :country_id, :person_id, :number, :date_of_issue, :authority
+  validates_uniqueness_of :number, :scope => :country_id
+  belongs_to :country
+  belongs_to :person
 end

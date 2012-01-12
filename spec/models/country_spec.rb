@@ -11,7 +11,7 @@ require 'spec_helper'
 
 describe Country do
   it "should have next behaviour" do
-    Country.create!(:tag => "Russia")
+    Factory(:country)
     should validate_presence_of :tag
     should validate_uniqueness_of :tag
     should have_many Country.versions_association_name

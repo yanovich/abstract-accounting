@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120112105039) do
+ActiveRecord::Schema.define(:version => 20120112120245) do
 
   create_table "assets", :force => true do |t|
     t.string "tag"
@@ -126,6 +126,18 @@ ActiveRecord::Schema.define(:version => 20120112105039) do
     t.integer  "resource_id"
     t.string   "resource_type"
   end
+
+  create_table "identity_documents", :force => true do |t|
+    t.integer "country_id"
+    t.string  "number"
+    t.date    "date_of_issue"
+    t.string  "authority"
+    t.integer "person_id"
+  end
+
+  add_index "identity_documents", ["country_id"], :name => "index_identity_documents_on_country_id"
+  add_index "identity_documents", ["number", "country_id"], :name => "index_identity_documents_on_number_and_country_id", :unique => true
+  add_index "identity_documents", ["person_id"], :name => "index_identity_documents_on_person_id"
 
   create_table "incomes", :force => true do |t|
     t.datetime "start"

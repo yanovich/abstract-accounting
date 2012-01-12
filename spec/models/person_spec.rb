@@ -11,13 +11,13 @@ require 'spec_helper'
 
 describe Person do
   it "should have next behaviour" do
-    Person.create!(:first_name => "Sergey", :second_name => "Sergeev",
-                   :birthday => Date.today, :place_of_birth => "Minsk")
+    Factory(:person)
     should validate_presence_of :first_name
     should validate_presence_of :second_name
     should validate_presence_of :birthday
     should validate_presence_of :place_of_birth
     should validate_uniqueness_of(:first_name).scoped_to(:second_name)
     should have_many Person.versions_association_name
+    should have_one(:identity).class_name(IdentityDocument)
   end
 end

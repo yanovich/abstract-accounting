@@ -97,4 +97,15 @@ FactoryGirl.define do
   factory :mu do |m|
     m.sequence(:tag) { |n| "mu#{n}" }
   end
+
+  factory :country do |c|
+    c.sequence(:tag) { |n| "Country#{n}" }
+  end
+
+  factory :person do |p|
+    p.sequence(:first_name) { |n| "FirstName#{n}" }
+    p.sequence(:second_name) { |n| "SecondName#{n}" }
+    p.birthday Date.today
+    p.place_of_birth "Minsk"
+  end
 end
