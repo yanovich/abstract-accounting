@@ -14,6 +14,7 @@ FactoryGirl.define do
 
   factory :asset do |a|
     a.sequence(:tag) { |n| "asset#{n}" }
+    a.sequence(:mu) { |n| "mu#{n}" }
   end
 
   factory :money do |m|

@@ -7,14 +7,10 @@
 #
 # Please see ./COPYING for details
 
-class Asset < ActiveRecord::Base
-  has_paper_trail
-
-  validates_presence_of :tag
-  validates_uniqueness_of :tag, :scope => :mu
-  has_many :deal_gives, :class_name => "Deal", :as => :give
-  has_many :deal_takes, :class_name => "Deal", :as => :take
-  belongs_to :detail, :class_name => "DetailedAsset"
+class AddMuColumnToAssets < ActiveRecord::Migration
+  def change
+    add_column :assets, :mu, :string
+    remove_index :assets, :tag
+    add_index :assets, [:tag, :mu], :unique => true
+  end
 end
-
-# vim: ts=2 sts=2 sw=2 et:

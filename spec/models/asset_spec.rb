@@ -13,7 +13,7 @@ describe Asset do
   it "should have next behaviour" do
     Factory(:asset)
     should validate_presence_of :tag
-    should validate_uniqueness_of :tag
+    should validate_uniqueness_of(:tag).scoped_to(:mu)
     should have_many :deal_gives
     should have_many :deal_takes
     should have_many Asset.versions_association_name
