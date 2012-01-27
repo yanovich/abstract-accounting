@@ -17,5 +17,6 @@ describe Catalog do
     should belong_to(:parent).class_name(Catalog)
     should have_many(:subcatalogs).class_name(Catalog)
     should have_many Catalog.versions_association_name
+    should have_and_belong_to_many(:boms).class_name(BoM)
   end
 end

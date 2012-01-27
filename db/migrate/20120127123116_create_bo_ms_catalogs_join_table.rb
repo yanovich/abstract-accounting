@@ -7,12 +7,12 @@
 #
 # Please see ./COPYING for details
 
-class Catalog < ActiveRecord::Base
-  has_paper_trail
-
-  validates :tag, :presence => true
-  validates_uniqueness_of :tag, :scope => :parent_id
-  belongs_to :parent, :class_name => "Catalog"
-  has_many :subcatalogs,  :class_name => "Catalog", :foreign_key => :parent_id
-  has_and_belongs_to_many :boms, :class_name => "BoM"
+class CreateBoMsCatalogsJoinTable < ActiveRecord::Migration
+  def change
+    create_table :bo_ms_catalogs, :id => false do |t|
+      t.integer :bo_m_id
+      t.integer :catalog_id
+    end
+    add_index :bo_ms_catalogs, [:bo_m_id, :catalog_id], :unique => true
+  end
 end

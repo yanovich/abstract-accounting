@@ -13,6 +13,7 @@ class BoM < ActiveRecord::Base
   validates_presence_of :resource_id
   belongs_to :resource, :class_name => 'Asset'
   has_many :items, :class_name => "BoMElement", :foreign_key => :bom_id
+  has_and_belongs_to_many :catalogs
 
   def to_deal(entity, prices, physical_volume)
     deal = Deal.create!(:tag => "estimate deal for bom: #{self.id}; ##{

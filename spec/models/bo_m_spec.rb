@@ -15,6 +15,7 @@ describe BoM do
     should belong_to(:resource).class_name(Asset)
     should have_many(BoM.versions_association_name)
     should have_many(:items).class_name(BoMElement)
+    should have_and_belong_to_many(:catalogs)
   end
 
   describe "#to_deal" do
