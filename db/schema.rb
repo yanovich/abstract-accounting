@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120116090951) do
+ActiveRecord::Schema.define(:version => 20120127113326) do
 
   create_table "assets", :force => true do |t|
     t.string  "tag"
@@ -58,6 +58,14 @@ ActiveRecord::Schema.define(:version => 20120116090951) do
   add_index "business_people", ["country_id"], :name => "index_business_people_on_country_id"
   add_index "business_people", ["identifier_id", "identifier_type"], :name => "index_business_people_on_identifier_id_and_identifier_type"
   add_index "business_people", ["person_id"], :name => "index_business_people_on_person_id"
+
+  create_table "catalogs", :force => true do |t|
+    t.string  "tag"
+    t.integer "parent_id"
+  end
+
+  add_index "catalogs", ["parent_id", "tag"], :name => "index_catalogs_on_parent_id_and_tag", :unique => true
+  add_index "catalogs", ["parent_id"], :name => "index_catalogs_on_parent_id"
 
   create_table "charts", :force => true do |t|
     t.integer "currency_id"
