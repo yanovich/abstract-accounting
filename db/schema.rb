@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120127123116) do
+ActiveRecord::Schema.define(:version => 20120127124809) do
 
   create_table "assets", :force => true do |t|
     t.string  "tag"
@@ -73,6 +73,13 @@ ActiveRecord::Schema.define(:version => 20120127123116) do
 
   add_index "catalogs", ["parent_id", "tag"], :name => "index_catalogs_on_parent_id_and_tag", :unique => true
   add_index "catalogs", ["parent_id"], :name => "index_catalogs_on_parent_id"
+
+  create_table "catalogs_price_lists", :id => false, :force => true do |t|
+    t.integer "catalog_id"
+    t.integer "price_list_id"
+  end
+
+  add_index "catalogs_price_lists", ["catalog_id", "price_list_id"], :name => "index_catalogs_price_lists_on_catalog_id_and_price_list_id", :unique => true
 
   create_table "charts", :force => true do |t|
     t.integer "currency_id"

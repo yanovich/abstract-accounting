@@ -7,11 +7,12 @@
 #
 # Please see ./COPYING for details
 
-class PriceList < ActiveRecord::Base
-  has_paper_trail
-
-  validates_presence_of :resource_id, :date
-  belongs_to :resource, :class_name => "Asset"
-  has_many :items, :class_name => "Price"
-  has_and_belongs_to_many :catalogs
+class CreateCatalogsPriceListsJoinTable < ActiveRecord::Migration
+  def change
+    create_table :catalogs_price_lists, :id => false do |t|
+      t.integer :catalog_id
+      t.integer :price_list_id
+    end
+    add_index :catalogs_price_lists, [:catalog_id, :price_list_id], :unique => true
+  end
 end

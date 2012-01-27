@@ -15,4 +15,5 @@ class Catalog < ActiveRecord::Base
   belongs_to :parent, :class_name => "Catalog"
   has_many :subcatalogs,  :class_name => "Catalog", :foreign_key => :parent_id
   has_and_belongs_to_many :boms, :class_name => "BoM"
+  has_and_belongs_to_many :price_lists
 end

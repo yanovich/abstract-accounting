@@ -16,5 +16,6 @@ describe PriceList do
     should belong_to(:resource).class_name(Asset)
     should have_many(PriceList.versions_association_name)
     should have_many(:items).class_name(Price)
+    should have_and_belong_to_many(:catalogs)
   end
 end

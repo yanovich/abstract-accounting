@@ -18,5 +18,6 @@ describe Catalog do
     should have_many(:subcatalogs).class_name(Catalog)
     should have_many Catalog.versions_association_name
     should have_and_belong_to_many(:boms).class_name(BoM)
+    should have_and_belong_to_many(:price_lists)
   end
 end
