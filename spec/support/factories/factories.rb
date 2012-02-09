@@ -89,6 +89,11 @@ FactoryGirl.define do
     p.price_list_id 1
   end
 
+  factory :bo_m do |bom|
+    bom.resource { |b| b.association(:asset) }
+    bom.tab "sometab"
+  end
+
   factory :bo_m_element do |be|
     be.resource { |element| element.association(:asset) }
     be.rate 0.45

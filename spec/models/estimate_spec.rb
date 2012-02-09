@@ -40,7 +40,7 @@ describe Estimate do
 
     it "should create deal when first item added" do
       @estimate.deal.should be_nil
-      bom = BoM.create!(:resource => @compaction)
+      bom = Factory(:bo_m, :resource => @compaction)
       bom.items.create!(:resource => @truck, :rate => 0.33)
       bom.items.create!(:resource => @compressor,
                         :rate => 0.46)
@@ -53,7 +53,7 @@ describe Estimate do
     it "should create rules when item added" do
       @estimate.deal.rules.count.should eq(1)
       @estimate.deal.rules.first.to.give.should eq(@compaction)
-      bom = BoM.create!(:resource => @covering)
+      bom = Factory(:bo_m, :resource => @covering)
       bom.items.create!(:resource => @truck2, :rate => 0.64)
       @estimate.items.build(:bom => bom, :amount => 2.0)
       @estimate.deal.rules.count.should eq(2)

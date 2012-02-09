@@ -12,6 +12,7 @@ require 'spec_helper'
 describe BoM do
   it "should have next behaviour" do
     should validate_presence_of(:resource_id)
+    should validate_presence_of(:tab)
     should belong_to(:resource).class_name(Asset)
     should have_many(BoM.versions_association_name)
     should have_many(:items).class_name(BoMElement)
@@ -30,7 +31,7 @@ describe BoM do
           :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
       @prices.items.create!(:resource => @truck, :rate => (74.03 * 4.70))
       @prices.items.create!(:resource => @compressor, :rate => (59.76 * 4.70))
-      @bom = BoM.create!(:resource => @compaction)
+      @bom = Factory(:bo_m, :resource => @compaction)
       @bom.items.create!(:resource => @truck, :rate => 0.33)
       @bom.items.create!(:resource => @compressor,
                         :rate => 0.46)

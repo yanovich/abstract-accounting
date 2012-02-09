@@ -10,7 +10,7 @@
 class BoM < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :resource_id
+  validates_presence_of :resource_id, :tab
   belongs_to :resource, :class_name => 'Asset'
   has_many :items, :class_name => "BoMElement", :foreign_key => :bom_id
   has_and_belongs_to_many :catalogs
