@@ -89,6 +89,12 @@ FactoryGirl.define do
     p.price_list_id 1
   end
 
+  factory :price_list do |pl|
+    pl.resource { |plist| plist.association(:asset) }
+    pl.date Date.new(2012, 1, 1)
+    pl.tab "sometab"
+  end
+
   factory :bo_m do |bom|
     bom.resource { |b| b.association(:asset) }
     bom.tab "sometab"

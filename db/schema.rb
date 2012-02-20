@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120209074312) do
+ActiveRecord::Schema.define(:version => 20120217103037) do
 
   create_table "assets", :force => true do |t|
     t.string  "tag"
@@ -240,9 +240,11 @@ ActiveRecord::Schema.define(:version => 20120209074312) do
   create_table "price_lists", :force => true do |t|
     t.integer  "resource_id"
     t.datetime "date"
+    t.string   "tab"
   end
 
   add_index "price_lists", ["resource_id"], :name => "index_price_lists_on_resource_id"
+  add_index "price_lists", ["tab"], :name => "index_price_lists_on_tab"
 
   create_table "prices", :force => true do |t|
     t.integer "resource_id"

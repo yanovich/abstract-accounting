@@ -26,9 +26,9 @@ describe BoM do
       @truck = Factory(:asset)
       @compressor = Factory(:asset)
       @compaction = Factory(:asset)
-      @prices = PriceList.create!(
-          :resource => Factory(:asset,:tag => "TUP of the Leningrad region"),
-          :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
+      @prices = Factory(:price_list,
+                        :resource => Factory(:asset,:tag => "TUP of the Leningrad region"),
+                        :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
       @prices.items.create!(:resource => @truck, :rate => (74.03 * 4.70))
       @prices.items.create!(:resource => @compressor, :rate => (59.76 * 4.70))
       @bom = Factory(:bo_m, :resource => @compaction)

@@ -13,6 +13,7 @@ describe PriceList do
   it "should have next behaviour" do
     should validate_presence_of :resource_id
     should validate_presence_of :date
+    should validate_presence_of :tab
     should belong_to(:resource).class_name(Asset)
     should have_many(PriceList.versions_association_name)
     should have_many(:items).class_name(Price)

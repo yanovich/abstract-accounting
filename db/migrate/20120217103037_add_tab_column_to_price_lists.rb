@@ -7,11 +7,9 @@
 #
 # Please see ./COPYING for details
 
-class PriceList < ActiveRecord::Base
-  has_paper_trail
-
-  validates_presence_of :resource_id, :date, :tab
-  belongs_to :resource, :class_name => "Asset"
-  has_many :items, :class_name => "Price"
-  has_and_belongs_to_many :catalogs
+class AddTabColumnToPriceLists < ActiveRecord::Migration
+  def change
+    add_column :price_lists, :tab, :string
+    add_index :price_lists, :tab
+  end
 end
