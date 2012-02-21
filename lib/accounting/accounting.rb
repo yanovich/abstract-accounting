@@ -7,7 +7,7 @@
 #
 # Please see ./COPYING for details
 
-Float.class_eval do
+module Accounting
   def accounting_zero?
     self < 0.00009 and self > -0.00009
   end
