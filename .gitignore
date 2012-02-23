@@ -5,3 +5,5 @@ tmp/**/*
 .idea
 .rspec
 vendor/bundle
+vendor/ruby
+bin
