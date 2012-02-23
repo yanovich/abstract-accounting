@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120217103037) do
+ActiveRecord::Schema.define(:version => 20120223121508) do
 
   create_table "assets", :force => true do |t|
     t.string  "tag"
@@ -150,13 +150,13 @@ ActiveRecord::Schema.define(:version => 20120217103037) do
   add_index "estimate_elements", ["estimate_id"], :name => "index_estimate_elements_on_estimate_id"
 
   create_table "estimates", :force => true do |t|
-    t.integer "entity_id"
     t.integer "price_list_id"
     t.integer "deal_id"
+    t.integer "legal_entity_id"
   end
 
   add_index "estimates", ["deal_id"], :name => "index_estimates_on_deal_id"
-  add_index "estimates", ["entity_id"], :name => "index_estimates_on_entity_id"
+  add_index "estimates", ["legal_entity_id"], :name => "index_estimates_on_legal_entity_id"
   add_index "estimates", ["price_list_id"], :name => "index_estimates_on_price_list_id"
 
   create_table "facts", :force => true do |t|

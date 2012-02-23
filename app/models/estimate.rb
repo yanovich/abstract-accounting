@@ -10,8 +10,8 @@
 class Estimate < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :entity_id, :price_list_id
-  belongs_to :entity
+  validates_presence_of :legal_entity_id, :price_list_id
+  belongs_to :legal_entity
   belongs_to :price_list
   belongs_to :deal
   has_many :items, :class_name => "EstimateElement",
@@ -29,12 +29,16 @@ class Estimate < ActiveRecord::Base
   def add_item(element)
     unless self.deal
       estimate_shipment = Asset.find_or_create_by_tag("Estimate shipment")
+      estimate_entity = Entity.where(:tag => self.legal_entity.name).first_or_create!
       self.create_deal!(
         :tag => "estimate deal ##{
-          Deal.find_all_by_entity_id(self.entity).count + 1
-        } for entity #{self.entity.tag}", :isOffBalance => true,
+          Deal.find_all_by_entity_id(estimate_entity.id).count + 1
+        } for entity #{estimate_entity.tag}", :isOffBalance => true,
         :give => estimate_shipment, :take => estimate_shipment,
-        :rate => 1.0, :entity => self.entity
+        :rate => 1.0,
+            # FIXME: temporary create new entity for deal,
+            #  but should use polymorphic association
+        :entity => estimate_entity
       )
       self.save!
     end

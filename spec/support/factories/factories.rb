@@ -128,4 +128,11 @@ FactoryGirl.define do
     u.entity { |user| user.association(:entity) }
     u.sequence(:reset_password_token) { |n| "anything#{n}" }
   end
+
+  factory :legal_entity do |le|
+    le.name "Some legal entity"
+    le.country { |l| l.association(:country) }
+    le.identifier_name "VATIN"
+    le.identifier_value "500100732259"
+  end
 end

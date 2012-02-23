@@ -23,17 +23,17 @@ describe EstimateElement do
   describe "#to_rule" do
     before(:all) do
       Factory(:chart)
-      @entity = Factory(:entity)
       truck = Factory(:asset)
       compaction = Factory(:asset)
       @prices = Factory(:price_list,
-                        :resource => Factory(:asset,:tag => "TUP of the Leningrad region"),
+                        :resource => Factory(:asset, :tag => "TUP of the Leningrad region"),
                         :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
       @prices.items.create!(:resource => truck, :rate => (74.03 * 4.70))
       @bom = Factory(:bo_m, :resource => compaction)
       @bom.items.create!(:resource => truck, :rate => 0.33)
-      @estimate = Estimate.create!(:entity => @entity, :price_list => @prices,
-                                   :deal =>Factory(:deal, :entity => @entity))
+      @estimate = Estimate.create!(:legal_entity => Factory(:legal_entity),
+                                   :price_list => @prices,
+                                   :deal =>Factory(:deal, :entity => Factory(:entity)))
     end
 
     it "should convert self to rule" do

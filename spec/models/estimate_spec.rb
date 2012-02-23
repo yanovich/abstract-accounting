@@ -11,10 +11,10 @@ require 'spec_helper'
 
 describe Estimate do
   it "should have next behaviour" do
-    should validate_presence_of :entity_id
+    should validate_presence_of :legal_entity_id
     should validate_presence_of :price_list_id
     should belong_to(:deal)
-    should belong_to(:entity)
+    should belong_to(:legal_entity)
     should belong_to(:price_list)
     should have_many Estimate.versions_association_name
     should have_many(:items).class_name(EstimateElement)
@@ -23,7 +23,6 @@ describe Estimate do
   describe "#items" do
     before(:all) do
       Factory(:chart)
-      @entity = Factory(:entity)
       @truck = Factory(:asset)
       @truck2 = Factory(:asset)
       @compressor = Factory(:asset)
@@ -35,7 +34,8 @@ describe Estimate do
       prices.items.create!(:resource => @truck, :rate => (74.03 * 4.70))
       prices.items.create!(:resource => @truck2, :rate => (74.03 * 6.06))
       prices.items.create!(:resource => @compressor, :rate => (59.76 * 4.70))
-      @estimate = Estimate.create!(:entity => @entity, :price_list => prices)
+      @estimate = Estimate.create!(:legal_entity => Factory(:legal_entity),
+                                   :price_list => prices)
     end
 
     it "should create deal when first item added" do
@@ -45,7 +45,8 @@ describe Estimate do
       bom.items.create!(:resource => @compressor,
                         :rate => 0.46)
       @estimate.items.create!(:bom => bom, :amount => 1.0)
-      @estimate.deal.entity.should eq(@entity)
+      @estimate.deal.entity.should eq(Entity.where(:tag => @estimate.legal_entity.name).
+                                          first_or_create!)
       @estimate.deal.isOffBalance.should be_true
       Estimate.find(@estimate).deal.should eq(@estimate.deal)
     end
