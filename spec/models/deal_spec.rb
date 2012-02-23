@@ -17,7 +17,7 @@ describe Deal do
     should validate_presence_of :entity_id
     should validate_presence_of :give_id
     should validate_presence_of :take_id
-    should validate_uniqueness_of(:tag).scoped_to(:entity_id)
+    should validate_uniqueness_of(:tag).scoped_to(:entity_id, :entity_type)
     should belong_to :entity
     should belong_to :give
     should belong_to :take

@@ -45,8 +45,7 @@ describe Estimate do
       bom.items.create!(:resource => @compressor,
                         :rate => 0.46)
       @estimate.items.create!(:bom => bom, :amount => 1.0)
-      @estimate.deal.entity.should eq(Entity.where(:tag => @estimate.legal_entity.name).
-                                          first_or_create!)
+      @estimate.deal.entity.should eq(@estimate.legal_entity)
       @estimate.deal.isOffBalance.should be_true
       Estimate.find(@estimate).deal.should eq(@estimate.deal)
     end

@@ -29,16 +29,14 @@ class Estimate < ActiveRecord::Base
   def add_item(element)
     unless self.deal
       estimate_shipment = Asset.find_or_create_by_tag("Estimate shipment")
-      estimate_entity = Entity.where(:tag => self.legal_entity.name).first_or_create!
       self.create_deal!(
         :tag => "estimate deal ##{
-          Deal.find_all_by_entity_id(estimate_entity.id).count + 1
-        } for entity #{estimate_entity.tag}", :isOffBalance => true,
+          Deal.find_all_by_entity_id_and_entity_type(self.legal_entity.id,
+                                                     LegalEntity).count + 1
+        } for entity #{self.legal_entity.name}", :isOffBalance => true,
         :give => estimate_shipment, :take => estimate_shipment,
         :rate => 1.0,
-            # FIXME: temporary create new entity for deal,
-            #  but should use polymorphic association
-        :entity => estimate_entity
+        :entity => self.legal_entity
       )
       self.save!
     end

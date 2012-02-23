@@ -10,9 +10,9 @@
 class Deal < ActiveRecord::Base
   has_paper_trail
 
-  validates :tag, :rate, :entity_id, :give_id, :take_id, :presence => true
-  validates_uniqueness_of :tag, :scope => :entity_id
-  belongs_to :entity
+  validates :tag, :rate, :entity_id, :entity_type, :give_id, :take_id, :presence => true
+  validates_uniqueness_of :tag, :scope => [:entity_id, :entity_type]
+  belongs_to :entity, :polymorphic => true
   belongs_to :give, :polymorphic => true
   belongs_to :take, :polymorphic => true
   has_many :states
