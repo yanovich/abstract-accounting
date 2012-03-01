@@ -12,10 +12,11 @@ require 'spec_helper'
 describe Estimate do
   it "should have next behaviour" do
     should validate_presence_of :legal_entity_id
-    should validate_presence_of :price_list_id
+    should validate_presence_of :catalog_id
+    should validate_presence_of :date
     should belong_to(:deal)
     should belong_to(:legal_entity)
-    should belong_to(:price_list)
+    should belong_to(:catalog)
     should have_many Estimate.versions_association_name
     should have_many(:items).class_name(EstimateElement)
   end
@@ -24,26 +25,25 @@ describe Estimate do
     before(:all) do
       Factory(:chart)
       @truck = Factory(:asset)
-      @truck2 = Factory(:asset)
       @compressor = Factory(:asset)
       @compaction = Factory(:asset)
       @covering = Factory(:asset)
-      prices = Factory(:price_list,
-                       :resource => Factory(:asset,:tag => "TUP of the Leningrad region"),
-                       :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
-      prices.items.create!(:resource => @truck, :rate => (74.03 * 4.70))
-      prices.items.create!(:resource => @truck2, :rate => (74.03 * 6.06))
-      prices.items.create!(:resource => @compressor, :rate => (59.76 * 4.70))
+      catalog = Catalog.create!(:tag => "TUP of the Leningrad region")
       @estimate = Estimate.create!(:legal_entity => Factory(:legal_entity),
-                                   :price_list => prices)
+                                   :catalog => catalog,
+                                   :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
     end
 
     it "should create deal when first item added" do
       @estimate.deal.should be_nil
-      bom = Factory(:bo_m, :resource => @compaction)
+      bom = @estimate.catalog.boms.create!(:resource => @compaction, :tab => "tab1")
       bom.items.create!(:resource => @truck, :rate => 0.33)
       bom.items.create!(:resource => @compressor,
                         :rate => 0.46)
+      pl = @estimate.catalog.price_lists.create!(:resource => @compaction, :tab => "tab1",
+                        :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
+      pl.items.create!(:resource => @truck, :rate => (74.03 * 4.70))
+      pl.items.create!(:resource => @compressor, :rate => (59.76 * 4.70))
       @estimate.items.create!(:bom => bom, :amount => 1.0)
       @estimate.deal.entity.should eq(@estimate.legal_entity)
       @estimate.deal.isOffBalance.should be_true
@@ -53,8 +53,11 @@ describe Estimate do
     it "should create rules when item added" do
       @estimate.deal.rules.count.should eq(1)
       @estimate.deal.rules.first.to.give.should eq(@compaction)
-      bom = Factory(:bo_m, :resource => @covering)
-      bom.items.create!(:resource => @truck2, :rate => 0.64)
+      bom = @estimate.catalog.boms.create!(:resource => @covering, :tab => "tab1")
+      bom.items.create!(:resource => @truck, :rate => 0.64)
+      pl = @estimate.catalog.price_lists.create!(:resource => @covering, :tab => "tab1",
+                        :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
+      pl.items.create!(:resource => @truck, :rate => (74.03 * 4.70))
       @estimate.items.build(:bom => bom, :amount => 2.0)
       @estimate.deal.rules.count.should eq(2)
       [@estimate.deal.rules.first.to.give,

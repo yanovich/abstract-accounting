@@ -25,15 +25,18 @@ describe EstimateElement do
       Factory(:chart)
       truck = Factory(:asset)
       compaction = Factory(:asset)
-      @prices = Factory(:price_list,
-                        :resource => Factory(:asset, :tag => "TUP of the Leningrad region"),
+      catalog = Catalog.create!(:tag => "TUP of the Leningrad region")
+      @prices = catalog.price_lists.create!(
+                        :resource => compaction,
+                        :tab => "tab1",
                         :date => DateTime.civil(2011, 11, 01, 12, 0, 0))
       @prices.items.create!(:resource => truck, :rate => (74.03 * 4.70))
-      @bom = Factory(:bo_m, :resource => compaction)
+      @bom = catalog.boms.create!(:resource => compaction, :tab => "tab1")
       @bom.items.create!(:resource => truck, :rate => 0.33)
       l_entity = Factory(:legal_entity)
       @estimate = Estimate.create!(:legal_entity => l_entity,
-                                   :price_list => @prices,
+                                   :catalog => catalog,
+                                   :date => DateTime.civil(2011, 11, 01, 12, 0, 0),
                                    :deal =>Factory(:deal, :entity => l_entity))
     end
 

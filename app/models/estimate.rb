@@ -10,13 +10,18 @@
 class Estimate < ActiveRecord::Base
   has_paper_trail
 
-  validates_presence_of :legal_entity_id, :price_list_id
+  validates_presence_of :legal_entity_id, :catalog_id, :date
   belongs_to :legal_entity
-  belongs_to :price_list
+  belongs_to :catalog
   belongs_to :deal
   has_many :items, :class_name => "EstimateElement",
            :after_remove => :remove_item,
            :before_add => :add_item
+
+  def price_list(bom)
+    self.catalog.price_lists.where(:date => self.date).
+                            where(:tab => bom.tab).first
+  end
 
   private
   def remove_item(element)
@@ -40,6 +45,6 @@ class Estimate < ActiveRecord::Base
       )
       self.save!
     end
-    element.to_rule(self.deal, self.price_list)
+    element.to_rule(self.deal, self.price_list(element.bom))
   end
 end

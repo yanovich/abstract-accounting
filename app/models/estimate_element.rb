@@ -18,7 +18,8 @@ class EstimateElement < ActiveRecord::Base
   def to_rule(deal, price_list = nil)
     deal.rules.create!(:tag => "deal: #{deal.tag}; rule ##{deal.rules.count() + 1}",
                        :from => nil, :rate => 1.0, :fact_side => false, :change_side => true,
-                       :to => self.bom.to_deal(deal.entity, self.estimate ? self.estimate.price_list : price_list,
-                                               self.amount))
+                       :to => self.bom.to_deal(deal.entity,
+                         self.estimate ? self.estimate.price_list(self.bom) : price_list,
+                         self.amount))
   end
 end
