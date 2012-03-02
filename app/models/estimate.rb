@@ -19,8 +19,7 @@ class Estimate < ActiveRecord::Base
            :before_add => :add_item
 
   def price_list(bom)
-    self.catalog.price_lists.where(:date => self.date).
-                            where(:tab => bom.tab).first
+    self.catalog.price_list(self.date, bom.tab)
   end
 
   private

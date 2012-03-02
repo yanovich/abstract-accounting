@@ -16,4 +16,9 @@ class Catalog < ActiveRecord::Base
   has_many :subcatalogs,  :class_name => "Catalog", :foreign_key => :parent_id
   has_and_belongs_to_many :boms, :class_name => "BoM"
   has_and_belongs_to_many :price_lists
+
+  def price_list(date, tab)
+    self.price_lists.where(:date => date).
+                     where(:tab => tab).first
+  end
 end

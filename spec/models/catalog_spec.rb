@@ -20,4 +20,18 @@ describe Catalog do
     should have_and_belong_to_many(:boms).class_name(BoM)
     should have_and_belong_to_many(:price_lists)
   end
+
+  it "should return price list" do
+    catalog = Catalog.create!(tag: "some catalog")
+    price = catalog.price_lists.create!(resource: Factory(:asset),
+                                date: DateTime.civil(2011, 11, 01, 12, 0, 0),
+                                tab: "tab1")
+    catalog.price_lists.create!(resource: Factory(:asset),
+                                date: DateTime.civil(2011, 11, 01, 12, 0, 0),
+                                tab: "tab2")
+    catalog.price_lists.create!(resource: Factory(:asset),
+                                date: DateTime.civil(2011, 12, 01, 12, 0, 0),
+                                tab: "tab1")
+    catalog.price_list(price.date, price.tab).should eq(price)
+  end
 end
